@@ -20,7 +20,6 @@
 - methods
   - Process(cmd Command) (events, err)
   - Apply(event) (err)
-  - Type() string
 
 ## Event
 - properties

@@ -9,6 +9,8 @@ services:
       - .:/app
     networks:
       mskit-network:
+    ports:
+      - "3000:3000"
     tty: true
     command: /bin/bash
 

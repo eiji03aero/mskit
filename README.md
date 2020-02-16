@@ -12,7 +12,5 @@
 - Respository
 
 # Todo
-- add uuid in utils package
 - add repository and basic functionality
-  - Save
   - Load

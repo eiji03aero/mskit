@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  ftgo-postgres:
+    container_name: ftgo-postgres
+    image: postgres:12.1-alpine
+    environment:
+      POSTGRES_USER: ftgo
+      POSTGRES_PASSWORD: ftgo123
+      POSTGRES_DB: ftgo
+    volumes:
+      - "../../sql:/sql"
+    networks:
+      mskit-network:
+    tty: true
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.7-alpine
+    networks:
+      mskit-network:
+    tty: true
+
+networks:
+  mskit-network:
+    external: true

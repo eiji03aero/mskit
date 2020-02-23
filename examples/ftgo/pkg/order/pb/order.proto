@@ -1,0 +1,40 @@
+syntax = "proto3";
+package pb;
+
+// -------------------- Objects --------------------
+message Address {
+  string zip_code = 1;
+}
+
+message DeliveryInformation {
+  Address address = 1;
+}
+
+message PaymentInformation {
+  string token = 1;
+}
+
+message OrderLineItem {
+  string menu_item_id = 1;
+  int64 quantity = 2;
+}
+
+message OrderLineItems {
+  repeated OrderLineItem line_items = 1;
+}
+
+// -------------------- Commands --------------------
+message CreateOrder {
+  string id = 1;
+  PaymentInformation payment_information = 2;
+  DeliveryInformation delivery_information = 3;
+  OrderLineItems order_line_items = 4;
+}
+
+// -------------------- Events --------------------
+message OrderCreated {
+  string id = 1;
+  PaymentInformation payment_information = 2;
+  DeliveryInformation delivery_information = 3;
+  OrderLineItems order_line_items = 4;
+}

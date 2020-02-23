@@ -15,8 +15,12 @@ function stop-docker-compose () {
 if [ $COMMAND = 'up' ] && [ $# -le 1 ]; then
   execute-docker-compose up
   stop-docker-compose
-elif [ $COMMAND = 'bash-p' ]; then
-  execute-docker-compose exec ftgo-postgres /bin/bash
+
+elif [ $COMMAND = 'bash-o' ]; then
+  execute-docker-compose exec ftgo-order /bin/bash
+elif [ $COMMAND = 'bash-o-p' ]; then
+  execute-docker-compose exec ftgo-order-postgres /bin/bash
+
 else
   execute-docker-compose $@
 fi

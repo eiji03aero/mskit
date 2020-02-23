@@ -5,15 +5,17 @@ import (
 )
 
 type Event struct {
-	ID            string
+	Id            string
 	Type          string
 	AggregateType string
-	AggregateID   string
+	AggregateId   string
 	Data          interface{}
 }
 
+type Events = []*Event
+
 func NewEvent(
-	aggregateID string,
+	aggregateId string,
 	aggregate interface{},
 	event interface{},
 ) *Event {
@@ -22,8 +24,22 @@ func NewEvent(
 
 	return &Event{
 		Type:          eventType,
-		AggregateID:   aggregateID,
+		AggregateId:   aggregateId,
 		AggregateType: aggregateType,
 		Data:          event,
+	}
+}
+
+func NewEventsSingle(
+	aggregateId string,
+	aggregate interface{},
+	event interface{},
+) Events {
+	return Events{
+		NewEvent(
+			aggregateId,
+			aggregate,
+			event,
+		),
 	}
 }

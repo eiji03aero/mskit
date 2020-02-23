@@ -24,3 +24,15 @@ func buildInsertStatement(tableName string, columns []string) string {
 		placeholderFragment,
 	)
 }
+
+func buildSelectStatement(tableName string, columns []string) string {
+	query := "SELECT %s FROM %s"
+
+	columnsFragment := strings.Join(columns, ", ")
+
+	return fmt.Sprintf(
+		query,
+		columnsFragment,
+		tableName,
+	)
+}

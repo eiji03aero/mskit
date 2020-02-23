@@ -1,46 +1,62 @@
 package service
 
 import (
+	logcommon "common/log"
+	"log"
+
+	orderdmn "order/domain/order"
+	"order/pb"
+
 	"github.com/eiji03aero/mskit"
-	ordersvc "github.com/eiji03aero/mskit/examples/ftgo/pkg/order"
-	orderdomain "github.com/eiji03aero/mskit/examples/ftgo/pkg/order/domain/order"
 	"github.com/eiji03aero/mskit/utils"
 )
 
 type service struct {
-	repository mskit.Repository
+	repository *mskit.Repository
 }
 
-func New(repo mskit.Repository) ordersvc.Service {
+type Service interface {
+	CreateOrder(params pb.CreateOrder) (id string, err error)
+	GetOrder(id string) (order *orderdmn.Order, err error)
+}
+
+func New(r *mskit.Repository) Service {
 	return &service{
-		repository: repo,
+		repository: r,
 	}
 }
 
-func (s *service) CreateOrder(params *ordersvc.CreateOrderParams) (string, error) {
+func (s *service) CreateOrder(params pb.CreateOrder) (string, error) {
 	id, err := utils.UUID()
 	if err != nil {
 		return "", err
 	}
 
-	order := &orderdomain.Order{}
-	createOrder := &orderdomain.CreateOrder{
-		ID:   id,
-		Name: params.Name,
-	}
+	order := &orderdmn.Order{}
+	params.Id = id
 
-	events, err := order.Process(createOrder)
+	events, err := order.Process(params)
 	if err != nil {
 		return "", err
 	}
 
 	for _, e := range events {
-		order.Apply(e)
-		err := s.repository.Save(e)
+		err = s.repository.Save(order, e)
 		if err != nil {
 			return "", err
 		}
 	}
 
+	log.Println("order created: ")
+	logcommon.PrintJsonln(order)
 	return id, nil
+}
+
+func (s *service) GetOrder(id string) (*orderdmn.Order, error) {
+	order := &orderdmn.Order{}
+	err := s.repository.Load(id, order)
+
+	log.Println("get order: ")
+	logcommon.PrintJsonln(order)
+	return order, err
 }

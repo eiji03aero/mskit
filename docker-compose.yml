@@ -3,17 +3,10 @@ version: '3.7'
 services:
   mskit:
     container_name: mskit
-    image: local/golang:1.13.0
+    build:
+      context: .
     working_dir: /app
     volumes:
       - .:/app
-    networks:
-      mskit-network:
-    ports:
-      - "3000:3000"
     tty: true
     command: /bin/bash
-
-networks:
-  mskit-network:
-    name: mskit-network

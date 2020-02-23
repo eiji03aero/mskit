@@ -1,8 +1,20 @@
 version: '3.7'
 
 services:
-  ftgo-postgres:
-    container_name: ftgo-postgres
+  ftgo-order:
+    container_name: ftgo-order
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    working_dir: /app/examples/ftgo/pkg/order
+    volumes:
+      - "../../:/app"
+    ports:
+      - "3000:3000"
+    tty: true
+
+  ftgo-order-postgres:
+    container_name: ftgo-order-postgres
     image: postgres:12.1-alpine
     environment:
       POSTGRES_USER: ftgo
@@ -10,17 +22,9 @@ services:
       POSTGRES_DB: ftgo
     volumes:
       - "../../sql:/sql"
-    networks:
-      mskit-network:
     tty: true
 
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.7-alpine
-    networks:
-      mskit-network:
     tty: true
-
-networks:
-  mskit-network:
-    external: true

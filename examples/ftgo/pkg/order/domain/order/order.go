@@ -4,56 +4,80 @@ import (
 	"errors"
 	"fmt"
 
+	"order/pb"
+
 	"github.com/eiji03aero/mskit"
 )
 
 type Order struct {
 	mskit.BaseAggregate
-	Name string
+	OrderState          OrderState          `json:"order_state"`
+	PaymentInformation  PaymentInformation  `json:"payment_information"`
+	DeliveryInformation DeliveryInformation `json:"delivery_information"`
+	OrderLineItems      OrderLineItems      `json:"order_line_items"`
 }
 
-func (o *Order) Process(cmd interface{}) ([]*mskit.Event, error) {
+func (o *Order) Validate() (errs []error) {
+	if o.OrderLineItems.Len() < 1 {
+		errs = append(errs, errors.New("quantity of order line items not enough"))
+	}
+
+	return errs
+}
+
+func (o *Order) Process(cmd interface{}) (mskit.Events, error) {
 	switch c := cmd.(type) {
-	case *CreateOrder:
+	case pb.CreateOrder:
 		return o.processCreateOrder(c)
 	default:
 		return nil, errors.New("not imp in Process")
 	}
 }
 
-func (o *Order) Apply(event *mskit.Event) error {
-	switch e := event.Data.(type) {
-	case *OrderCreated:
+func (o *Order) Apply(event interface{}) error {
+	switch e := event.(type) {
+	case *pb.OrderCreated:
 		return o.applyOrderCreated(e)
 	default:
 		return errors.New(fmt.Sprintf("not implemented in Apply: %v", e))
 	}
 }
 
-type CreateOrder struct {
-	ID   string
-	Name string
-}
+func (o *Order) processCreateOrder(cmd pb.CreateOrder) (mskit.Events, error) {
+	// validation has to be here, return error if bad
 
-type OrderCreated struct {
-	Name string `json:"name"`
-}
-
-func (o *Order) processCreateOrder(cmd *CreateOrder) ([]*mskit.Event, error) {
-	events := []*mskit.Event{
-		mskit.NewEvent(
-			cmd.ID,
-			&Order{},
-			&OrderCreated{
-				Name: cmd.Name,
-			},
-		),
-	}
+	events := mskit.NewEventsSingle(
+		cmd.Id,
+		Order{},
+		&pb.OrderCreated{
+			Id:                  cmd.Id,
+			PaymentInformation:  cmd.PaymentInformation,
+			DeliveryInformation: cmd.DeliveryInformation,
+			OrderLineItems:      cmd.OrderLineItems,
+		},
+	)
 
 	return events, nil
 }
 
-func (o *Order) applyOrderCreated(event *OrderCreated) error {
-	o.Name = event.Name
+func (o *Order) applyOrderCreated(event *pb.OrderCreated) (err error) {
+	o.OrderState = OrderState_ApprovalPending
+	o.Id = event.Id
+
+	err = o.PaymentInformation.Merge(event.PaymentInformation)
+	if err != nil {
+		return err
+	}
+
+	err = o.DeliveryInformation.Merge(event.DeliveryInformation)
+	if err != nil {
+		return err
+	}
+
+	err = o.OrderLineItems.Merge(event.OrderLineItems)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

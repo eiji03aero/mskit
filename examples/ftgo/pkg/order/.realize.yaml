@@ -8,10 +8,12 @@ schema:
   commands:
     install:
       status: true
-      method: go build -o app ./cmd/main/main.go
+      method: make build
     run:
       status: true
-      method: ./app
+      method: make run
+    test:
+      status: true
   watcher:
     extensions:
     - go

@@ -21,6 +21,11 @@ elif [ $COMMAND = 'bash-o' ]; then
 elif [ $COMMAND = 'bash-o-p' ]; then
   execute-docker-compose exec ftgo-order-postgres /bin/bash
 
+elif [ $COMMAND = 'bash-k' ]; then
+  execute-docker-compose exec ftgo-kitchen /bin/bash
+elif [ $COMMAND = 'bash-k-m' ]; then
+  execute-docker-compose exec ftgo-kitchen-mongo /bin/bash
+
 else
   execute-docker-compose $@
 fi

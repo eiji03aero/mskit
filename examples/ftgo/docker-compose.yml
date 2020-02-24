@@ -6,13 +6,15 @@ services:
     build:
       context: ../../
       dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - ftgo-kitchen-mongo
     working_dir: /app/examples/ftgo/pkg/order
     volumes:
       - "../../:/app"
     ports:
       - "3000:3000"
     tty: true
-
   ftgo-order-postgres:
     container_name: ftgo-order-postgres
     image: postgres:12.1-alpine
@@ -20,8 +22,23 @@ services:
       POSTGRES_USER: ftgo
       POSTGRES_PASSWORD: ftgo123
       POSTGRES_DB: ftgo
+    tty: true
+
+  ftgo-kitchen:
+    container_name: ftgo-kitchen
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - ftgo-kitchen-mongo
+    working_dir: /app/examples/ftgo/pkg/kitchen
     volumes:
-      - "../../sql:/sql"
+      - "../../:/app"
+    tty: true
+  ftgo-kitchen-mongo:
+    container_name: ftgo-kitchen-mongo
+    image: mongo:4.2.2
     tty: true
 
   rabbitmq:

@@ -40,7 +40,31 @@
   - properties
     - zipCode string
 
-## RestaurantService
+## KitchenService
+### Aggregates
+- Ticket
+  - properties
+    - state TicketState
+    - previousState TicketState
+    - restaurantId string
+    - ticketLineItems TicketLineItems
+    - readyBy time
+    - acceptTime time
+    - preparingTime time
+    - pickedUpTime time
+    - readyForPickupTime time
+
+### ValueObject
+- TicketState
+  - enum
+    - create_pending, awaiting_acceptance, accepted, preparing, ready_for_pickup, picked_up, cancel_pending, cancelled, revision_pending,
+- TicketLineItems
+  - properties
+    - lineItems []TicketLineItem
+- TicketLineItem
+  - properties
+    quantity int
+    menuItemId string
 
 # Common
 - Money

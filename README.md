@@ -2,10 +2,14 @@
 - toolkit for microservices in go
 
 # Todo
-- add repository and basic functionality
-  - Load
+- add kitchen service
+  - create mongo eventstore
+  - no protobuffer
+
+## TBD
 - should ponder how tables are initialized
   - probably it should just provide sql
+- version on aggregate
 
 # Features
 - Event sourcing
@@ -14,9 +18,6 @@
   - EventPublisher
 - RPC with other service
   - RPCClient
-
-# TBD
-- version on aggregate
 
 # Components
 ## BaseAggregate

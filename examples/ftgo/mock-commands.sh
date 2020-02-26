@@ -17,24 +17,14 @@ if [ $command = "createOrder" ]; then
     --dump-header - \
     -d '
     {
-      "payment_information": {
-        "token": "daiji na token"
-      },
+      "payment_information": { "token": "daiji na token" },
       "delivery_information": {
-        "address": {
-          "zip_code": "359-0034"
-        }
+        "address": { "zip_code": "359-0034" }
       },
       "order_line_items": {
         "line_items": [
-          {
-            "menu_item_id": "kore",
-            "quantity": 5
-          },
-          {
-            "menu_item_id": "soukai",
-            "quantity": 1
-          }
+          { "menu_item_id": "kore", "quantity": 5 },
+          { "menu_item_id": "soukai", "quantity": 1 }
         ]
       }
     }' \
@@ -45,17 +35,11 @@ elif [ $command = "createOrder-not-enough-items" ]; then
     --dump-header - \
     -d '
     {
-      "payment_information": {
-        "token": "daiji na token"
-      },
+      "payment_information": { "token": "daiji na token" },
       "delivery_information": {
-        "address": {
-          "zip_code": "359-0034"
-        }
+        "address": { "zip_code": "359-0034" }
       },
-      "order_line_items": {
-        "line_items": [ ]
-      }
+      "order_line_items": { "line_items": [] }
     }' \
     localhost:3000/order
 

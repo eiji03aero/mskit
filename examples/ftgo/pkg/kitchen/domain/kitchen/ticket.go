@@ -30,8 +30,9 @@ func (t *Ticket) Apply(event interface{}) error {
 	switch e := event.(type) {
 	case *TicketCreatedEvent:
 		return t.applyTicketCreatedEvent(e)
+	default:
+		return errorscommon.ErrNotSupportedParams(t.Apply, e)
 	}
-	return nil
 }
 
 func (t *Ticket) processCreateTicketCommand(cmd CreateTicketCommand) (mskit.Events, error) {

@@ -3,13 +3,13 @@
 COMMAND=${1:-up}
 container_name="mskit"
 
-function execute-docker-compose () {
+execute-docker-compose () {
   docker-compose \
     -f 'docker-compose.yml' \
     $@
 }
 
-function stop-docker-compose () {
+stop-docker-compose () {
   execute-docker-compose stop
 }
 

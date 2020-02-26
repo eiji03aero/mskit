@@ -13,14 +13,14 @@ import (
 )
 
 func main() {
-	dbOptions := postgres.DBOption{
+	dbOption := postgres.DBOption{
 		User:     "ftgo",
 		Password: "ftgo123",
 		Host:     "ftgo-order-postgres",
 		Port:     "5432",
 		Name:     "ftgo",
 	}
-	// err := postgres.InitializeDB(dbOptions)
+	// err := postgres.InitializeDB(dbOption)
 	// if err != nil {
 	// 	panic(err)
 	// }
@@ -28,7 +28,7 @@ func main() {
 	er := mskit.NewEventRegistry()
 	er.Set(pb.OrderCreated{})
 
-	eventStore, err := postgres.New(dbOptions, er)
+	eventStore, err := postgres.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}

@@ -31,7 +31,7 @@ func (s *service) CreateTicket(cmd kitchendmn.CreateTicketCommand) (id string, e
 
 	cmd.Id = id
 
-	ticket := kitchendmn.Ticket{}
+	ticket := &kitchendmn.Ticket{}
 	events, err := ticket.Process(cmd)
 	if err != nil {
 		return

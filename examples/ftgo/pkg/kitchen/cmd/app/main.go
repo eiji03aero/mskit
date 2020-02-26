@@ -1,58 +1,55 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"log"
+	logcommon "common/log"
+	kitchendmn "kitchen/domain/kitchen"
+	kitchensvc "kitchen/service"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/eventstore/mongo"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
-	dbOptions := mongo.DBOption{
+	dbOption := mongo.DBOption{
 		Host: "ftgo-kitchen-mongo",
 		Port: "27017",
 	}
 
 	er := mskit.NewEventRegistry()
+	er.Set(kitchendmn.TicketCreatedEvent{})
 
-	eventStore, err := mongo.New(dbOptions, er)
+	eventStore, err := mongo.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}
 
-	// _ = mskit.NewRepository(eventStore)
+	repository := mskit.NewRepository(eventStore)
 
-	mongoClient, ok := eventStore.(*mongo.Client)
-	if !ok {
-		panic("shippai mongo client")
+	svc := kitchensvc.New(repository)
+
+	cmd := kitchendmn.CreateTicketCommand{
+		RestaurantId: "mac",
+		TicketLineItems: kitchendmn.TicketLineItems{
+			LineItems: []kitchendmn.TicketLineItem{
+				kitchendmn.TicketLineItem{
+					Quantity:   2,
+					MenuItemId: "fries",
+				},
+				kitchendmn.TicketLineItem{
+					Quantity:   5,
+					MenuItemId: "fries L size",
+				},
+			},
+		},
 	}
 
-	db := mongoClient.Client.Database("mskit")
-	coll := db.Collection("testing")
-	coll.Drop(context.Background())
+	id, _ := svc.CreateTicket(cmd)
 
-	result, err := coll.InsertOne(
-		context.Background(),
-		bson.D{
-			{Key: "item", Value: "canvas"},
-			{Key: "quantity", Value: 100},
-			{Key: "tags", Value: bson.A{"cotton"}},
-		},
-	)
+	ticket := kitchendmn.Ticket{}
+	err = eventStore.Load(id, &ticket)
+	if err != nil {
+		panic(err)
+	}
 
-	id := result.InsertedID
-	log.Println(id, err)
-
-	var doc bson.D
-	coll.FindOne(
-		context.Background(),
-		bson.D{
-			{Key: "_id", Value: id},
-		},
-	).Decode(&doc)
-	docStr, err := json.Marshal(doc)
-	log.Println(string(docStr), err)
+	logcommon.PrintJsonln(ticket)
 }

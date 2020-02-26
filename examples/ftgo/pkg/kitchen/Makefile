@@ -1,7 +1,9 @@
 app_artifact = ./bin/app
 
+.PHONY: build
 build:
 	go build -o ./bin/app ./cmd/app/main.go
 
-run: $(build)
-	go run ./cmd/app
+.PHONY: run
+run:
+	go run ./cmd/app/main.go

@@ -2,22 +2,22 @@
 - toolkit for microservices in go
 
 # Todo
-- add kitchen service
-  - create mongo eventstore
-  - no protobuffer
 
 ## TBD
 - should ponder how tables are initialized
   - probably it should just provide sql
-- version on aggregate
+- aggregate
+  - version
+  - snapshot
 
 # Features
 - Event sourcing
-- Saga
 - Pub/Sub
   - EventPublisher
+  - EventConsumer
 - RPC with other service
   - RPCClient
+- Saga
 
 # Components
 ## BaseAggregate
@@ -39,3 +39,10 @@
 - methods
   - Save(events []Event) err
   - Load(id string) (BaseAggregate, err)
+
+## EventBus(rabbitmq)
+- properties
+  - conn rabbitmq.Connection
+- methods
+  - NewPublisher
+  - NewConsumer

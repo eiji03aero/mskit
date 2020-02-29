@@ -8,6 +8,7 @@ require (
 	github.com/klauspost/compress v1.10.1 // indirect
 	github.com/lib/pq v1.3.0
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	go.mongodb.org/mongo-driver v1.3.0
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2 // indirect

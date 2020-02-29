@@ -5,8 +5,6 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type Delivery amqp.Delivery
-
 type Consumer struct {
 	conn            *amqp.Connection
 	channel         *amqp.Channel
@@ -16,7 +14,7 @@ type Consumer struct {
 	QueueOption     QueueOption
 	QueueBindOption QueueBindOption
 	ConsumeOption   ConsumeOption
-	DeliveryHandler DeliveryHandler
+	DeliveryHandler func(d amqp.Delivery)
 }
 
 type QueueOption struct {
@@ -35,7 +33,7 @@ type QueueBindOption struct {
 }
 
 type ConsumeOption struct {
-	NoAck     bool
+	AutoAck   bool
 	Exclusive bool
 	NoLocal   bool
 	NoWait    bool
@@ -64,9 +62,7 @@ func (c *Consumer) Configure(
 	return c
 }
 
-type DeliveryHandler func(msg amqp.Delivery)
-
-func (c *Consumer) OnDelivery(cb DeliveryHandler) *Consumer {
+func (c *Consumer) OnDelivery(cb func(d amqp.Delivery)) *Consumer {
 	c.DeliveryHandler = cb
 	return c
 }
@@ -93,51 +89,22 @@ func (c *Consumer) Exec() (err error) {
 		return
 	}
 
-	err = c.channel.ExchangeDeclare(
-		c.ExchangeOption.Name,
-		c.ExchangeOption.Type,
-		c.ExchangeOption.Durable,
-		c.ExchangeOption.AutoDeleted,
-		c.ExchangeOption.Internal,
-		c.ExchangeOption.NoWait,
-		c.ExchangeOption.Arguments,
-	)
+	err = ExchangeDeclare(c.channel, c.ExchangeOption)
 	if err != nil {
 		return
 	}
 
-	queue, err := c.channel.QueueDeclare(
-		c.QueueOption.Name,
-		c.QueueOption.Durable,
-		c.QueueOption.AutoDeleted,
-		c.QueueOption.Exclusive,
-		c.QueueOption.NoWait,
-		c.QueueOption.Arguments,
-	)
+	queue, err := QueueDeclare(c.channel, c.QueueOption)
 	if err != nil {
 		return
 	}
 
-	err = c.channel.QueueBind(
-		queue.Name,
-		c.QueueBindOption.Key,
-		c.ExchangeOption.Name,
-		c.QueueBindOption.NoWait,
-		c.QueueBindOption.Arguments,
-	)
+	err = QueueBind(c.channel, queue.Name, c.ExchangeOption.Name, c.QueueBindOption)
 	if err != nil {
 		return
 	}
 
-	deliveries, err := c.channel.Consume(
-		queue.Name,
-		c.Tag,
-		c.ConsumeOption.NoAck,
-		c.ConsumeOption.Exclusive,
-		c.ConsumeOption.NoLocal,
-		c.ConsumeOption.NoWait,
-		c.ConsumeOption.Arguments,
-	)
+	deliveries, err := Consume(c.channel, queue.Name, c.Tag, c.ConsumeOption)
 	if err != nil {
 		return
 	}

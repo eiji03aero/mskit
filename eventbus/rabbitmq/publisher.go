@@ -45,26 +45,12 @@ func (p *Publisher) Exec() error {
 		return err
 	}
 
-	err = channel.ExchangeDeclare(
-		p.ExchangeOption.Name,
-		p.ExchangeOption.Type,
-		p.ExchangeOption.Durable,
-		p.ExchangeOption.AutoDeleted,
-		p.ExchangeOption.Internal,
-		p.ExchangeOption.NoWait,
-		p.ExchangeOption.Arguments,
-	)
+	err = ExchangeDeclare(channel, p.ExchangeOption)
 	if err != nil {
 		return err
 	}
 
-	err = channel.Publish(
-		p.ExchangeOption.Name,
-		p.PublishArgs.RoutingKey,
-		p.PublishArgs.Mandatory,
-		p.PublishArgs.Immediate,
-		p.PublishArgs.Publishing,
-	)
+	err = Publish(channel, p.ExchangeOption.Name, p.PublishArgs)
 	if err != nil {
 		return err
 	}

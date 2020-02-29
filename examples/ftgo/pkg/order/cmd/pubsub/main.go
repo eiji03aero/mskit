@@ -32,12 +32,14 @@ var queueMap = map[string]rabbitmq.QueueOption{
 
 func main() {
 	client, err := rabbitmq.NewClient(rabbitmq.Option{
-		Host: "rabbitmq",
+		Host: "ftgo-rabbitmq",
 		Port: "5672",
 	})
 	if err != nil {
 		panic(err)
 	}
+
+	finish := make(chan error, 2)
 
 	go func() {
 		go client.NewConsumer().
@@ -50,7 +52,7 @@ func main() {
 					NoWait: false,
 				},
 				rabbitmq.ConsumeOption{
-					NoAck:     false,
+					AutoAck:   true,
 					Exclusive: false,
 					NoLocal:   false,
 					NoWait:    false,
@@ -72,7 +74,7 @@ func main() {
 					NoWait: false,
 				},
 				rabbitmq.ConsumeOption{
-					NoAck:     false,
+					AutoAck:   true,
 					Exclusive: false,
 					NoLocal:   false,
 					NoWait:    false,
@@ -83,7 +85,11 @@ func main() {
 				fmt.Println(string(d.Body))
 			}).
 			Exec()
+
+		finish <- nil
 	}()
+
+	time.Sleep(2 * time.Second)
 
 	go func() {
 		complainExchange := rabbitmq.ExchangeOption{
@@ -112,8 +118,6 @@ func main() {
 			},
 		}
 
-		time.Sleep(3 * time.Second)
-
 		go client.NewPublisher().
 			Configure(
 				complainExchange,
@@ -127,9 +131,13 @@ func main() {
 				complainPublishArgsError,
 			).
 			Exec()
+
+		time.Sleep(2 * time.Second)
+		finish <- nil
 	}()
 
 	log.Println("Starting publisher ... ")
-	time.Sleep(10 * time.Second)
+	<-finish
+	<-finish
 	log.Println("Closing ... ")
 }

@@ -52,3 +52,11 @@ func (c *Client) NewPublisher() *Publisher {
 func (c *Client) NewConsumer() *Consumer {
 	return NewConsumer(c.conn)
 }
+
+func (c *Client) NewRPCClient() *RPCClient {
+	return NewRPCClient(c.conn)
+}
+
+func (c *Client) NewRPCServer() *RPCServer {
+	return NewRPCServer(c.conn)
+}

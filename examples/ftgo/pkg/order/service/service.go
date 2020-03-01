@@ -5,7 +5,6 @@ import (
 	"log"
 
 	orderdmn "order/domain/order"
-	"order/pb"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
@@ -16,7 +15,7 @@ type service struct {
 }
 
 type Service interface {
-	CreateOrder(params pb.CreateOrder) (id string, err error)
+	CreateOrder(params orderdmn.CreateOrder) (id string, err error)
 	GetOrder(id string) (order *orderdmn.Order, err error)
 }
 
@@ -26,7 +25,7 @@ func New(r *mskit.Repository) Service {
 	}
 }
 
-func (s *service) CreateOrder(params pb.CreateOrder) (string, error) {
+func (s *service) CreateOrder(params orderdmn.CreateOrder) (string, error) {
 	id, err := utils.UUID()
 	if err != nil {
 		return "", err

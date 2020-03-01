@@ -16,7 +16,7 @@ func main() {
 	}
 
 	er := mskit.NewEventRegistry()
-	er.Set(kitchendmn.TicketCreatedEvent{})
+	er.Set(kitchendmn.TicketCreated{})
 
 	eventStore, err := mongo.New(dbOption, er)
 	if err != nil {
@@ -27,7 +27,7 @@ func main() {
 
 	svc := kitchensvc.New(repository)
 
-	cmd := kitchendmn.CreateTicketCommand{
+	cmd := kitchendmn.CreateTicket{
 		RestaurantId: "mac",
 		TicketLineItems: kitchendmn.TicketLineItems{
 			LineItems: []kitchendmn.TicketLineItem{

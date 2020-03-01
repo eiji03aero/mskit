@@ -11,9 +11,7 @@ schema:
       method: make build
     run:
       status: true
-      method: make run
-    test:
-      status: true
+      method: ./bin/app
   watcher:
     extensions:
     - go

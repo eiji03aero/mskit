@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"order/pb"
+	orderdmn "order/domain/order"
 	"order/service"
 	httptransport "order/transport/http"
 
@@ -26,7 +26,7 @@ func main() {
 	// }
 
 	er := mskit.NewEventRegistry()
-	er.Set(pb.OrderCreated{})
+	er.Set(orderdmn.OrderCreated{})
 
 	eventStore, err := postgres.New(dbOption, er)
 	if err != nil {

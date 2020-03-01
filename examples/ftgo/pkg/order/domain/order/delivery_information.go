@@ -2,7 +2,6 @@ package order
 
 import (
 	"common/errors"
-	"order/pb"
 )
 
 type DeliveryInformation struct {
@@ -11,7 +10,7 @@ type DeliveryInformation struct {
 
 func (di *DeliveryInformation) Merge(obj interface{}) error {
 	switch o := obj.(type) {
-	case *pb.DeliveryInformation:
+	case DeliveryInformation:
 		di.Address.Merge(o.Address)
 	default:
 		return errors.ErrNotSupportedParams(di.Merge, o)

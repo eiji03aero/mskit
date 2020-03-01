@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"order/pb"
-
 	"github.com/eiji03aero/mskit"
 )
 
@@ -27,7 +25,7 @@ func (o *Order) Validate() (errs []error) {
 
 func (o *Order) Process(cmd interface{}) (mskit.Events, error) {
 	switch c := cmd.(type) {
-	case pb.CreateOrder:
+	case CreateOrder:
 		return o.processCreateOrder(c)
 	default:
 		return nil, errors.New("not imp in Process")
@@ -36,20 +34,20 @@ func (o *Order) Process(cmd interface{}) (mskit.Events, error) {
 
 func (o *Order) Apply(event interface{}) error {
 	switch e := event.(type) {
-	case *pb.OrderCreated:
+	case *OrderCreated:
 		return o.applyOrderCreated(e)
 	default:
 		return errors.New(fmt.Sprintf("not implemented in Apply: %v", e))
 	}
 }
 
-func (o *Order) processCreateOrder(cmd pb.CreateOrder) (mskit.Events, error) {
+func (o *Order) processCreateOrder(cmd CreateOrder) (mskit.Events, error) {
 	// validation has to be here, return error if bad
 
 	events := mskit.NewEventsSingle(
 		cmd.Id,
 		Order{},
-		&pb.OrderCreated{
+		&OrderCreated{
 			Id:                  cmd.Id,
 			PaymentInformation:  cmd.PaymentInformation,
 			DeliveryInformation: cmd.DeliveryInformation,
@@ -60,7 +58,7 @@ func (o *Order) processCreateOrder(cmd pb.CreateOrder) (mskit.Events, error) {
 	return events, nil
 }
 
-func (o *Order) applyOrderCreated(event *pb.OrderCreated) (err error) {
+func (o *Order) applyOrderCreated(event *OrderCreated) (err error) {
 	o.OrderState = OrderState_ApprovalPending
 	o.Id = event.Id
 

@@ -2,6 +2,10 @@
 - toolkit for microservices in go
 
 # Todo
+- try to deal with basic process/apply usecase, create helper
+- refactor the Apply(event) part to deal with value instead of ptr
+- add domain event pug/sub on restaurant, order
+  - Restaurant created event
 - setup tests
   - unit tests
   - github action

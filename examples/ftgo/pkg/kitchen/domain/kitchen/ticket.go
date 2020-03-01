@@ -19,8 +19,8 @@ func (t *Ticket) Validate() (errs []error) {
 
 func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 	switch c := cmd.(type) {
-	case CreateTicketCommand:
-		return t.processCreateTicketCommand(c)
+	case CreateTicket:
+		return t.processCreateTicket(c)
 	default:
 		return mskit.Events{}, errorscommon.ErrNotSupportedParams(t.Process, c)
 	}
@@ -28,18 +28,18 @@ func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 
 func (t *Ticket) Apply(event interface{}) error {
 	switch e := event.(type) {
-	case *TicketCreatedEvent:
-		return t.applyTicketCreatedEvent(e)
+	case *TicketCreated:
+		return t.applyTicketCreated(e)
 	default:
 		return errorscommon.ErrNotSupportedParams(t.Apply, e)
 	}
 }
 
-func (t *Ticket) processCreateTicketCommand(cmd CreateTicketCommand) (mskit.Events, error) {
+func (t *Ticket) processCreateTicket(cmd CreateTicket) (mskit.Events, error) {
 	events := mskit.NewEventsSingle(
 		cmd.Id,
 		Ticket{},
-		&TicketCreatedEvent{
+		&TicketCreated{
 			Id:              cmd.Id,
 			RestaurantId:    cmd.RestaurantId,
 			TicketLineItems: cmd.TicketLineItems,
@@ -49,7 +49,7 @@ func (t *Ticket) processCreateTicketCommand(cmd CreateTicketCommand) (mskit.Even
 	return events, nil
 }
 
-func (t *Ticket) applyTicketCreatedEvent(event *TicketCreatedEvent) error {
+func (t *Ticket) applyTicketCreated(event *TicketCreated) error {
 	t.Id = event.Id
 	t.RestaurantId = event.RestaurantId
 	t.TicketLineItems = event.TicketLineItems

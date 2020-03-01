@@ -1,17 +1,16 @@
 package order
 
 import (
-	"order/pb"
 	"testing"
 )
 
 func TestAddress_Merge(t *testing.T) {
 	tests := []struct {
-		arg      pb.Address
+		arg      Address
 		expected Address
 	}{
 		{
-			pb.Address{
+			Address{
 				ZipCode: "300-0000",
 			},
 			Address{

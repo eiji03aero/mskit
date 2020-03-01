@@ -46,5 +46,5 @@ elif [ $command = "createOrder-not-enough-items" ]; then
 elif [ $command = "getOrder" ]; then
   curl \
     --dump-header - \
-    localhost:3000/order/dbf4c6f8-55c7-459a-8ece-f7e9d097b8b6
+    localhost:3000/order/2bc91765-ae77-4697-8c35-6d53faf40dd3
 fi

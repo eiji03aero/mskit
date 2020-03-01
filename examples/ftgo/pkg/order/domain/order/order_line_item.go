@@ -2,7 +2,6 @@ package order
 
 import (
 	errorscommon "common/errors"
-	"order/pb"
 )
 
 type OrderLineItem struct {
@@ -12,7 +11,7 @@ type OrderLineItem struct {
 
 func (oli *OrderLineItem) Merge(obj interface{}) error {
 	switch o := obj.(type) {
-	case *pb.OrderLineItem:
+	case OrderLineItem:
 		oli.Quantity = o.Quantity
 		oli.MenuItemId = o.MenuItemId
 	default:

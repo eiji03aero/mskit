@@ -14,7 +14,7 @@ type service struct {
 }
 
 type Service interface {
-	CreateTicket(cmd kitchendmn.CreateTicketCommand) (id string, err error)
+	CreateTicket(cmd kitchendmn.CreateTicket) (id string, err error)
 }
 
 func New(r *mskit.Repository) Service {
@@ -23,7 +23,7 @@ func New(r *mskit.Repository) Service {
 	}
 }
 
-func (s *service) CreateTicket(cmd kitchendmn.CreateTicketCommand) (id string, err error) {
+func (s *service) CreateTicket(cmd kitchendmn.CreateTicket) (id string, err error) {
 	id, err = utils.UUID()
 	if err != nil {
 		return id, err

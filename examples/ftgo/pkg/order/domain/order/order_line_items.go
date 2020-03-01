@@ -2,7 +2,6 @@ package order
 
 import (
 	errorscommon "common/errors"
-	"order/pb"
 	"sort"
 )
 
@@ -12,7 +11,7 @@ type OrderLineItems struct {
 
 func (oli *OrderLineItems) Merge(obj interface{}) error {
 	switch o := obj.(type) {
-	case *pb.OrderLineItems:
+	case OrderLineItems:
 		for _, argOli := range o.LineItems {
 			i := sort.Search(len(oli.LineItems), func(i int) bool {
 				return oli.LineItems[i].MenuItemId == argOli.MenuItemId

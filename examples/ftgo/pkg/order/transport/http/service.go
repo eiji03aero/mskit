@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"path"
 
-	"order/pb"
+	orderdmn "order/domain/order"
 	ordersvc "order/service"
 )
 
@@ -29,7 +29,7 @@ func orders(svc ordersvc.Service) http.HandlerFunc {
 				return
 			}
 
-			params := pb.CreateOrder{}
+			params := orderdmn.CreateOrder{}
 			err = json.Unmarshal(body, &params)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)

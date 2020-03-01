@@ -19,8 +19,10 @@ func NewRPCServer(conn *amqp.Connection) *RPCServer {
 
 func (rs *RPCServer) Configure(
 	qopt QueueOption,
+	copt ConsumeOption,
 ) *RPCServer {
 	rs.QueueOption = qopt
+	rs.ConsumeOption = copt
 	return rs
 }
 

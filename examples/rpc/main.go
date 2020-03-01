@@ -25,6 +25,13 @@ func main() {
 				rabbitmq.QueueOption{
 					Name: "calc-onegai-shimasu",
 				},
+				rabbitmq.ConsumeOption{
+					AutoAck:   true,
+					Exclusive: true,
+					NoLocal:   false,
+					NoWait:    false,
+					Arguments: nil,
+				},
 			).
 			OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
 				p.Body = []byte("kore ga calc no kekka")

@@ -2,11 +2,13 @@
 - toolkit for microservices in go
 
 # Todo
-
-## TBD
+- setup tests
+  - unit tests
+  - github action
+- should try to make the pub/sub, rpc apis easier ...
 - should ponder how tables are initialized
   - probably it should just provide sql
-- aggregate
+- update aggregate
   - version
   - snapshot
 
@@ -16,7 +18,6 @@
   - EventPublisher
   - EventConsumer
 - RPC with other service
-  - RPCClient
 - Saga
 
 # Components
@@ -46,3 +47,5 @@
 - methods
   - NewPublisher
   - NewConsumer
+  - NewRPCServer
+  - NewRPCClient

@@ -35,9 +35,30 @@ services:
     working_dir: /app/examples/ftgo/pkg/kitchen
     volumes:
       - "../../:/app"
+    ports:
+      - "3001:3001"
     tty: true
   ftgo-kitchen-mongo:
     container_name: ftgo-kitchen-mongo
+    image: mongo:4.2.2
+    tty: true
+
+  ftgo-restaurant:
+    container_name: ftgo-restaurant
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    depends_on:
+      - ftgo-rabbitmq
+      - ftgo-restaurant-mongo
+    working_dir: /app/examples/ftgo/pkg/restaurant
+    volumes:
+      - "../../:/app"
+    ports:
+      - "3002:3002"
+    tty: true
+  ftgo-restaurant-mongo:
+    container_name: ftgo-restaurant-mongo
     image: mongo:4.2.2
     tty: true
 

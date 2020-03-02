@@ -28,7 +28,7 @@ if [ $command = "createOrder" ]; then
         ]
       }
     }' \
-    localhost:3000/order
+    localhost:3000/orders
 
 elif [ $command = "createOrder-not-enough-items" ]; then
   curl -X POST \
@@ -46,5 +46,20 @@ elif [ $command = "createOrder-not-enough-items" ]; then
 elif [ $command = "getOrder" ]; then
   curl \
     --dump-header - \
-    localhost:3000/order/2bc91765-ae77-4697-8c35-6d53faf40dd3
+    localhost:3000/orders/2bc91765-ae77-4697-8c35-6d53faf40dd3
+
+elif [ $command = "createRestaurant" ]; then
+  curl -X POST \
+    --dump-header - \
+    -d '
+    {
+      "name": "macdonalds",
+      "restaurant_menu": {
+        "menu_items": [
+          { "name": "fries large", "price": 300 },
+          { "name": "cheese burger", "price": 200 }
+        ]
+      }
+    }' \
+    localhost:3002/restaurants
 fi

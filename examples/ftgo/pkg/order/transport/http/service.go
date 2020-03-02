@@ -12,8 +12,8 @@ import (
 
 func New(svc ordersvc.Service) *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.Handle("/order", orders(svc))
-	mux.Handle("/order/", order(svc))
+	mux.Handle("/orders", orders(svc))
+	mux.Handle("/orders/", ordersMember(svc))
 
 	return mux
 }
@@ -49,7 +49,7 @@ func orders(svc ordersvc.Service) http.HandlerFunc {
 	}
 }
 
-func order(svc ordersvc.Service) http.HandlerFunc {
+func ordersMember(svc ordersvc.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
 

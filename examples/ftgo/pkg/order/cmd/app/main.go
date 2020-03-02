@@ -20,10 +20,6 @@ func main() {
 		Port:     "5432",
 		Name:     "ftgo",
 	}
-	// err := postgres.InitializeDB(dbOption)
-	// if err != nil {
-	// 	panic(err)
-	// }
 
 	er := mskit.NewEventRegistry()
 	er.Set(orderdmn.OrderCreated{})

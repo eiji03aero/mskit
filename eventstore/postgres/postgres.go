@@ -34,32 +34,24 @@ func getDBUrl(opt DBOption) string {
 	)
 }
 
-func InitializeDB(opt DBOption) error {
-	db, err := sql.Open("postgres", getDBUrl(opt))
+func InitializeDB(opt DBOption) (db *sql.DB, err error) {
+	db, err = sql.Open("postgres", getDBUrl(opt))
 	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	_, err = db.Exec("DROP TABLE IF EXISTS mskit_events")
-	if err != nil {
-		return err
+		return
 	}
 
-	_, err = db.Exec(`
-CREATE TABLE mskit_events (
-  id SERIAL PRIMARY KEY,
-  event_type VARCHAR NOT NULL,
-  aggregate_type VARCHAR NOT NULL,
-  aggregate_id VARCHAR NOT NULL,
-  event_data TEXT NOT NULL DEFAULT ''
-);
-	`)
+	err = CreateTable(db, "mskit_events", []string{
+		"id SERIAL PRIMARY KEY",
+		"event_type VARCHAR NOT NULL",
+		"aggregate_type VARCHAR NOT NULL",
+		"aggregate_id VARCHAR NOT NULL",
+		"event_data TEXT NOT NULL DEFAULT ''",
+	})
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	return
 }
 
 func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
@@ -77,7 +69,7 @@ func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
 }
 
 func (c *Client) Save(event *mskit.Event) error {
-	query := buildInsertStatement(
+	query := BuildInsertStatement(
 		"mskit_events",
 		[]string{
 			"event_type",
@@ -113,7 +105,7 @@ func (c *Client) Save(event *mskit.Event) error {
 
 func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
 	_, aggregateName := utils.GetTypeName(aggregate)
-	query := buildSelectStatement(
+	query := BuildSelectStatement(
 		"mskit_events",
 		[]string{
 			"event_type",

@@ -26,6 +26,11 @@ elif [ $COMMAND = 'bash-k' ]; then
 elif [ $COMMAND = 'bash-k-m' ]; then
   execute-docker-compose exec ftgo-kitchen-mongo /bin/bash
 
+elif [ $COMMAND = 'bash-r' ]; then
+  execute-docker-compose exec ftgo-restaurant /bin/bash
+elif [ $COMMAND = 'bash-r-m' ]; then
+  execute-docker-compose exec ftgo-restaurant-mongo /bin/bash
+
 elif [ $COMMAND = 'bash-rm' ]; then
   execute-docker-compose exec ftgo-rabbitmq /bin/bash
 

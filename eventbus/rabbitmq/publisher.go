@@ -1,11 +1,8 @@
 package rabbitmq
 
 import (
-	"github.com/eiji03aero/mskit/utils"
 	"github.com/streadway/amqp"
 )
-
-type Publishing amqp.Publishing
 
 type Publisher struct {
 	conn           *amqp.Connection
@@ -13,33 +10,34 @@ type Publisher struct {
 	PublishArgs    PublishArgs
 }
 
-type PublishArgs struct {
-	RoutingKey string
-	Mandatory  bool
-	Immediate  bool
-	Publishing amqp.Publishing
-}
-
 func NewPublisher(c *amqp.Connection) *Publisher {
 	return &Publisher{
-		conn: c,
+		conn:           c,
+		ExchangeOption: DefaultExchangeOption,
+		PublishArgs:    DefaultPublishArgs,
 	}
 }
 
-func (p *Publisher) Configure(exopt ExchangeOption, pubargs PublishArgs) *Publisher {
-	p.ExchangeOption = exopt
-	p.PublishArgs = pubargs
+func (p *Publisher) Configure(opts ...interface{}) *Publisher {
+	for _, opt := range opts {
+		switch o := opt.(type) {
+		case ExchangeOption:
+			p.ExchangeOption = o
+		case PublishArgs:
+			p.PublishArgs = o
+
+		case TopicPublisherOption:
+			p.ExchangeOption.Type = "topic"
+			p.ExchangeOption.Name = o.ExchangeName
+			p.PublishArgs.RoutingKey = o.RoutingKey
+			p.PublishArgs.Publishing = o.Publishing
+		}
+	}
+
 	return p
 }
 
 func (p *Publisher) Exec() error {
-	if &(p.ExchangeOption) == nil || &(p.PublishArgs) == nil {
-		return utils.NewErrNotEnoughPropertiesSet([][]interface{}{
-			{"ExchangeOption", p.ExchangeOption},
-			{"PublishArgs", p.PublishArgs},
-		})
-	}
-
 	channel, err := p.conn.Channel()
 	if err != nil {
 		return err

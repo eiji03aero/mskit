@@ -17,48 +17,45 @@ type Consumer struct {
 	DeliveryHandler func(d amqp.Delivery)
 }
 
-type QueueOption struct {
-	Name        string
-	Durable     bool
-	AutoDeleted bool
-	Exclusive   bool
-	NoWait      bool
-	Arguments   amqp.Table
-}
-
-type QueueBindOption struct {
-	Key       string
-	NoWait    bool
-	Arguments amqp.Table
-}
-
-type ConsumeOption struct {
-	AutoAck   bool
-	Exclusive bool
-	NoLocal   bool
-	NoWait    bool
-	Arguments amqp.Table
-}
-
 func NewConsumer(c *amqp.Connection) *Consumer {
 	return &Consumer{
-		conn: c,
-		done: make(chan error),
+		conn:            c,
+		done:            make(chan error),
+		Tag:             generateDefaultTag(),
+		ExchangeOption:  DefaultExchangeOption,
+		QueueOption:     DefaultQueueOption,
+		QueueBindOption: DefaultQueueBindOption,
+		ConsumeOption:   DefaultConsumeOption,
 	}
 }
 
-func (c *Consumer) Configure(
-	tag string,
-	exopt ExchangeOption,
-	qopt QueueOption,
-	qbopt QueueBindOption,
-	copt ConsumeOption,
-) *Consumer {
-	c.Tag = tag
-	c.ExchangeOption = exopt
-	c.QueueOption = qopt
-	c.QueueBindOption = qbopt
-	c.ConsumeOption = copt
+func generateDefaultTag() string {
+	id, _ := utils.UUID()
+	return id
+}
+
+func (c *Consumer) Configure(opts ...interface{}) *Consumer {
+	for _, opt := range opts {
+		switch o := opt.(type) {
+		case string:
+			// FIXME: cannot force all the string to be Tag. has to be better way :(
+			c.Tag = o
+		case ExchangeOption:
+			c.ExchangeOption = o
+		case QueueOption:
+			c.QueueOption = o
+		case QueueBindOption:
+			c.QueueBindOption = o
+		case ConsumeOption:
+			c.ConsumeOption = o
+
+		case TopicConsumerOption:
+			c.ExchangeOption.Type = "topic"
+			c.ExchangeOption.Name = o.ExchangeName
+			c.QueueBindOption.RoutingKey = o.RoutingKey
+		}
+	}
+
 	return c
 }
 
@@ -68,22 +65,6 @@ func (c *Consumer) OnDelivery(cb func(d amqp.Delivery)) *Consumer {
 }
 
 func (c *Consumer) Exec() (err error) {
-	if c.Tag == "" ||
-		&(c.ExchangeOption) == nil ||
-		&(c.QueueOption) == nil ||
-		&(c.QueueBindOption) == nil ||
-		&(c.ConsumeOption) == nil ||
-		&(c.DeliveryHandler) == nil {
-		return utils.NewErrNotEnoughPropertiesSet([][]interface{}{
-			{"Tag", c.Tag},
-			{"ExchangeOption", c.ExchangeOption},
-			{"QueueOption", c.QueueOption},
-			{"QueueBindOption", c.QueueBindOption},
-			{"ConsumeOption", c.ConsumeOption},
-			{"DeliveryHandler", c.DeliveryHandler},
-		})
-	}
-
 	c.channel, err = c.conn.Channel()
 	if err != nil {
 		return

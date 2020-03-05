@@ -11,11 +11,13 @@
   - unit tests
   - github action
 - should try to make the pub/sub and rpc apis easier
-- should ponder how tables are initialized
-  - probably it should just provide sql
 - update aggregate
   - version
   - snapshot
+- review all the namings
+
+- should ponder how tables are initialized
+  - probably it should just provide sql
 
 # Features
 - Event sourcing

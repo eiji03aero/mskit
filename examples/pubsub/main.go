@@ -48,8 +48,8 @@ func main() {
 				exchangeMap["complain"],
 				queueMap["complain"],
 				rabbitmq.QueueBindOption{
-					Key:    "complain.#",
-					NoWait: false,
+					RoutingKey: "complain.#",
+					NoWait:     false,
 				},
 				rabbitmq.ConsumeOption{
 					AutoAck:   true,
@@ -70,8 +70,8 @@ func main() {
 				exchangeMap["complain"],
 				queueMap["complain"],
 				rabbitmq.QueueBindOption{
-					Key:    "complain.error",
-					NoWait: false,
+					RoutingKey: "complain.error",
+					NoWait:     false,
 				},
 				rabbitmq.ConsumeOption{
 					AutoAck:   true,

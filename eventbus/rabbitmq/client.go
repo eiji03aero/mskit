@@ -15,16 +15,6 @@ type Option struct {
 	Port string
 }
 
-type ExchangeOption struct {
-	Name        string
-	Type        string
-	Durable     bool
-	AutoDeleted bool
-	Internal    bool
-	NoWait      bool
-	Arguments   amqp.Table
-}
-
 func getUrl(opt Option) string {
 	return fmt.Sprintf(
 		"amqp://%s:%s/",

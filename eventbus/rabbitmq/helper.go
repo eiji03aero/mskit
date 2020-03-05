@@ -40,7 +40,7 @@ func QueueDeclare(ch *amqp.Channel, qo QueueOption) (amqp.Queue, error) {
 func QueueBind(ch *amqp.Channel, queueName string, exchangeName string, qbo QueueBindOption) error {
 	return ch.QueueBind(
 		queueName,
-		qbo.Key,
+		qbo.RoutingKey,
 		exchangeName,
 		qbo.NoWait,
 		qbo.Arguments,

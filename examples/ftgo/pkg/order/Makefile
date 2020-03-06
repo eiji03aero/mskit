@@ -4,6 +4,10 @@ protoc=protoc --go_out=. */*.proto
 build:
 	go build -o ./bin/app ./cmd/app/main.go
 
+.PHONY: run
+run:
+	reflex -r '(\.go|go\.mod)' -s go run ./cmd/app/main.go
+
 .PHONY: test-watch
 test-watch:
-	while true; do go test -v ./...; sleep 5s; done;
+	reflex -r '(\.go)' -s go test ./...

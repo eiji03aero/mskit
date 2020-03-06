@@ -17,8 +17,6 @@ RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.
 RUN go get -u \
   github.com/golang/protobuf/protoc-gen-go \
   github.com/go-delve/delve/cmd/dlv \
-  github.com/oxequa/realize
-RUN cd /usr/local \
-  && curl -sL https://taskfile.dev/install.sh | sh
+  github.com/cespare/reflex
 
 CMD ["/bin/bash"]

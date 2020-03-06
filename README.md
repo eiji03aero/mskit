@@ -2,6 +2,7 @@
 - toolkit for microservices in go
 
 # Todo
+- probably publish should be handled by repository
 - add domain event pug/sub on restaurant, order
   - Restaurant created event
 - add default options on pub/sub/rpcs

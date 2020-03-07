@@ -34,7 +34,7 @@ func (o *Order) Process(cmd interface{}) (mskit.Events, error) {
 
 func (o *Order) Apply(event interface{}) error {
 	switch e := event.(type) {
-	case *OrderCreated:
+	case OrderCreated:
 		return o.applyOrderCreated(e)
 	default:
 		return errors.New(fmt.Sprintf("not implemented in Apply: %v", e))
@@ -47,7 +47,7 @@ func (o *Order) processCreateOrder(cmd CreateOrder) (mskit.Events, error) {
 	events := mskit.NewEventsSingle(
 		cmd.Id,
 		Order{},
-		&OrderCreated{
+		OrderCreated{
 			Id:                  cmd.Id,
 			PaymentInformation:  cmd.PaymentInformation,
 			DeliveryInformation: cmd.DeliveryInformation,
@@ -58,7 +58,7 @@ func (o *Order) processCreateOrder(cmd CreateOrder) (mskit.Events, error) {
 	return events, nil
 }
 
-func (o *Order) applyOrderCreated(event *OrderCreated) (err error) {
+func (o *Order) applyOrderCreated(event OrderCreated) (err error) {
 	o.OrderState = OrderState_ApprovalPending
 	o.Id = event.Id
 

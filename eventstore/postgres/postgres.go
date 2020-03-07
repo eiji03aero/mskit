@@ -19,7 +19,7 @@ type DBOption struct {
 }
 
 type Client struct {
-	DB            *sql.DB
+	db            *sql.DB
 	eventRegistry *mskit.EventRegistry
 }
 
@@ -34,8 +34,12 @@ func getDBUrl(opt DBOption) string {
 	)
 }
 
+func GetDB(opt DBOption) (db *sql.DB, err error) {
+	return sql.Open("postgres", getDBUrl(opt))
+}
+
 func InitializeDB(opt DBOption) (db *sql.DB, err error) {
-	db, err = sql.Open("postgres", getDBUrl(opt))
+	db, err = GetDB(opt)
 	if err != nil {
 		return
 	}
@@ -55,20 +59,20 @@ func InitializeDB(opt DBOption) (db *sql.DB, err error) {
 }
 
 func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
-	db, err := sql.Open("postgres", getDBUrl(opt))
+	db, err := GetDB(opt)
 	if err != nil {
 		return nil, err
 	}
 
 	es := &Client{
-		DB:            db,
+		db:            db,
 		eventRegistry: er,
 	}
 
 	return es, nil
 }
 
-func (c *Client) Save(event *mskit.Event) error {
+func (c *Client) Save(event mskit.Event) error {
 	query := BuildInsertStatement(
 		"mskit_events",
 		[]string{
@@ -84,7 +88,7 @@ func (c *Client) Save(event *mskit.Event) error {
 		return err
 	}
 
-	stmt, err := c.DB.Prepare(query)
+	stmt, err := c.db.Prepare(query)
 	if err != nil {
 		return err
 	}
@@ -114,7 +118,7 @@ func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
 	)
 	query = query + fmt.Sprintf(" WHERE aggregate_id = $1 AND aggregate_type = $2")
 
-	rows, err := c.DB.Query(query, id, aggregateName)
+	rows, err := c.db.Query(query, id, aggregateName)
 	if err != nil {
 		return err
 	}
@@ -126,16 +130,17 @@ func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
 			return err
 		}
 
-		event, err := c.eventRegistry.Get(eventName)
+		eventPtr, err := c.eventRegistry.Get(eventName)
 		if err != nil {
 			return err
 		}
 
-		err = json.Unmarshal(eventData, &event)
+		err = json.Unmarshal(eventData, eventPtr)
 		if err != nil {
 			return err
 		}
 
+		event := utils.DereferenceIfPtr(eventPtr)
 		err = aggregate.Apply(event)
 		if err != nil {
 			return err

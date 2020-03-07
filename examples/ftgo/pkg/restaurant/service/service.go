@@ -2,9 +2,10 @@ package service
 
 import (
 	logcommon "common/log"
+	restaurantdmn "restaurant/domain/restaurant"
+
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
-	restaurantdmn "restaurant/domain/restaurant"
 )
 
 type service struct {
@@ -24,14 +25,12 @@ func New(r *mskit.Repository, p mskit.DomainEventPublisher) Service {
 }
 
 func (s *service) CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id string, err error) {
-	id, err = utils.UUID()
+	cmd.Id, err = utils.UUID()
 	if err != nil {
 		return
 	}
 
 	restaurant := &restaurantdmn.Restaurant{}
-	restaurant.Id = id
-
 	events, err := restaurant.Process(cmd)
 	if err != nil {
 		return
@@ -49,7 +48,6 @@ func (s *service) CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id strin
 		}
 	}
 
-	logcommon.PrintJsonln("Restaurant created: ")
-	logcommon.PrintJsonln(restaurant)
+	logcommon.PrintCreated(restaurant)
 	return
 }

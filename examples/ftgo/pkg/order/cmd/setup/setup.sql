@@ -1,13 +1,5 @@
-DROP TABLE IF EXISTS restaurants;
-CREATE TABLE restaurants (
+DROP TABLE IF EXISTS json_data;
+CREATE TABLE json_data (
   id VARCHAR NOT NULL,
-  name VARCHAR NOT NULL
-);
-
-DROP TABLE IF EXISTS restaurant_menu_items;
-CREATE TABLE restaurant_menu_items (
-  id VARCHAR NOT NULL,
-  restaurant_id VARCHAR NOT NULL,
-  name VARCHAR NOT NULL,
-  price int NOT NULL
+  data JSON NOT NULL
 );

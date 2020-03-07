@@ -37,7 +37,7 @@ func main() {
 
 	for _, s := range statements {
 		result, err := db.Exec(s)
-		log.Printf("result=%v err=%v \n", result, err)
+		log.Println(result, err)
 	}
 }
 

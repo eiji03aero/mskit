@@ -2,11 +2,6 @@
 - toolkit for microservices in go
 
 # Todo
-- probably publish should be handled by repository
-- add domain event pug/sub on restaurant, order
-  - Restaurant created event
-- add default options on pub/sub/rpcs
-  - deal with how to configure as well. should be with dedicated method to set options
 - try to deal with basic process/apply usecase, create helper
 - setup tests
   - unit tests
@@ -17,6 +12,7 @@
   - snapshot
 - review all the namings
 
+- probably publish should be handled by repository
 - should ponder how tables are initialized
   - probably it should just provide sql
 

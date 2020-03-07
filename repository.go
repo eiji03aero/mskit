@@ -10,7 +10,7 @@ func NewRepository(eventStore EventStore) *Repository {
 	}
 }
 
-func (r *Repository) Save(aggregate Aggregate, event *Event) error {
+func (r *Repository) Save(aggregate Aggregate, event Event) error {
 	err := aggregate.Apply(event.Data)
 	if err != nil {
 		return err

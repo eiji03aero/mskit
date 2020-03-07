@@ -28,7 +28,7 @@ func (r *Restaurant) processCreateRestaurant(cmd CreateRestaurant) (mskit.Events
 	events := mskit.NewEventsSingle(
 		cmd.Id,
 		Restaurant{},
-		&RestaurantCreated{
+		RestaurantCreated{
 			Id:             cmd.Id,
 			Name:           cmd.Name,
 			RestaurantMenu: cmd.RestaurantMenu,
@@ -40,14 +40,14 @@ func (r *Restaurant) processCreateRestaurant(cmd CreateRestaurant) (mskit.Events
 
 func (r *Restaurant) Apply(event interface{}) error {
 	switch e := event.(type) {
-	case *RestaurantCreated:
+	case RestaurantCreated:
 		return r.applyRestaurantCreated(e)
 	default:
 		return errorscommon.ErrNotSupportedParams("r.Apply", e)
 	}
 }
 
-func (r *Restaurant) applyRestaurantCreated(event *RestaurantCreated) error {
+func (r *Restaurant) applyRestaurantCreated(event RestaurantCreated) error {
 	r.Id = event.Id
 	r.Name = event.Name
 	r.RestaurantMenu = event.RestaurantMenu

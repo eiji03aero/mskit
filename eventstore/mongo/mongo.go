@@ -60,7 +60,7 @@ func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
 	return es, nil
 }
 
-func (c *Client) Save(event *mskit.Event) error {
+func (c *Client) Save(event mskit.Event) error {
 	col := c.collectionEvents()
 
 	eventDoc := NewEventDocument(event)
@@ -99,16 +99,17 @@ func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
 			return err
 		}
 
-		event, err := c.eventRegistry.Get(eventDoc.Type)
+		eventPtr, err := c.eventRegistry.Get(eventDoc.Type)
 		if err != nil {
 			return err
 		}
 
-		err = json.Unmarshal(eventDoc.JsonData, &event)
+		err = json.Unmarshal(eventDoc.JsonData, eventPtr)
 		if err != nil {
 			return err
 		}
 
+		event := utils.DereferenceIfPtr(eventPtr)
 		err = aggregate.Apply(event)
 		if err != nil {
 			return err

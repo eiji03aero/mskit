@@ -12,17 +12,17 @@ type Event struct {
 	Data          interface{}
 }
 
-type Events = []*Event
+type Events = []Event
 
 func NewEvent(
 	aggregateId string,
 	aggregate interface{},
 	event interface{},
-) *Event {
+) Event {
 	_, aggregateType := utils.GetTypeName(aggregate)
 	_, eventType := utils.GetTypeName(event)
 
-	return &Event{
+	return Event{
 		Type:          eventType,
 		AggregateId:   aggregateId,
 		AggregateType: aggregateType,

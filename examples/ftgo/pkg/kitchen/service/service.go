@@ -1,12 +1,11 @@
 package service
 
 import (
-	"log"
-
 	logcommon "common/log"
+	kitchendmn "kitchen/domain/kitchen"
+
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
-	kitchendmn "kitchen/domain/kitchen"
 )
 
 type service struct {
@@ -44,7 +43,6 @@ func (s *service) CreateTicket(cmd kitchendmn.CreateTicket) (id string, err erro
 		}
 	}
 
-	log.Println("ticket created: ")
-	logcommon.PrintJsonln(ticket)
+	logcommon.PrintCreated(ticket)
 	return
 }

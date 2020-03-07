@@ -43,7 +43,10 @@ func main() {
 		},
 	}
 
-	id, _ := svc.CreateTicket(cmd)
+	id, err := svc.CreateTicket(cmd)
+	if err != nil {
+		panic(err)
+	}
 
 	ticket := kitchendmn.Ticket{}
 	err = eventStore.Load(id, &ticket)

@@ -8,6 +8,11 @@ build:
 run:
 	reflex -r '(\.go|go\.mod)' -s go run ./cmd/app/main.go
 
+.PHONY: setup
+setup:
+	go run ./cmd/setup/main.go
+	
+
 .PHONY: test-watch
 test-watch:
 	reflex -r '(\.go)' -s go test ./...

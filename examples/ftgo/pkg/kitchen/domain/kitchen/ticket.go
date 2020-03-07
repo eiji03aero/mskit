@@ -2,6 +2,7 @@ package kitchen
 
 import (
 	errorscommon "common/errors"
+
 	"github.com/eiji03aero/mskit"
 )
 
@@ -28,7 +29,7 @@ func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 
 func (t *Ticket) Apply(event interface{}) error {
 	switch e := event.(type) {
-	case *TicketCreated:
+	case TicketCreated:
 		return t.applyTicketCreated(e)
 	default:
 		return errorscommon.ErrNotSupportedParams(t.Apply, e)
@@ -39,7 +40,7 @@ func (t *Ticket) processCreateTicket(cmd CreateTicket) (mskit.Events, error) {
 	events := mskit.NewEventsSingle(
 		cmd.Id,
 		Ticket{},
-		&TicketCreated{
+		TicketCreated{
 			Id:              cmd.Id,
 			RestaurantId:    cmd.RestaurantId,
 			TicketLineItems: cmd.TicketLineItems,
@@ -49,7 +50,7 @@ func (t *Ticket) processCreateTicket(cmd CreateTicket) (mskit.Events, error) {
 	return events, nil
 }
 
-func (t *Ticket) applyTicketCreated(event *TicketCreated) error {
+func (t *Ticket) applyTicketCreated(event TicketCreated) error {
 	t.Id = event.Id
 	t.RestaurantId = event.RestaurantId
 	t.TicketLineItems = event.TicketLineItems

@@ -3,8 +3,9 @@ package mskit
 import (
 	"errors"
 	"fmt"
-	"github.com/eiji03aero/mskit/utils"
 	"reflect"
+
+	"github.com/eiji03aero/mskit/utils"
 )
 
 type EventMap map[string]reflect.Type
@@ -25,6 +26,7 @@ func (er *EventRegistry) Set(event interface{}) error {
 	return nil
 }
 
+// Get returns pointer to the struct that was registered by Set
 func (er *EventRegistry) Get(name string) (interface{}, error) {
 	rawType, ok := er.events[name]
 	if !ok {

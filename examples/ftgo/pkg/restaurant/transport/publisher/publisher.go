@@ -27,7 +27,7 @@ func (p *publisher) Publish(event interface{}) (err error) {
 	}
 
 	switch e := event.(type) {
-	case *restaurantdmn.RestaurantCreated:
+	case restaurantdmn.RestaurantCreated:
 		err = p.c.NewPublisher().
 			Configure(
 				rabbitmq.TopicPublisherOption{

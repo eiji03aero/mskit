@@ -2,26 +2,33 @@ package service
 
 import (
 	logcommon "common/log"
-	"log"
-
 	orderdmn "order/domain/order"
+	restaurantdmn "order/domain/restaurant"
+	restaurantrepo "order/repository/restaurant"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
 )
 
 type service struct {
-	repository *mskit.Repository
+	repository           *mskit.Repository
+	restaurantRepository *restaurantrepo.Repository
 }
 
 type Service interface {
 	CreateOrder(params orderdmn.CreateOrder) (id string, err error)
 	GetOrder(id string) (order *orderdmn.Order, err error)
+	CreateRestaurant(restaurantdmn.Restaurant) (err error)
+	GetRestaurant(id string) (restaurant *restaurantdmn.Restaurant, err error)
 }
 
-func New(r *mskit.Repository) Service {
+func New(
+	r *mskit.Repository,
+	rrepo *restaurantrepo.Repository,
+) Service {
 	return &service{
-		repository: r,
+		repository:           r,
+		restaurantRepository: rrepo,
 	}
 }
 
@@ -46,8 +53,7 @@ func (s *service) CreateOrder(params orderdmn.CreateOrder) (string, error) {
 		}
 	}
 
-	log.Println("order created: ")
-	logcommon.PrintJsonln(order)
+	logcommon.PrintCreated(order)
 	return id, nil
 }
 
@@ -55,7 +61,6 @@ func (s *service) GetOrder(id string) (*orderdmn.Order, error) {
 	order := &orderdmn.Order{}
 	err := s.repository.Load(id, order)
 
-	log.Println("get order: ")
-	logcommon.PrintJsonln(order)
+	logcommon.PrintGet(order)
 	return order, err
 }

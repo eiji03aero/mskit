@@ -46,7 +46,7 @@ elif [ $command = "createOrder-not-enough-items" ]; then
 elif [ $command = "getOrder" ]; then
   curl \
     --dump-header - \
-    localhost:3000/orders/2bc91765-ae77-4697-8c35-6d53faf40dd3
+    localhost:3000/orders/$2
 
 elif [ $command = "createRestaurant" ]; then
   curl -X POST \
@@ -62,4 +62,8 @@ elif [ $command = "createRestaurant" ]; then
       }
     }' \
     localhost:3002/restaurants
+elif [ $command = "getRestaurant" ]; then
+  curl \
+    --dump-header - \
+    localhost:3000/restaurants/$2
 fi

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMMAND=${1:-up}
+cmd=${1:-up}
 
 function execute-docker-compose () {
   docker-compose \
@@ -12,27 +12,34 @@ function stop-docker-compose () {
   execute-docker-compose stop
 }
 
-if [ $COMMAND = 'up' ] && [ $# -le 1 ]; then
+if [ $cmd = 'up' ] && [ $# -le 1 ]; then
   execute-docker-compose up
   stop-docker-compose
 
-elif [ $COMMAND = 'bash-o' ]; then
+elif [ $cmd = 'bash-o' ]; then
   execute-docker-compose exec ftgo-order /bin/bash
-elif [ $COMMAND = 'bash-o-p' ]; then
+elif [ $cmd = 'bash-o-p' ]; then
   execute-docker-compose exec ftgo-order-postgres /bin/bash
 
-elif [ $COMMAND = 'bash-k' ]; then
+elif [ $cmd = 'bash-k' ]; then
   execute-docker-compose exec ftgo-kitchen /bin/bash
-elif [ $COMMAND = 'bash-k-m' ]; then
+elif [ $cmd = 'bash-k-m' ]; then
   execute-docker-compose exec ftgo-kitchen-mongo /bin/bash
 
-elif [ $COMMAND = 'bash-r' ]; then
+elif [ $cmd = 'bash-r' ]; then
   execute-docker-compose exec ftgo-restaurant /bin/bash
-elif [ $COMMAND = 'bash-r-m' ]; then
+elif [ $cmd = 'bash-r-m' ]; then
   execute-docker-compose exec ftgo-restaurant-mongo /bin/bash
 
-elif [ $COMMAND = 'bash-rm' ]; then
+elif [ $cmd = 'bash-rm' ]; then
   execute-docker-compose exec ftgo-rabbitmq /bin/bash
+
+elif [ $cmd = 'setup-db' ]; then
+  execute-docker-compose exec ftgo-order make setup
+  execute-docker-compose exec ftgo-kitchen-mongo mongo --eval \
+    'db.getSiblingDB("mskit").events.remove({});'
+  execute-docker-compose exec ftgo-restaurant-mongo mongo --eval \
+    'db.getSiblingDB("mskit").events.remove({});'
 
 else
   execute-docker-compose $@

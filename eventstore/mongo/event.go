@@ -16,7 +16,7 @@ type EventDocument struct {
 	Data          interface{}         `bson:"-"`
 }
 
-func NewEventDocument(event *mskit.Event) *EventDocument {
+func NewEventDocument(event mskit.Event) *EventDocument {
 	return &EventDocument{
 		Type:          event.Type,
 		AggregateType: event.AggregateType,

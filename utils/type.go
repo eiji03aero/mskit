@@ -16,3 +16,7 @@ func GetTypeName(v interface{}) (reflect.Type, string) {
 	fragments := strings.Split(name, ".")
 	return rawType, fragments[1]
 }
+
+func DereferenceIfPtr(v interface{}) interface{} {
+	return reflect.Indirect(reflect.ValueOf(v)).Interface()
+}

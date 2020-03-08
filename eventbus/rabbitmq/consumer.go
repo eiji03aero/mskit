@@ -51,6 +51,9 @@ func (c *Consumer) Configure(opts ...interface{}) *Consumer {
 
 		case TopicConsumerOption:
 			c.ExchangeOption.Type = "topic"
+			c.ExchangeOption.Durable = true
+			c.QueueOption.Durable = true
+
 			c.ExchangeOption.Name = o.ExchangeName
 			c.QueueBindOption.RoutingKey = o.RoutingKey
 		}

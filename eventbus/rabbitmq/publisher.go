@@ -28,6 +28,8 @@ func (p *Publisher) Configure(opts ...interface{}) *Publisher {
 
 		case TopicPublisherOption:
 			p.ExchangeOption.Type = "topic"
+			p.ExchangeOption.Durable = true
+
 			p.ExchangeOption.Name = o.ExchangeName
 			p.PublishArgs.RoutingKey = o.RoutingKey
 			p.PublishArgs.Publishing = o.Publishing

@@ -41,6 +41,11 @@ elif [ $cmd = 'setup-db' ]; then
   execute-docker-compose exec ftgo-restaurant-mongo mongo --eval \
     'db.getSiblingDB("mskit").events.remove({});'
 
+elif [ $cmd = 'reset-mq' ]; then
+  execute-docker-compose exec ftgo-rabbitmq rabbitmqctl stop_app
+  execute-docker-compose exec ftgo-rabbitmq rabbitmqctl reset
+  execute-docker-compose exec ftgo-rabbitmq rabbitmqctl start_app
+
 else
   execute-docker-compose $@
 fi

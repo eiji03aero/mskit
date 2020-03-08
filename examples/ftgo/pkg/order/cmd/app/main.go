@@ -15,13 +15,24 @@ import (
 	"github.com/eiji03aero/mskit/eventstore/postgres"
 )
 
-func main() {
-	dbOption := postgres.DBOption{
+var (
+	dbOption = postgres.DBOption{
 		User:     "ftgo",
 		Password: "ftgo123",
 		Host:     "ftgo-order-postgres",
 		Port:     "5432",
 		Name:     "ftgo",
+	}
+	rabbitmqOption = rabbitmq.Option{
+		Host: "ftgo-rabbitmq",
+		Port: "5672",
+	}
+)
+
+func main() {
+	db, err := postgres.GetDB(dbOption)
+	if err != nil {
+		panic(err)
 	}
 
 	er := mskit.NewEventRegistry()
@@ -32,25 +43,14 @@ func main() {
 		panic(err)
 	}
 
-	eventBusClient, err := rabbitmq.NewClient(rabbitmq.Option{
-		Host: "ftgo-rabbitmq",
-		Port: "5672",
-	})
+	eventBusClient, err := rabbitmq.NewClient(rabbitmqOption)
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := postgres.GetDB(dbOption)
-	if err != nil {
-		panic(err)
-	}
-
-	restaurantRepository := restaurantrepo.New(db)
-
-	repository := mskit.NewRepository(eventStore)
 	svc := service.New(
-		repository,
-		restaurantRepository,
+		mskit.NewRepository(eventStore, &mskit.StubDomainEventPublisher{}),
+		restaurantrepo.New(db),
 	)
 
 	err = consumer.New(eventBusClient, svc).

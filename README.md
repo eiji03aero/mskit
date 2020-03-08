@@ -3,18 +3,19 @@
 
 # Todo
 - try to deal with basic process/apply usecase, create helper
-- setup tests
-  - unit tests
-  - github action
 - should try to make the pub/sub and rpc apis easier
+- check if topic queue, exchange is durable
 - update aggregate
   - version
   - snapshot
 - review all the namings
-
 - probably publish should be handled by repository
 - should ponder how tables are initialized
   - probably it should just provide sql
+- setup tests
+  - unit tests
+  - add comments on exporteds
+  - github action
 
 # Features
 - Event sourcing

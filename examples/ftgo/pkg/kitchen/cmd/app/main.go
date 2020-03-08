@@ -9,12 +9,14 @@ import (
 	"github.com/eiji03aero/mskit/eventstore/mongo"
 )
 
-func main() {
-	dbOption := mongo.DBOption{
+var (
+	dbOption = mongo.DBOption{
 		Host: "ftgo-kitchen-mongo",
 		Port: "27017",
 	}
+)
 
+func main() {
 	er := mskit.NewEventRegistry()
 	er.Set(kitchendmn.TicketCreated{})
 
@@ -23,9 +25,9 @@ func main() {
 		panic(err)
 	}
 
-	repository := mskit.NewRepository(eventStore)
-
-	svc := kitchensvc.New(repository)
+	svc := kitchensvc.New(
+		mskit.NewRepository(eventStore, &mskit.StubDomainEventPublisher{}),
+	)
 
 	cmd := kitchendmn.CreateTicket{
 		RestaurantId: "mac",

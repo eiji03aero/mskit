@@ -25,27 +25,17 @@ func New(r *mskit.Repository, p mskit.DomainEventPublisher) Service {
 }
 
 func (s *service) CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id string, err error) {
-	cmd.Id, err = utils.UUID()
+	id, err = utils.UUID()
 	if err != nil {
 		return
 	}
 
 	restaurant := &restaurantdmn.Restaurant{}
-	events, err := restaurant.Process(cmd)
+	cmd.Id = id
+
+	s.repository.ExecuteCommand(restaurant, cmd)
 	if err != nil {
 		return
-	}
-
-	for _, e := range events {
-		err = s.repository.Save(restaurant, e)
-		if err != nil {
-			return
-		}
-
-		err = s.publisher.Publish(e.Data)
-		if err != nil {
-			return
-		}
 	}
 
 	logcommon.PrintCreated(restaurant)

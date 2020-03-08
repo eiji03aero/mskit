@@ -28,20 +28,10 @@ func (s *service) CreateTicket(cmd kitchendmn.CreateTicket) (id string, err erro
 		return id, err
 	}
 
+	ticket := &kitchendmn.Ticket{}
 	cmd.Id = id
 
-	ticket := &kitchendmn.Ticket{}
-	events, err := ticket.Process(cmd)
-	if err != nil {
-		return
-	}
-
-	for _, event := range events {
-		err = s.repository.Save(ticket, event)
-		if err != nil {
-			return
-		}
-	}
+	err = s.repository.ExecuteCommand(ticket, cmd)
 
 	logcommon.PrintCreated(ticket)
 	return

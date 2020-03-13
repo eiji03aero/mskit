@@ -2,9 +2,6 @@
 - from: https://www.manning.com/books/microservices-patterns
 
 # Todo
-- update Order to include all properties and logics related
-- add common events
-  - not implemented events/commands
 
 # Services
 ## OrderService
@@ -72,7 +69,30 @@
 # Apis
 ## create order
 - OrderService#createOrder
-  - order := Order.New
-  - events, err := order.process(cmd CreateOrder)
-  - err := order.apply(events)
-  - repository.save(events)
+  - arguments
+    - CreateOrder{}
+      - consumerId
+      - restaurantId
+      - lineItems []OrderMenuItem
+  - flow
+    - verify if restaurant exists
+      - if not returns error
+    - verify menuItems
+      - if not returns error
+    - repo.ExecuteCommand
+    - create CreateOrderSaga and execute
+        step()
+        .withCompensation(orderService.reject, CreateOrderSagaState::makeRejectOrderCommand)
+      .step()
+        .invokeParticipant(consumerService.validateOrder, CreateOrderSagaState::makeValidateOrderByConsumerCommand)
+      .step()
+        .invokeParticipant(kitchenService.create, CreateOrderSagaState::makeCreateTicketCommand)
+        .onReply(CreateTicketReply.class, CreateOrderSagaState::handleCreateTicketReply)
+        .withCompensation(kitchenService.cancel, CreateOrderSagaState::makeCancelCreateTicketCommand)
+      .step()
+        .invokeParticipant(accountingService.authorize, CreateOrderSagaState::makeAuthorizeCommand)
+      .step()
+        .invokeParticipant(kitchenService.confirmCreate, CreateOrderSagaState::makeConfirmCreateTicketCommand)
+      .step()
+        .invokeParticipant(orderService.approve, CreateOrderSagaState::makeApproveOrderCommand)
+      .build();

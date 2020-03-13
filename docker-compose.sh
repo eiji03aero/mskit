@@ -20,9 +20,6 @@ if [ $COMMAND = 'up' ] && [ $# -le 1 ]; then
 elif [ $COMMAND = 'bash' ]; then
   execute-docker-compose exec $container_name /bin/bash
 
-elif [ $COMMAND = 'bash-ftgo-order' ]; then
-  execute-docker-compose exec -w /app/examples/ftgo/pkg/order $container_name /bin/bash
-
 else
   execute-docker-compose $@
 fi

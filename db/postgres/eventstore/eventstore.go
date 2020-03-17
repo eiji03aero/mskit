@@ -1,4 +1,4 @@
-package postgres
+package eventstore
 
 import (
 	"database/sql"
@@ -6,45 +6,22 @@ import (
 	"fmt"
 
 	"github.com/eiji03aero/mskit"
+	"github.com/eiji03aero/mskit/db/postgres"
 	"github.com/eiji03aero/mskit/utils"
-	_ "github.com/lib/pq"
 )
-
-type DBOption struct {
-	User     string
-	Password string
-	Host     string
-	Port     string
-	Name     string
-}
 
 type Client struct {
 	db            *sql.DB
 	eventRegistry *mskit.EventRegistry
 }
 
-func getDBUrl(opt DBOption) string {
-	return fmt.Sprintf(
-		"postgresql://%s:%s@%s:%s/%s?sslmode=disable",
-		opt.User,
-		opt.Password,
-		opt.Host,
-		opt.Port,
-		opt.Name,
-	)
-}
-
-func GetDB(opt DBOption) (db *sql.DB, err error) {
-	return sql.Open("postgres", getDBUrl(opt))
-}
-
-func InitializeDB(opt DBOption) (db *sql.DB, err error) {
-	db, err = GetDB(opt)
+func InitializeDB(opt postgres.DBOption) (db *sql.DB, err error) {
+	db, err = postgres.GetDB(opt)
 	if err != nil {
 		return
 	}
 
-	err = CreateTable(db, "mskit_events", []string{
+	err = postgres.CreateTable(db, "mskit_events", []string{
 		"id SERIAL PRIMARY KEY",
 		"event_type VARCHAR NOT NULL",
 		"aggregate_type VARCHAR NOT NULL",
@@ -58,8 +35,8 @@ func InitializeDB(opt DBOption) (db *sql.DB, err error) {
 	return
 }
 
-func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
-	db, err := GetDB(opt)
+func New(opt postgres.DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
+	db, err := postgres.GetDB(opt)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +50,7 @@ func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
 }
 
 func (c *Client) Save(event mskit.Event) error {
-	query := BuildInsertStatement(
+	query := postgres.BuildInsertStatement(
 		"mskit_events",
 		[]string{
 			"event_type",
@@ -109,7 +86,7 @@ func (c *Client) Save(event mskit.Event) error {
 
 func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
 	_, aggregateName := utils.GetTypeName(aggregate)
-	query := BuildSelectStatement(
+	query := postgres.BuildSelectStatement(
 		"mskit_events",
 		[]string{
 			"event_type",

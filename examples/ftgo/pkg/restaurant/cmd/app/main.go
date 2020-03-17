@@ -9,8 +9,9 @@ import (
 	"restaurant/transport/publisher"
 
 	"github.com/eiji03aero/mskit"
+	"github.com/eiji03aero/mskit/db/mongo"
+	"github.com/eiji03aero/mskit/db/mongo/eventstore"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/eventstore/mongo"
 )
 
 var (
@@ -34,11 +35,11 @@ func main() {
 	}
 	dep := publisher.New(eventBusClient)
 
-	eventStore, err := mongo.New(dbOption, er)
+	es, err := eventstore.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}
-	repository := mskit.NewRepository(eventStore, dep)
+	repository := mskit.NewRepository(es, dep)
 
 	svc := restaurantsvc.New(repository, dep)
 	mux := httptransport.New(svc)

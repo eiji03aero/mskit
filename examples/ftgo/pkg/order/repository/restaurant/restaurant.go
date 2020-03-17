@@ -7,7 +7,7 @@ import (
 
 	restaurantdmn "order/domain/restaurant"
 
-	"github.com/eiji03aero/mskit/eventstore/postgres"
+	"github.com/eiji03aero/mskit/db/postgres"
 )
 
 const (

@@ -8,6 +8,7 @@
   - authorize order
 - saga
 - review all the namings
+  - NewRPCEndpoint instead of NewRPCServer?
 - setup tests
   - unit tests
   - add comments on exporteds
@@ -28,16 +29,16 @@
 # Components
 ## BaseAggregate
 - properties
-  - ID string
+  - Id string
 - methods
   - Process(cmd Command) (events, err)
   - Apply(event) (err)
 
 ## Event
 - properties
-  - ID string
+  - Id string
   - Type string
-  - AggregateID string
+  - AggregateId string
   - AggregateType string
   - Data interface{}
 
@@ -74,38 +75,43 @@
 - if response was fail, invoke compensations
 
 ## components
+### Saga
+- properties
+  - Definition \*SagaDefinition
 ### SagaDefinition
 - properties
-  - actions []SagaAction
+  - steps []SagaStep
+- methods
+  - addStep()
 ### SagaDefinitionBuilder
 - properties
   - sagaDefinition SagaDefinition
 - methods
-  - Step()
-  - WithCompensation()
+  - Step(opts ...interface{}) (\*SagaDefinitionBuilder)
   - InvokeParticipant()
   - OnReply()
+  - WithCompensation()
   - Build() (SagaDefinition, error)
-### SagaAction
+### SagaStepInvokeParticipantOption
+### SagaStepReplyOption
+### SagaStepCompensationOption
+### SagaStep
 - properties
-  - OnCompensation func()
-  - OnReply func()
-  - OnInvokeParticipant func()
+  - invokeParticipantHandler func()
+  - replyHandler func()
+  - compensationHandler func()
 - methods
-  - validate() error
+  - Validate() error
+  - Configure(opts ...interface{})
 ### SagaInstance
 - properties
+  - Id string
   - SagaState enum [Processing, Aborted, Done]
   - Data interface{}
 ### SagaManager
+- properties
+  - repository SagaInstanceRepository
+  - saga Saga
 - methods
   - Create(SagaDefinition) (SagaInstance)
   - Subscribe
-
-## interfaces
-### Saga
-- methods
-  - GetDefinition () (SagaDefinition)
-
-## concerns
-- instance that runs across deployment could cause error if saga definition had update

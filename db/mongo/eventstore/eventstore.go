@@ -1,21 +1,18 @@
-package mongo
+package eventstore
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"time"
 
 	"github.com/eiji03aero/mskit"
+	mongodb "github.com/eiji03aero/mskit/db/mongo"
 	"github.com/eiji03aero/mskit/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
-	Collection_Events   = "events"
-	DefaultDatabaseName = "mskit"
+	Collection_Events = "events"
 )
 
 type DBOption struct {
@@ -30,23 +27,12 @@ type Client struct {
 	eventRegistry *mskit.EventRegistry
 }
 
-func getDBUrl(opt DBOption) string {
-	return fmt.Sprintf(
-		"mongodb://%s:%s",
-		opt.Host,
-		opt.Port,
-	)
-}
-
-func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
+func New(opt mongodb.DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
 	if opt.Name == "" {
-		opt.Name = DefaultDatabaseName
+		opt.Name = mongodb.DefaultDatabaseName
 	}
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(getDBUrl(opt)))
+	client, err := mongodb.GetClient(opt)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +47,7 @@ func New(opt DBOption, er *mskit.EventRegistry) (mskit.EventStore, error) {
 }
 
 func (c *Client) Save(event mskit.Event) error {
-	col := c.collectionEvents()
+	col := c.collection()
 
 	eventDoc := NewEventDocument(event)
 	err := eventDoc.makeJsonData()
@@ -78,7 +64,7 @@ func (c *Client) Save(event mskit.Event) error {
 }
 
 func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
-	col := c.collectionEvents()
+	col := c.collection()
 	_, aggregateName := utils.GetTypeName(aggregate)
 
 	cur, err := col.Find(
@@ -123,6 +109,6 @@ func (c *Client) db() *mongo.Database {
 	return c.Client.Database(c.Database)
 }
 
-func (c *Client) collectionEvents() *mongo.Collection {
+func (c *Client) collection() *mongo.Collection {
 	return c.db().Collection(Collection_Events)
 }

@@ -7,7 +7,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/eiji03aero/mskit/eventstore/postgres"
+	"github.com/eiji03aero/mskit/db/postgres"
+	"github.com/eiji03aero/mskit/db/postgres/eventstore"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 		Name:     "ftgo",
 	}
 
-	db, err := postgres.InitializeDB(dbOption)
+	db, err := eventstore.InitializeDB(dbOption)
 	if err != nil {
 		panic(err)
 	}

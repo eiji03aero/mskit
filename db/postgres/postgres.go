@@ -4,7 +4,32 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	_ "github.com/lib/pq"
 )
+
+type DBOption struct {
+	User     string
+	Password string
+	Host     string
+	Port     string
+	Name     string
+}
+
+func GetDBUrl(opt DBOption) string {
+	return fmt.Sprintf(
+		"postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+		opt.User,
+		opt.Password,
+		opt.Host,
+		opt.Port,
+		opt.Name,
+	)
+}
+
+func GetDB(opt DBOption) (*sql.DB, error) {
+	return sql.Open("postgres", GetDBUrl(opt))
+}
 
 func CreateTable(db *sql.DB, tableName string, columns []string) (err error) {
 	_, err = db.Exec(BuildDropTableStatement(tableName))

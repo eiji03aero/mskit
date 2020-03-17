@@ -11,8 +11,9 @@ import (
 	httptransport "order/transport/http"
 
 	"github.com/eiji03aero/mskit"
+	"github.com/eiji03aero/mskit/db/postgres"
+	"github.com/eiji03aero/mskit/db/postgres/eventstore"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/eventstore/postgres"
 )
 
 var (
@@ -38,7 +39,7 @@ func main() {
 	er := mskit.NewEventRegistry()
 	er.Set(orderdmn.OrderCreated{})
 
-	eventStore, err := postgres.New(dbOption, er)
+	es, err := eventstore.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +50,7 @@ func main() {
 	}
 
 	svc := service.New(
-		mskit.NewRepository(eventStore, &mskit.StubDomainEventPublisher{}),
+		mskit.NewRepository(es, &mskit.StubDomainEventPublisher{}),
 		restaurantrepo.New(db),
 	)
 

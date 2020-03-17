@@ -1,4 +1,4 @@
-package mongo
+package eventstore
 
 import (
 	"encoding/json"

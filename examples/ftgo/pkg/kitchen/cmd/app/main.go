@@ -6,7 +6,8 @@ import (
 	kitchensvc "kitchen/service"
 
 	"github.com/eiji03aero/mskit"
-	"github.com/eiji03aero/mskit/eventstore/mongo"
+	"github.com/eiji03aero/mskit/db/mongo"
+	"github.com/eiji03aero/mskit/db/mongo/eventstore"
 )
 
 var (
@@ -20,13 +21,13 @@ func main() {
 	er := mskit.NewEventRegistry()
 	er.Set(kitchendmn.TicketCreated{})
 
-	eventStore, err := mongo.New(dbOption, er)
+	es, err := eventstore.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}
 
 	svc := kitchensvc.New(
-		mskit.NewRepository(eventStore, &mskit.StubDomainEventPublisher{}),
+		mskit.NewRepository(es, &mskit.StubDomainEventPublisher{}),
 	)
 
 	cmd := kitchendmn.CreateTicket{
@@ -51,7 +52,7 @@ func main() {
 	}
 
 	ticket := kitchendmn.Ticket{}
-	err = eventStore.Load(id, &ticket)
+	err = es.Load(id, &ticket)
 	if err != nil {
 		panic(err)
 	}

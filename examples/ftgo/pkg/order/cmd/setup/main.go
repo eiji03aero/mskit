@@ -9,6 +9,7 @@ import (
 
 	"github.com/eiji03aero/mskit/db/postgres"
 	"github.com/eiji03aero/mskit/db/postgres/eventstore"
+	"github.com/eiji03aero/mskit/db/postgres/sagastore"
 )
 
 func main() {
@@ -23,11 +24,21 @@ func main() {
 		Name:     "ftgo",
 	}
 
-	db, err := eventstore.InitializeDB(dbOption)
+	db, err := postgres.GetDB(dbOption)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
+
+	err = eventstore.InitializeDB(db)
+	if err != nil {
+		panic(err)
+	}
+
+	err = sagastore.InitializeDB(db)
+	if err != nil {
+		panic(err)
+	}
 
 	sqlFileContent, err := ioutil.ReadFile(sqlFilePath)
 	if err != nil {
@@ -38,7 +49,7 @@ func main() {
 
 	for _, s := range statements {
 		result, err := db.Exec(s)
-		log.Println(result, err)
+		log.Println(s, result, err)
 	}
 }
 

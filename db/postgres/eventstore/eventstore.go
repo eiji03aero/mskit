@@ -15,12 +15,7 @@ type Client struct {
 	eventRegistry *mskit.EventRegistry
 }
 
-func InitializeDB(opt postgres.DBOption) (db *sql.DB, err error) {
-	db, err = postgres.GetDB(opt)
-	if err != nil {
-		return
-	}
-
+func InitializeDB(db *sql.DB) (err error) {
 	err = postgres.CreateTable(db, "mskit_events", []string{
 		"id SERIAL PRIMARY KEY",
 		"event_type VARCHAR NOT NULL",

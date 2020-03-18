@@ -13,7 +13,12 @@
   - unit tests
   - add comments on exporteds
   - github action
+- move docker related files into sub directory
 
+- ponder on how repositories should be managed
+  - unify sagainstancerepo and event repo into one?
+  - keep them both separate?
+  - btw naming on sagastore is not consistent, while eventrepo has both eventstore and repository
 - update aggregate
   - version
   - snapshot

@@ -7,7 +7,6 @@ import (
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/postgres"
-	"github.com/eiji03aero/mskit/utils"
 )
 
 const (
@@ -18,12 +17,7 @@ type Client struct {
 	db *sql.DB
 }
 
-func InitializeDB(opt postgres.DBOption) (db *sql.DB, err error) {
-	db, err = postgres.GetDB(opt)
-	if err != nil {
-		return
-	}
-
+func InitializeDB(db *sql.DB) (err error) {
 	err = postgres.CreateTable(db, TableName, []string{
 		"id VARCHAR PRIMARY KEY",
 		"saga_state smallint NOT NULL",
@@ -36,7 +30,7 @@ func InitializeDB(opt postgres.DBOption) (db *sql.DB, err error) {
 	return
 }
 
-func New(opt postgres.DBOption) (mskit.SagaInstanceRepository, error) {
+func New(opt postgres.DBOption) (mskit.SagaStore, error) {
 	db, err := postgres.GetDB(opt)
 	if err != nil {
 		return nil, err
@@ -49,7 +43,7 @@ func New(opt postgres.DBOption) (mskit.SagaInstanceRepository, error) {
 	return repository, nil
 }
 
-func (c *Client) Save(si SagaInstance) error {
+func (c *Client) Save(si mskit.SagaInstance) error {
 	query := postgres.BuildInsertStatement(
 		TableName,
 		[]string{
@@ -82,7 +76,7 @@ func (c *Client) Save(si SagaInstance) error {
 	return nil
 }
 
-func (c *Client) Load(id string, sagaInstance *mskit.SagaInstance) error {
+func (c *Client) Load(id string, si *mskit.SagaInstance) error {
 	var dataStr string
 	query := postgres.BuildSelectStatement(
 		TableName,
@@ -94,17 +88,17 @@ func (c *Client) Load(id string, sagaInstance *mskit.SagaInstance) error {
 	query = query + fmt.Sprintf(" WHERE id = $1")
 
 	err := c.db.QueryRow(query, id).
-		Scan(&sagaInstance.SagaState, &dataStr)
+		Scan(&si.SagaState, &dataStr)
 	if err != nil {
 		return err
 	}
 
-	err = json.Unmarshal([]byte(dataStr), &sagaInstance.Data)
+	err = json.Unmarshal([]byte(dataStr), &si.Data)
 	if err != nil {
 		return err
 	}
 
-	sagaInstance.Id = id
+	si.Id = id
 
 	return nil
 }

@@ -5,7 +5,7 @@ type SagaRepository struct {
 	sagaStore SagaStore
 }
 
-// NewRepository creates and returns new SagaRepository
+// NewSagaRepository creates and returns new SagaRepository
 func NewSagaRepository(ss SagaStore) *SagaRepository {
 	return &SagaRepository{
 		sagaStore: ss,

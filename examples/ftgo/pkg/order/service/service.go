@@ -9,7 +9,7 @@ import (
 )
 
 type service struct {
-	repository           *mskit.Repository
+	eventRepository      *mskit.EventRepository
 	restaurantRepository *restaurantrepo.Repository
 }
 
@@ -21,11 +21,11 @@ type Service interface {
 }
 
 func New(
-	r *mskit.Repository,
+	r *mskit.EventRepository,
 	rrepo *restaurantrepo.Repository,
 ) Service {
 	return &service{
-		repository:           r,
+		eventRepository:      r,
 		restaurantRepository: rrepo,
 	}
 }

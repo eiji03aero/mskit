@@ -50,7 +50,7 @@ func main() {
 	}
 
 	svc := service.New(
-		mskit.NewRepository(es, &mskit.StubDomainEventPublisher{}),
+		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
 		restaurantrepo.New(db),
 	)
 

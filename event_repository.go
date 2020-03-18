@@ -1,18 +1,18 @@
 package mskit
 
-type Repository struct {
+type EventRepository struct {
 	eventStore EventStore
 	publisher  DomainEventPublisher
 }
 
-func NewRepository(eventStore EventStore, publisher DomainEventPublisher) *Repository {
-	return &Repository{
+func NewEventRepository(eventStore EventStore, publisher DomainEventPublisher) *EventRepository {
+	return &EventRepository{
 		eventStore: eventStore,
 		publisher:  publisher,
 	}
 }
 
-func (r *Repository) Save(aggregate Aggregate, event Event) error {
+func (r *EventRepository) Save(aggregate Aggregate, event Event) error {
 	err := aggregate.Apply(event.Data)
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func (r *Repository) Save(aggregate Aggregate, event Event) error {
 	return nil
 }
 
-func (r *Repository) ExecuteCommand(aggregate Aggregate, cmd interface{}) error {
+func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) error {
 	events, err := aggregate.Process(cmd)
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (r *Repository) ExecuteCommand(aggregate Aggregate, cmd interface{}) error 
 	return nil
 }
 
-func (r *Repository) Load(id string, aggregate Aggregate) error {
+func (r *EventRepository) Load(id string, aggregate Aggregate) error {
 	err := r.eventStore.Load(id, aggregate)
 	if err != nil {
 		return err

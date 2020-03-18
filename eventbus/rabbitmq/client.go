@@ -47,6 +47,6 @@ func (c *Client) NewRPCClient() *RPCClient {
 	return NewRPCClient(c.conn)
 }
 
-func (c *Client) NewRPCServer() *RPCServer {
-	return NewRPCServer(c.conn)
+func (c *Client) NewRPCEndpoint() *RPCEndpoint {
+	return NewRPCEndpoint(c.conn)
 }

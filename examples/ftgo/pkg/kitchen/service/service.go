@@ -9,14 +9,14 @@ import (
 )
 
 type service struct {
-	repository *mskit.Repository
+	repository *mskit.EventRepository
 }
 
 type Service interface {
 	CreateTicket(cmd kitchendmn.CreateTicket) (id string, err error)
 }
 
-func New(r *mskit.Repository) Service {
+func New(r *mskit.EventRepository) Service {
 	return &service{
 		repository: r,
 	}

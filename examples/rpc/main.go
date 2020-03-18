@@ -20,7 +20,7 @@ func main() {
 	finish := make(chan error)
 
 	go func() {
-		client.NewRPCServer().
+		client.NewRPCEndpoint().
 			Configure(
 				rabbitmq.QueueOption{
 					Name: "calc-onegai-shimasu",

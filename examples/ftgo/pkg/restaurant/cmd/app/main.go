@@ -39,9 +39,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	repository := mskit.NewRepository(es, dep)
+	eventRepository := mskit.NewEventRepository(es, dep)
 
-	svc := restaurantsvc.New(repository, dep)
+	svc := restaurantsvc.New(eventRepository, dep)
 	mux := httptransport.New(svc)
 
 	log.Println("server starting to listen ...")

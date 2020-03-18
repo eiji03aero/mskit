@@ -4,34 +4,34 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RPCServer struct {
+type RPCEndpoint struct {
 	conn            *amqp.Connection
 	QueueOption     QueueOption
 	ConsumeOption   ConsumeOption
 	DeliveryHandler func(d amqp.Delivery) amqp.Publishing
 }
 
-func NewRPCServer(conn *amqp.Connection) *RPCServer {
-	return &RPCServer{
+func NewRPCEndpoint(conn *amqp.Connection) *RPCEndpoint {
+	return &RPCEndpoint{
 		conn: conn,
 	}
 }
 
-func (rs *RPCServer) Configure(
+func (rs *RPCEndpoint) Configure(
 	qopt QueueOption,
 	copt ConsumeOption,
-) *RPCServer {
+) *RPCEndpoint {
 	rs.QueueOption = qopt
 	rs.ConsumeOption = copt
 	return rs
 }
 
-func (rs *RPCServer) OnDelivery(cb func(d amqp.Delivery) amqp.Publishing) *RPCServer {
+func (rs *RPCEndpoint) OnDelivery(cb func(d amqp.Delivery) amqp.Publishing) *RPCEndpoint {
 	rs.DeliveryHandler = cb
 	return rs
 }
 
-func (rs *RPCServer) Exec() (err error) {
+func (rs *RPCEndpoint) Exec() (err error) {
 	channel, err := rs.conn.Channel()
 	if err != nil {
 		return

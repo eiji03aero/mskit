@@ -9,18 +9,18 @@ import (
 )
 
 type service struct {
-	repository *mskit.Repository
-	publisher  mskit.DomainEventPublisher
+	eventRepository *mskit.EventRepository
+	publisher       mskit.DomainEventPublisher
 }
 
 type Service interface {
 	CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id string, err error)
 }
 
-func New(r *mskit.Repository, p mskit.DomainEventPublisher) Service {
+func New(r *mskit.EventRepository, p mskit.DomainEventPublisher) Service {
 	return &service{
-		repository: r,
-		publisher:  p,
+		eventRepository: r,
+		publisher:       p,
 	}
 }
 
@@ -33,7 +33,7 @@ func (s *service) CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id strin
 	restaurant := &restaurantdmn.Restaurant{}
 	cmd.Id = id
 
-	s.repository.ExecuteCommand(restaurant, cmd)
+	s.eventRepository.ExecuteCommand(restaurant, cmd)
 	if err != nil {
 		return
 	}

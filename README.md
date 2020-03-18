@@ -2,23 +2,22 @@
 - toolkit for microservices in go
 
 # Todo
-- create consumer service
-  - validate order by consumer
-- create accounting service
-  - authorize order
+- review namings
+  - none for now
+
 - saga
-- review all the namings
-  - NewRPCEndpoint instead of NewRPCServer?
+  - createOrder saga
+    - add basic structs and methods
+    - create consumer service
+      - validate order by consumer
+    - create accounting service
+      - authorize order
+
 - setup tests
   - unit tests
   - add comments on exporteds
   - github action
-- move docker related files into sub directory
 
-- ponder on how repositories should be managed
-  - unify sagainstancerepo and event repo into one?
-  - keep them both separate?
-  - btw naming on sagastore is not consistent, while eventrepo has both eventstore and repository
 - update aggregate
   - version
   - snapshot
@@ -47,7 +46,7 @@
   - AggregateType string
   - Data interface{}
 
-## Repository
+## EventRepository
 - methods
   - Save(events []Event) err
   - Load(id string) (BaseAggregate, err)
@@ -58,7 +57,7 @@
 - methods
   - NewPublisher
   - NewConsumer
-  - NewRPCServer
+  - NewRPCEndpoint
   - NewRPCClient
 
 # Saga
@@ -115,7 +114,7 @@
   - Data interface{}
 ### SagaManager
 - properties
-  - repository SagaInstanceRepository
+  - repository SagaRepository
   - saga Saga
 - methods
   - Create(SagaDefinition) (SagaInstance)

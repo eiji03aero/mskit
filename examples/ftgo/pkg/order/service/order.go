@@ -16,7 +16,7 @@ func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (string, error) {
 	order := &orderdmn.Order{}
 	cmd.Id = id
 
-	err = s.repository.ExecuteCommand(order, cmd)
+	err = s.eventRepository.ExecuteCommand(order, cmd)
 	if err != nil {
 		return "", err
 	}
@@ -27,7 +27,7 @@ func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (string, error) {
 
 func (s *service) GetOrder(id string) (*orderdmn.Order, error) {
 	order := &orderdmn.Order{}
-	err := s.repository.Load(id, order)
+	err := s.eventRepository.Load(id, order)
 
 	logcommon.PrintGet(order)
 	return order, err

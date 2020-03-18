@@ -27,7 +27,7 @@ func main() {
 	}
 
 	svc := kitchensvc.New(
-		mskit.NewRepository(es, &mskit.StubDomainEventPublisher{}),
+		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
 	)
 
 	cmd := kitchendmn.CreateTicket{

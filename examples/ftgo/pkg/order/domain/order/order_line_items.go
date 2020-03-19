@@ -27,7 +27,7 @@ func (oli *OrderLineItems) Merge(obj interface{}) error {
 			}
 		}
 	default:
-		return errorscommon.ErrNotSupportedParams(oli.Merge, o)
+		return errorscommon.NewErrNotSupportedParams(oli.Merge, o)
 	}
 
 	return nil

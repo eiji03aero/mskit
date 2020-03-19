@@ -13,7 +13,7 @@ func (a *Address) Merge(obj interface{}) error {
 	case Address:
 		a.ZipCode = o.ZipCode
 	default:
-		return errors.ErrNotSupportedParams(a.Merge, o)
+		return errors.NewErrNotSupportedParams(a.Merge, o)
 	}
 	return nil
 }

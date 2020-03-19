@@ -15,7 +15,7 @@ func (oli *OrderLineItem) Merge(obj interface{}) error {
 		oli.Quantity = o.Quantity
 		oli.MenuItemId = o.MenuItemId
 	default:
-		return errorscommon.ErrNotSupportedParams(oli.Merge, o)
+		return errorscommon.NewErrNotSupportedParams(oli.Merge, o)
 	}
 	return nil
 }

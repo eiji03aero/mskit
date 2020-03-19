@@ -15,6 +15,11 @@ function stop-docker-compose () {
 if [ $cmd = 'up' ] && [ $# -le 1 ]; then
   execute-docker-compose up
   stop-docker-compose
+elif [ $cmd = 'restart-services' ]; then
+  execute-docker-compose restart ftgo-order ftgo-restaurant ftgo-consumer
+
+elif [ $cmd = 'bash' ]; then
+  execute-docker-compose exec -w /app/examples/ftgo ftgo-order /bin/bash
 
 elif [ $cmd = 'bash-o' ]; then
   execute-docker-compose exec ftgo-order /bin/bash
@@ -31,6 +36,11 @@ elif [ $cmd = 'bash-r' ]; then
 elif [ $cmd = 'bash-r-m' ]; then
   execute-docker-compose exec ftgo-restaurant-mongo /bin/bash
 
+elif [ $cmd = 'bash-c' ]; then
+  execute-docker-compose exec ftgo-consumer /bin/bash
+elif [ $cmd = 'bash-c-m' ]; then
+  execute-docker-compose exec ftgo-consumer-mongo /bin/bash
+
 elif [ $cmd = 'bash-rm' ]; then
   execute-docker-compose exec ftgo-rabbitmq /bin/bash
 
@@ -40,6 +50,15 @@ elif [ $cmd = 'setup-db' ]; then
     'db.getSiblingDB("mskit").events.remove({});'
   execute-docker-compose exec ftgo-restaurant-mongo mongo --eval \
     'db.getSiblingDB("mskit").events.remove({});'
+  execute-docker-compose exec ftgo-consumer-mongo mongo --eval \
+    'db.getSiblingDB("mskit").events.remove({});'
+
+elif [ $cmd = 'seed' ]; then
+  ./mock-commands.sh createRestaurant
+  sleep 2s
+  ./mock-commands.sh createConsumer
+  sleep 2s
+  ./mock-commands.sh createOrder
 
 elif [ $cmd = 'reset-mq' ]; then
   execute-docker-compose exec ftgo-rabbitmq rabbitmqctl stop_app

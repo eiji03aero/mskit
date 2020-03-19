@@ -7,9 +7,12 @@
 
 - saga
   - createOrder saga
-    - add basic structs and methods
-    - create consumer service
-      - validate order by consumer
+    - add the initial rejectOrder step
+      - orderservice proxy
+    - validate order by consumer
+      - find consumer by id
+        - if not found, return error
+      - call consumer.validateOrder
     - create accounting service
       - authorize order
 
@@ -97,8 +100,11 @@
   - WithCompensation()
   - Build() (SagaDefinition, error)
 ### SagaStepInvokeParticipantOption
+- handler func()
 ### SagaStepReplyOption
+- handler func()
 ### SagaStepCompensationOption
+- handler func()
 ### SagaStep
 - properties
   - invokeParticipantHandler func()

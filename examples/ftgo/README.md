@@ -79,20 +79,23 @@
       - if not returns error
     - verify menuItems
       - if not returns error
+      - map through the line_items
+        - make restaurant find each item, if not found return error
+        - create menuItem
     - repo.ExecuteCommand
     - create CreateOrderSaga and execute
         step()
-        .withCompensation(orderService.reject, CreateOrderSagaState::makeRejectOrderCommand)
-      .step()
-        .invokeParticipant(consumerService.validateOrder, CreateOrderSagaState::makeValidateOrderByConsumerCommand)
-      .step()
-        .invokeParticipant(kitchenService.create, CreateOrderSagaState::makeCreateTicketCommand)
-        .onReply(CreateTicketReply.class, CreateOrderSagaState::handleCreateTicketReply)
-        .withCompensation(kitchenService.cancel, CreateOrderSagaState::makeCancelCreateTicketCommand)
-      .step()
-        .invokeParticipant(accountingService.authorize, CreateOrderSagaState::makeAuthorizeCommand)
-      .step()
-        .invokeParticipant(kitchenService.confirmCreate, CreateOrderSagaState::makeConfirmCreateTicketCommand)
-      .step()
-        .invokeParticipant(orderService.approve, CreateOrderSagaState::makeApproveOrderCommand)
-      .build();
+          .withCompensation(orderService.reject, CreateOrderSagaState::makeRejectOrderCommand)
+        .step()
+          .invokeParticipant(consumerService.validateOrder, CreateOrderSagaState::makeValidateOrderByConsumerCommand)
+        .step()
+          .invokeParticipant(kitchenService.create, CreateOrderSagaState::makeCreateTicketCommand)
+          .onReply(CreateTicketReply.class, CreateOrderSagaState::handleCreateTicketReply)
+          .withCompensation(kitchenService.cancel, CreateOrderSagaState::makeCancelCreateTicketCommand)
+        .step()
+          .invokeParticipant(accountingService.authorize, CreateOrderSagaState::makeAuthorizeCommand)
+        .step()
+          .invokeParticipant(kitchenService.confirmCreate, CreateOrderSagaState::makeConfirmCreateTicketCommand)
+        .step()
+          .invokeParticipant(orderService.approve, CreateOrderSagaState::makeApproveOrderCommand)
+        .build();

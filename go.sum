@@ -11,6 +11,7 @@ github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200229042554-a2080c
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200301073153-298deddb8a1b h1:fvr7VxevNKmQSYjqJ749U8BfRKiFM75t2xlrfxRffhs=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200306004028-eab1f19aeccb h1:qhiZl4RBn2K5N24GwzCHI4EUG8VJLqe7N6TcUVwjUc8=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200313081825-fd065f91e18a h1:RGa7BfT2MGB6W/87FR871CfiWNkeUFtG52TYgzVxy/I=
+github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200318085250-09885f9c402c h1:+GrzUHEk+qYsa7MxiTNDWCHia1pCuhAhZISrv4gRXTQ=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/restaurant v0.0.0-20200302132755-0ce3878a6038 h1:1dfDtn4SWkAeUn8lpZd7VG/iOlfjFnxyK1+xZuw3R8A=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=

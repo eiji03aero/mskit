@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"path"
 
@@ -31,6 +32,7 @@ func orders(svc ordersvc.Service) http.HandlerFunc {
 				return
 			}
 
+			log.Println("bodyyyyyyyy", string(body))
 			params := orderdmn.CreateOrder{}
 			err = json.Unmarshal(body, &params)
 			if err != nil {
@@ -39,14 +41,14 @@ func orders(svc ordersvc.Service) http.HandlerFunc {
 				return
 			}
 
-			_, err = svc.CreateOrder(params)
+			id, err := svc.CreateOrder(params)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				w.Write([]byte(err.Error()))
 				return
 			}
 
-			return
+			w.Write([]byte(id))
 		}
 	}
 }
@@ -70,7 +72,7 @@ func ordersMember(svc ordersvc.Service) http.HandlerFunc {
 				w.Write([]byte(err.Error()))
 				return
 			}
-			w.Write([]byte(orderJson))
+			w.Write(orderJson)
 		}
 	}
 }

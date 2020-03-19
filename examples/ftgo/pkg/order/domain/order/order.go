@@ -9,6 +9,8 @@ import (
 
 type Order struct {
 	mskit.BaseAggregate
+	ConsumerId          string              `json:"consumer_id"`
+	RestaurantId        string              `json:"restaurant_id"`
 	OrderState          OrderState          `json:"order_state"`
 	PaymentInformation  PaymentInformation  `json:"payment_information"`
 	DeliveryInformation DeliveryInformation `json:"delivery_information"`
@@ -42,13 +44,13 @@ func (o *Order) Apply(event interface{}) error {
 }
 
 func (o *Order) processCreateOrder(cmd CreateOrder) (mskit.Events, error) {
-	// validation has to be here, return error if bad
-
 	events := mskit.NewEventsSingle(
 		cmd.Id,
 		Order{},
 		OrderCreated{
 			Id:                  cmd.Id,
+			ConsumerId:          cmd.ConsumerId,
+			RestaurantId:        cmd.RestaurantId,
 			PaymentInformation:  cmd.PaymentInformation,
 			DeliveryInformation: cmd.DeliveryInformation,
 			OrderLineItems:      cmd.OrderLineItems,

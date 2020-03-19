@@ -13,7 +13,7 @@ func (di *DeliveryInformation) Merge(obj interface{}) error {
 	case DeliveryInformation:
 		di.Address.Merge(o.Address)
 	default:
-		return errors.ErrNotSupportedParams(di.Merge, o)
+		return errors.NewErrNotSupportedParams(di.Merge, o)
 	}
 	return nil
 }

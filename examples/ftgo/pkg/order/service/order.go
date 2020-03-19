@@ -7,14 +7,19 @@ import (
 	"github.com/eiji03aero/mskit/utils"
 )
 
-func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (string, error) {
-	id, err := utils.UUID()
+func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (id string, err error) {
+	_, err = s.GetRestaurant(cmd.RestaurantId)
+	if err != nil {
+		return
+	}
+
+	id, err = utils.UUID()
 	if err != nil {
 		return "", err
 	}
 
-	order := &orderdmn.Order{}
 	cmd.Id = id
+	order := &orderdmn.Order{}
 
 	err = s.eventRepository.ExecuteCommand(order, cmd)
 	if err != nil {

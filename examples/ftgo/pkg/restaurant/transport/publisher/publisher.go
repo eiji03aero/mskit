@@ -41,7 +41,7 @@ func (p *publisher) Publish(event interface{}) (err error) {
 			Exec()
 
 	default:
-		err = errorscommon.ErrNotSupportedParams("p.Publish", e)
+		err = errorscommon.NewErrNotSupportedParams(p.Publish, e)
 	}
 
 	return

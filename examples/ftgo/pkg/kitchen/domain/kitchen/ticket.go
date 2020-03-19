@@ -23,7 +23,7 @@ func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 	case CreateTicket:
 		return t.processCreateTicket(c)
 	default:
-		return mskit.Events{}, errorscommon.ErrNotSupportedParams(t.Process, c)
+		return mskit.Events{}, errorscommon.NewErrNotSupportedParams(t.Process, c)
 	}
 }
 
@@ -32,7 +32,7 @@ func (t *Ticket) Apply(event interface{}) error {
 	case TicketCreated:
 		return t.applyTicketCreated(e)
 	default:
-		return errorscommon.ErrNotSupportedParams(t.Apply, e)
+		return errorscommon.NewErrNotSupportedParams(t.Apply, e)
 	}
 }
 

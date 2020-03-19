@@ -1,20 +1,30 @@
 version: '3.7'
 
+x-service-default: &service-default
+  build:
+    context: ../../
+    dockerfile: Dockerfile
+  depends_on:
+    - ftgo-rabbitmq
+  volumes:
+    - "../../:/app"
+  tty: true
+  restart: "unless-stopped"
+  command: make run
+
+x-mongo-default: &mongo-default
+  image: mongo:4.2.2
+  tty: true
+
 services:
   ftgo-order:
+    <<: *service-default
     container_name: ftgo-order
-    build:
-      context: ../../
-      dockerfile: Dockerfile
     depends_on:
-      - ftgo-rabbitmq
       - ftgo-kitchen-mongo
     working_dir: /app/examples/ftgo/pkg/order
-    volumes:
-      - "../../:/app"
     ports:
       - "3000:3000"
-    tty: true
   ftgo-order-postgres:
     container_name: ftgo-order-postgres
     image: postgres:12.1-alpine
@@ -25,42 +35,41 @@ services:
     tty: true
 
   ftgo-kitchen:
+    <<: *service-default
     container_name: ftgo-kitchen
-    build:
-      context: ../../
-      dockerfile: Dockerfile
     depends_on:
-      - ftgo-rabbitmq
       - ftgo-kitchen-mongo
     working_dir: /app/examples/ftgo/pkg/kitchen
-    volumes:
-      - "../../:/app"
     ports:
       - "3001:3001"
-    tty: true
+    command: /bin/bash
   ftgo-kitchen-mongo:
+    <<: *mongo-default
     container_name: ftgo-kitchen-mongo
-    image: mongo:4.2.2
-    tty: true
 
   ftgo-restaurant:
+    <<: *service-default
     container_name: ftgo-restaurant
-    build:
-      context: ../../
-      dockerfile: Dockerfile
     depends_on:
-      - ftgo-rabbitmq
       - ftgo-restaurant-mongo
     working_dir: /app/examples/ftgo/pkg/restaurant
-    volumes:
-      - "../../:/app"
     ports:
       - "3002:3002"
-    tty: true
   ftgo-restaurant-mongo:
+    <<: *mongo-default
     container_name: ftgo-restaurant-mongo
-    image: mongo:4.2.2
-    tty: true
+
+  ftgo-consumer:
+    <<: *service-default
+    container_name: ftgo-consumer
+    depends_on:
+      - ftgo-consumer-mongo
+    working_dir: /app/examples/ftgo/pkg/consumer
+    ports:
+      - "3003:3003"
+  ftgo-consumer-mongo:
+    <<: *mongo-default
+    container_name: ftgo-consumer-mongo
 
   ftgo-rabbitmq:
     container_name: ftgo-rabbitmq

@@ -13,16 +13,22 @@ type RPCEndpoint struct {
 
 func NewRPCEndpoint(conn *amqp.Connection) *RPCEndpoint {
 	return &RPCEndpoint{
-		conn: conn,
+		conn:          conn,
+		QueueOption:   DefaultQueueOption,
+		ConsumeOption: DefaultConsumeOption,
 	}
 }
 
-func (rs *RPCEndpoint) Configure(
-	qopt QueueOption,
-	copt ConsumeOption,
-) *RPCEndpoint {
-	rs.QueueOption = qopt
-	rs.ConsumeOption = copt
+func (rs *RPCEndpoint) Configure(opts ...interface{}) *RPCEndpoint {
+	for _, opt := range opts {
+		switch o := opt.(type) {
+		case QueueOption:
+			rs.QueueOption = o
+		case ConsumeOption:
+			rs.ConsumeOption = o
+		}
+	}
+
 	return rs
 }
 

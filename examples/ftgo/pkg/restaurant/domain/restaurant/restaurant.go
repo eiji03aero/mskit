@@ -20,7 +20,7 @@ func (r *Restaurant) Process(cmd interface{}) (mskit.Events, error) {
 	case CreateRestaurant:
 		return r.processCreateRestaurant(c)
 	default:
-		return mskit.Events{}, errorscommon.ErrNotSupportedParams("r.Process", c)
+		return mskit.Events{}, errorscommon.NewErrNotSupportedParams(r.Process, c)
 	}
 }
 
@@ -43,7 +43,7 @@ func (r *Restaurant) Apply(event interface{}) error {
 	case RestaurantCreated:
 		return r.applyRestaurantCreated(e)
 	default:
-		return errorscommon.ErrNotSupportedParams("r.Apply", e)
+		return errorscommon.NewErrNotSupportedParams(r.Apply, e)
 	}
 }
 

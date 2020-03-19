@@ -13,7 +13,7 @@ func (pi *PaymentInformation) Merge(obj interface{}) error {
 	case PaymentInformation:
 		pi.Token = o.Token
 	default:
-		return errors.ErrNotSupportedParams(pi.Merge, o)
+		return errors.NewErrNotSupportedParams(pi.Merge, o)
 	}
 	return nil
 }

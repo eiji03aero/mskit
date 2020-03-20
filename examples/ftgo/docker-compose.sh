@@ -15,8 +15,6 @@ function stop-docker-compose () {
 if [ $cmd = 'up' ] && [ $# -le 1 ]; then
   execute-docker-compose up
   stop-docker-compose
-elif [ $cmd = 'restart-services' ]; then
-  execute-docker-compose restart ftgo-order ftgo-restaurant ftgo-consumer
 
 elif [ $cmd = 'bash' ]; then
   execute-docker-compose exec -w /app/examples/ftgo ftgo-order /bin/bash
@@ -55,9 +53,9 @@ elif [ $cmd = 'setup-db' ]; then
 
 elif [ $cmd = 'seed' ]; then
   ./mock-commands.sh createRestaurant
-  sleep 2s
+  sleep 1s
   ./mock-commands.sh createConsumer
-  sleep 2s
+  sleep 1s
   ./mock-commands.sh createOrder
 
 elif [ $cmd = 'reset-mq' ]; then

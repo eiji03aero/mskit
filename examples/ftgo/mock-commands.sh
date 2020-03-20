@@ -35,6 +35,7 @@ value-or-get () {
 store-id-from-file () {
   key=$1
   ./temp-data.sh write-by-key-from-file $key $res_file
+  rm $res_file
 }
 
 if [ $command = "createOrder" ]; then
@@ -101,5 +102,4 @@ elif [ $command = "getConsumer" ]; then
   id=$(value-or-get consumer_id $2)
   curl $debug_options \
     ftgo-consumer:3003/consumers/$id
-  show-response-body
 fi

@@ -5,12 +5,17 @@ x-service-default: &service-default
     context: ../../
     dockerfile: Dockerfile
   depends_on:
-    - ftgo-rabbitmq
+    ftgo-rabbitmq:
   volumes:
     - "../../:/app"
   tty: true
-  restart: "unless-stopped"
-  command: make run
+  command:
+    - /bin/bash
+    - -c
+    - |
+      echo wait for rabbitmq to get ready
+      sleep 20s
+      make run
 
 x-mongo-default: &mongo-default
   image: mongo:4.2.2

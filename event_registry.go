@@ -8,18 +8,22 @@ import (
 	"github.com/eiji03aero/mskit/utils"
 )
 
+// EventMap is a map to hold Event structs
 type EventMap map[string]reflect.Type
 
+// EventRegistry provides feature to manage EventMap
 type EventRegistry struct {
 	events EventMap
 }
 
+// NewEventRegistry creates new struct
 func NewEventRegistry() *EventRegistry {
 	return &EventRegistry{
 		events: EventMap{},
 	}
 }
 
+// Set registers new struct
 func (er *EventRegistry) Set(event interface{}) error {
 	rawType, name := utils.GetTypeName(event)
 	er.events[name] = rawType

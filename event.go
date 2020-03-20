@@ -4,6 +4,7 @@ import (
 	"github.com/eiji03aero/mskit/utils"
 )
 
+// Event is struct to express domain event
 type Event struct {
 	Id            string
 	Type          string
@@ -12,8 +13,10 @@ type Event struct {
 	Data          interface{}
 }
 
+// Events is a type to express slice of Event
 type Events = []Event
 
+// NewEvent is utility function to create Event struct
 func NewEvent(
 	aggregateId string,
 	aggregate interface{},
@@ -30,6 +33,7 @@ func NewEvent(
 	}
 }
 
+// NewEventsSingle is utility to create a single event in slice
 func NewEventsSingle(
 	aggregateId string,
 	aggregate interface{},

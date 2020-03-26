@@ -5,6 +5,15 @@
 - review namings
   - none for now
 
+- cli
+  - create service
+    - skelton structure
+      - cmd
+      - domain
+      - service
+        - service.go
+  - generate aggregate
+
 - saga
   - createOrder saga
     - add the initial rejectOrder step
@@ -24,6 +33,12 @@
 - update aggregate
   - version
   - snapshot
+
+- udpate go to 1.14
+
+# Concerns
+- better implementation for saga?
+  - should remain to be flexible (capable of using messaging/http/grpc)
 
 # Features
 - Event sourcing
@@ -82,9 +97,6 @@
 - if response was fail, invoke compensations
 
 ## components
-### Saga
-- properties
-  - Definition \*SagaDefinition
 ### SagaDefinition
 - properties
   - steps []SagaStep
@@ -99,25 +111,29 @@
   - OnReply()
   - WithCompensation()
   - Build() (SagaDefinition, error)
+
 ### SagaStepInvokeParticipantOption
-- handler func()
-### SagaStepReplyOption
-- handler func()
+- Handler func(sagaInstance interface{}) (SagaStepResult)
 ### SagaStepCompensationOption
-- handler func()
+- Handler func(sagaInstance interface{}) (SagaStepResult)
 ### SagaStep
 - properties
   - invokeParticipantHandler func()
-  - replyHandler func()
   - compensationHandler func()
 - methods
   - Validate() error
   - Configure(opts ...interface{})
+### SagaStepResult
+- properties
+  - Id string
+  - Error error
+
 ### SagaInstance
 - properties
   - Id string
   - SagaState enum [Processing, Aborted, Done]
   - Data interface{}
+
 ### SagaManager
 - properties
   - repository SagaRepository

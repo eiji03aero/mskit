@@ -13,8 +13,13 @@ func NewSagaRepository(ss SagaStore) *SagaRepository {
 }
 
 // Save persists SagaInstance
-func (sr *SagaRepository) Save(si SagaInstance) error {
+func (sr *SagaRepository) Save(si *SagaInstance) error {
 	return sr.sagaStore.Save(si)
+}
+
+// Update saves updates of SagaInstance
+func (sr *SagaRepository) Update(si *SagaInstance) error {
+	return sr.sagaStore.Update(si)
 }
 
 // Load loads up data into SagaInstance

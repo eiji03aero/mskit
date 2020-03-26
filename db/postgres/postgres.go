@@ -75,6 +75,23 @@ func BuildInsertStatement(tableName string, columns []string) string {
 	)
 }
 
+func BuildUpdateStatement(tableName string, columns []string) string {
+	query := "UPDATE %s SET %s"
+
+	placeholders := []string{}
+	for i, column := range columns {
+		p := fmt.Sprintf("%s = $%d", column, i+1)
+		placeholders = append(placeholders, p)
+	}
+	placeholderFragment := strings.Join(placeholders, ", ")
+
+	return fmt.Sprintf(
+		query,
+		tableName,
+		placeholderFragment,
+	)
+}
+
 func BuildSelectStatement(tableName string, columns []string) string {
 	query := "SELECT %s FROM %s"
 

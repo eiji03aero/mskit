@@ -20,6 +20,7 @@ type Client struct {
 func InitializeDB(db *sql.DB) (err error) {
 	err = postgres.CreateTable(db, TableName, []string{
 		"id VARCHAR PRIMARY KEY",
+		"step_index smallint NOT NULL",
 		"saga_state smallint NOT NULL",
 		"data TEXT NOT NULL DEFAULT ''",
 	})
@@ -43,7 +44,7 @@ func New(opt postgres.DBOption) (mskit.SagaStore, error) {
 	return repository, nil
 }
 
-func (c *Client) Save(si mskit.SagaInstance) error {
+func (c *Client) Save(si *mskit.SagaInstance) error {
 	query := postgres.BuildInsertStatement(
 		TableName,
 		[]string{
@@ -68,6 +69,41 @@ func (c *Client) Save(si mskit.SagaInstance) error {
 		si.Id,
 		si.SagaState,
 		string(siDataJson),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) Update(si *mskit.SagaInstance) error {
+	query := postgres.BuildInsertStatement(
+		TableName,
+		[]string{
+			"step_index",
+			"saga_state",
+			"data",
+		},
+	)
+	query += " WHERE id = $4"
+
+	siDataJson, err := json.Marshal(si.Data)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := c.db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		si.StepIndex,
+		si.SagaState,
+		string(siDataJson),
+		si.Id,
 	)
 	if err != nil {
 		return err

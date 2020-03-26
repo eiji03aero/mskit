@@ -14,6 +14,14 @@ func (sd *SagaDefinition) addStep() {
 	sd.steps = append(sd.steps, SagaStep{})
 }
 
+func (sd *SagaDefinition) Len() int {
+	return len(sd.steps)
+}
+
+func (sd *SagaDefinition) Get(index int) (ss SagaStep) {
+	return sd.steps[index]
+}
+
 // SagaDefinitionBuilder is a struct that is used while building Saga
 type SagaDefinitionBuilder struct {
 	sagaDefinition *SagaDefinition

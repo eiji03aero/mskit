@@ -21,7 +21,7 @@ const (
 type SagaInstance struct {
 	Id        string            `json:"id"`
 	StepIndex int               `json:"step_index"`
-	SagaState SagaInstanceState `json:"saga_state"`
+	State     SagaInstanceState `json:"state"`
 	Data      interface{}       `json:"data"`
 }
 
@@ -34,15 +34,15 @@ func NewSagaInstance() (si *SagaInstance, err error) {
 	si = &SagaInstance{
 		Id:        id,
 		StepIndex: 0,
-		SagaState: SagaInstanceState_Processing,
+		State:     SagaInstanceState_Processing,
 	}
 
 	return
 }
 
 func (si *SagaInstance) processResult(result *SagaStepResult) (err error) {
-	if result.Error != nil && si.SagaState == SagaInstanceState_Processing {
-		si.SagaState = SagaInstanceState_Aborting
+	if result.Error != nil && si.State == SagaInstanceState_Processing {
+		si.State = SagaInstanceState_Aborting
 		// Need to return, since current step might have compensation
 		return
 	}
@@ -51,13 +51,13 @@ func (si *SagaInstance) processResult(result *SagaStepResult) (err error) {
 }
 
 func (si *SagaInstance) shiftIndex() (err error) {
-	switch si.SagaState {
+	switch si.State {
 	case SagaInstanceState_Processing:
 		si.StepIndex++
 	case SagaInstanceState_Aborting:
 		si.StepIndex--
 	default:
-		return fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.StepIndex)
+		return fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)
 	}
 	return
 }
@@ -66,10 +66,10 @@ func (si *SagaInstance) checkFinishState(lenSteps int) bool {
 	i := si.StepIndex
 	switch {
 	case i < 0:
-		si.SagaState = SagaInstanceState_Aborted
+		si.State = SagaInstanceState_Aborted
 		return true
 	case i >= lenSteps:
-		si.SagaState = SagaInstanceState_Processing
+		si.State = SagaInstanceState_Processing
 		return true
 	default:
 		return false
@@ -77,7 +77,7 @@ func (si *SagaInstance) checkFinishState(lenSteps int) bool {
 }
 
 func (si *SagaInstance) checkStepHasHandler(step SagaStep) bool {
-	switch si.SagaState {
+	switch si.State {
 	case SagaInstanceState_Processing:
 		return step.invokeParticipantHandler != nil
 	case SagaInstanceState_Aborting:
@@ -88,13 +88,13 @@ func (si *SagaInstance) checkStepHasHandler(step SagaStep) bool {
 }
 
 func (si *SagaInstance) executeStepHandler(step SagaStep) (result *SagaStepResult, err error) {
-	switch si.SagaState {
+	switch si.State {
 	case SagaInstanceState_Processing:
 		result = step.invokeParticipantHandler(si.Data)
 	case SagaInstanceState_Aborting:
 		result = step.compensationHandler(si.Data)
 	default:
-		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.StepIndex)
+		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)
 	}
 	return
 }

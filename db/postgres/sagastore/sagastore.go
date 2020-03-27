@@ -21,7 +21,7 @@ func InitializeDB(db *sql.DB) (err error) {
 	err = postgres.CreateTable(db, TableName, []string{
 		"id VARCHAR PRIMARY KEY",
 		"step_index smallint NOT NULL",
-		"saga_state smallint NOT NULL",
+		"state smallint NOT NULL",
 		"data TEXT NOT NULL DEFAULT ''",
 	})
 	if err != nil {
@@ -49,7 +49,7 @@ func (c *Client) Save(si *mskit.SagaInstance) error {
 		TableName,
 		[]string{
 			"id",
-			"saga_state",
+			"state",
 			"data",
 		},
 	)
@@ -67,7 +67,7 @@ func (c *Client) Save(si *mskit.SagaInstance) error {
 
 	_, err = stmt.Exec(
 		si.Id,
-		si.SagaState,
+		si.State,
 		string(siDataJson),
 	)
 	if err != nil {
@@ -82,7 +82,7 @@ func (c *Client) Update(si *mskit.SagaInstance) error {
 		TableName,
 		[]string{
 			"step_index",
-			"saga_state",
+			"state",
 			"data",
 		},
 	)
@@ -101,7 +101,7 @@ func (c *Client) Update(si *mskit.SagaInstance) error {
 
 	_, err = stmt.Exec(
 		si.StepIndex,
-		si.SagaState,
+		si.State,
 		string(siDataJson),
 		si.Id,
 	)
@@ -117,14 +117,14 @@ func (c *Client) Load(id string, si *mskit.SagaInstance) error {
 	query := postgres.BuildSelectStatement(
 		TableName,
 		[]string{
-			"saga_state",
+			"state",
 			"data",
 		},
 	)
 	query = query + fmt.Sprintf(" WHERE id = $1")
 
 	err := c.db.QueryRow(query, id).
-		Scan(&si.SagaState, &dataStr)
+		Scan(&si.State, &dataStr)
 	if err != nil {
 		return err
 	}

@@ -1,19 +1,22 @@
 package mskit
 
+// SagaStepHandler defines the signature for handle function for step
+type SagaStepHandler func(sagaState interface{}) (result *SagaStepResult)
+
 // SagaStep is a struct to express one action of saga
 type SagaStep struct {
-	invokeParticipantHandler func(sagaState interface{}) (result *SagaStepResult)
-	compensationHandler      func(sagaState interface{}) (result *SagaStepResult)
+	invokeParticipantHandler SagaStepHandler
+	compensationHandler      SagaStepHandler
 }
 
 // SagaStepInvokeParticipantOption is struct to set InvokeParticipant in SagaAction
 type SagaStepInvokeParticipantOption struct {
-	Handler func(sagaState interface{})
+	Handler SagaStepHandler
 }
 
 // SagaStepCompensationOption is struct to set Compensation in SagaAction
 type SagaStepCompensationOption struct {
-	Handler func(sagaState interface{})
+	Handler SagaStepHandler
 }
 
 // Configure sets options

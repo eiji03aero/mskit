@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
@@ -54,7 +54,7 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println(string(delivery.Body))
+		log.Println(string(delivery.Body))
 		finish <- nil
 	}()
 

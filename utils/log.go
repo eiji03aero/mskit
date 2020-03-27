@@ -1,10 +1,8 @@
-package log
+package utils
 
 import (
 	"encoding/json"
 	"log"
-
-	"github.com/eiji03aero/mskit/utils"
 )
 
 func PrintJsonln(obj interface{}) {
@@ -21,11 +19,11 @@ func SprintJson(obj interface{}) string {
 }
 
 func PrintGet(obj interface{}) {
-	_, name := utils.GetTypeName(obj)
+	_, name := GetTypeName(obj)
 	log.Println("get ", name, ": ", SprintJson(obj))
 }
 
 func PrintCreated(obj interface{}) {
-	_, name := utils.GetTypeName(obj)
+	_, name := GetTypeName(obj)
 	log.Println(name, " created: ", SprintJson(obj))
 }

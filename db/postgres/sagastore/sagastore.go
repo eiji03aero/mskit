@@ -49,6 +49,7 @@ func (c *Client) Save(si *mskit.SagaInstance) error {
 		TableName,
 		[]string{
 			"id",
+			"step_index",
 			"state",
 			"data",
 		},
@@ -67,6 +68,7 @@ func (c *Client) Save(si *mskit.SagaInstance) error {
 
 	_, err = stmt.Exec(
 		si.Id,
+		si.StepIndex,
 		si.State,
 		string(siDataJson),
 	)
@@ -78,7 +80,7 @@ func (c *Client) Save(si *mskit.SagaInstance) error {
 }
 
 func (c *Client) Update(si *mskit.SagaInstance) error {
-	query := postgres.BuildInsertStatement(
+	query := postgres.BuildUpdateStatement(
 		TableName,
 		[]string{
 			"step_index",
@@ -113,7 +115,6 @@ func (c *Client) Update(si *mskit.SagaInstance) error {
 }
 
 func (c *Client) Load(id string, si *mskit.SagaInstance) error {
-	var dataStr string
 	query := postgres.BuildSelectStatement(
 		TableName,
 		[]string{
@@ -124,12 +125,7 @@ func (c *Client) Load(id string, si *mskit.SagaInstance) error {
 	query = query + fmt.Sprintf(" WHERE id = $1")
 
 	err := c.db.QueryRow(query, id).
-		Scan(&si.State, &dataStr)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal([]byte(dataStr), &si.Data)
+		Scan(&si.State, &si.Data)
 	if err != nil {
 		return err
 	}

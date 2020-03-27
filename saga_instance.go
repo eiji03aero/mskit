@@ -2,6 +2,7 @@ package mskit
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/eiji03aero/mskit/utils"
 )
@@ -41,13 +42,18 @@ func NewSagaInstance() (si *SagaInstance, err error) {
 }
 
 func (si *SagaInstance) processResult(result *SagaStepResult) (err error) {
+	log.Println("SagaInstance#processResult: ", si, result)
+
 	if result.Error != nil && si.State == SagaInstanceState_Processing {
+		log.Println("SagaInstance#processResult: gonna abort")
 		si.State = SagaInstanceState_Aborting
 		// Need to return, since current step might have compensation
 		return
 	}
 
-	return si.shiftIndex()
+	err = si.shiftIndex()
+
+	return
 }
 
 func (si *SagaInstance) shiftIndex() (err error) {
@@ -76,10 +82,10 @@ func (si *SagaInstance) checkFinishState(lenSteps int) bool {
 	}
 }
 
-func (si *SagaInstance) checkStepHasHandler(step SagaStep) bool {
+func (si *SagaInstance) checkStepHasHandler(step *SagaStep) bool {
 	switch si.State {
 	case SagaInstanceState_Processing:
-		return step.invokeParticipantHandler != nil
+		return step.executeHandler != nil
 	case SagaInstanceState_Aborting:
 		return step.compensationHandler != nil
 	default:
@@ -87,12 +93,14 @@ func (si *SagaInstance) checkStepHasHandler(step SagaStep) bool {
 	}
 }
 
-func (si *SagaInstance) executeStepHandler(step SagaStep) (result *SagaStepResult, err error) {
+func (si *SagaInstance) executeStepHandler(step *SagaStep) (err error) {
 	switch si.State {
 	case SagaInstanceState_Processing:
-		result = step.invokeParticipantHandler(si.Data)
+		log.Println("SagaInstance#executeStephandler: gonna execute", si.Data)
+		err = step.executeHandler(si.Data)
 	case SagaInstanceState_Aborting:
-		result = step.compensationHandler(si.Data)
+		log.Println("SagaInstance#executeStephandler: gonna compensate", si.Data)
+		err = step.compensationHandler(si.Data)
 	default:
 		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)
 	}

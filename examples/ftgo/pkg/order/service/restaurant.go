@@ -1,7 +1,9 @@
 package service
 
 import (
+	errorscommon "common/errors"
 	logcommon "common/log"
+	orderdmn "order/domain/order"
 	restaurantdmn "order/domain/restaurant"
 )
 
@@ -21,4 +23,14 @@ func (s *service) GetRestaurant(id string) (restaurant *restaurantdmn.Restaurant
 		return
 	}
 	return
+}
+
+func (s *service) validateMenuItems(restaurant *restaurantdmn.Restaurant, items orderdmn.OrderLineItems) (err error) {
+	for _, item := range items.LineItems {
+		_, found := restaurant.GetItemById(item.MenuItemId)
+		if !found {
+			return errorscommon.NewErrDataNotFound(item, item.MenuItemId)
+		}
+	}
+	return nil
 }

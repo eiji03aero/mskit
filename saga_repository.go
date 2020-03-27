@@ -1,5 +1,9 @@
 package mskit
 
+import (
+	"github.com/eiji03aero/mskit/utils"
+)
+
 // SagaStore defines interface to persist SagaInstance
 type SagaRepository struct {
 	sagaStore SagaStore
@@ -23,6 +27,12 @@ func (sr *SagaRepository) Update(si *SagaInstance) error {
 }
 
 // Load loads up data into SagaInstance
-func (sr *SagaRepository) Load(id string, si *SagaInstance) error {
-	return sr.sagaStore.Load(id, si)
+func (sr *SagaRepository) Load(id string, si *SagaInstance) (err error) {
+	err = sr.sagaStore.Load(id, si)
+	if err != nil {
+		return
+	}
+
+	utils.PrintlnWithJson("SagaRepository#Load:", si)
+	return
 }

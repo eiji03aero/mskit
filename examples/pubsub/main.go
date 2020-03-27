@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -59,8 +58,8 @@ func main() {
 				},
 			).
 			OnDelivery(func(d amqp.Delivery) {
-				fmt.Println("complain-consumer-all: received and printing to log!")
-				fmt.Println(string(d.Body))
+				log.Println("complain-consumer-all: received and printing to log!")
+				log.Println(string(d.Body))
 			}).
 			Exec()
 
@@ -81,8 +80,8 @@ func main() {
 				},
 			).
 			OnDelivery(func(d amqp.Delivery) {
-				fmt.Println("complain-consumer-error: received and printing to log!")
-				fmt.Println(string(d.Body))
+				log.Println("complain-consumer-error: received and printing to log!")
+				log.Println(string(d.Body))
 			}).
 			Exec()
 

@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"path"
 
@@ -32,7 +31,6 @@ func orders(svc ordersvc.Service) http.HandlerFunc {
 				return
 			}
 
-			log.Println("bodyyyyyyyy", string(body))
 			params := orderdmn.CreateOrder{}
 			err = json.Unmarshal(body, &params)
 			if err != nil {

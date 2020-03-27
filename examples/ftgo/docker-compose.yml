@@ -8,13 +8,15 @@ x-service-default: &service-default
     ftgo-rabbitmq:
   volumes:
     - "../../:/app"
+    - "v-ftgo-go-mod:/go/pkg/mod"
   tty: true
   command:
     - /bin/bash
     - -c
     - |
       echo wait for rabbitmq to get ready
-      sleep 20s
+      while ! nc -z ftgo-rabbitmq 5672; do sleep 3s; done
+      echo Connected to rabbitmq
       make run
 
 x-mongo-default: &mongo-default
@@ -83,3 +85,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
+volumes:
+  v-ftgo-go-mod:

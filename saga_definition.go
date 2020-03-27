@@ -2,7 +2,7 @@ package mskit
 
 // SagaDefinition is a struct to express the abstracted definition of saga
 type SagaDefinition struct {
-	steps []SagaStep
+	steps []*SagaStep
 }
 
 // NewSagaDefinition returns new SagaDefinition
@@ -11,14 +11,14 @@ func NewSagaDefinition() *SagaDefinition {
 }
 
 func (sd *SagaDefinition) addStep() {
-	sd.steps = append(sd.steps, SagaStep{})
+	sd.steps = append(sd.steps, &SagaStep{})
 }
 
 func (sd *SagaDefinition) Len() int {
 	return len(sd.steps)
 }
 
-func (sd *SagaDefinition) Get(index int) (ss SagaStep) {
+func (sd *SagaDefinition) Get(index int) (ss *SagaStep) {
 	return sd.steps[index]
 }
 
@@ -39,7 +39,7 @@ func (b *SagaDefinitionBuilder) Step(opts ...interface{}) *SagaDefinitionBuilder
 	b.sagaDefinition.addStep()
 	step := b.getCurrentStep()
 
-	step.Configure(opts)
+	step.Configure(opts...)
 
 	return b
 }
@@ -56,7 +56,7 @@ func (b *SagaDefinitionBuilder) Build() (*SagaDefinition, error) {
 	return b.sagaDefinition, nil
 }
 
-func (b *SagaDefinitionBuilder) getCurrentStep() SagaStep {
+func (b *SagaDefinitionBuilder) getCurrentStep() *SagaStep {
 	steps := b.sagaDefinition.steps
 	return steps[len(steps)-1]
 }

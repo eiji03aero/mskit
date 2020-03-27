@@ -38,7 +38,14 @@ store-id-from-file () {
   rm $res_file
 }
 
-if [ $command = "createOrder" ]; then
+if [ $command = "seed" ]; then
+  ./mock-commands.sh createRestaurant
+  sleep 1s
+  ./mock-commands.sh createConsumer
+  sleep 1s
+  ./mock-commands.sh createOrder
+
+elif [ $command = "createOrder" ]; then
   restaurant_id=$(value-or-get restaurant_id $2)
   curl $post_options $debug_options $save_res_options \
     -d $(printf '%s' $(cat <<- EOF
@@ -50,8 +57,7 @@ if [ $command = "createOrder" ]; then
         },
         "order_line_items": {
           "line_items": [
-            { "menu_item_id": "kore", "quantity": 5 },
-            { "menu_item_id": "soukai", "quantity": 1 }
+            { "menu_item_id": "awesome-papas", "quantity": 5 }
           ]
         }
       }
@@ -72,8 +78,8 @@ elif [ $command = "createRestaurant" ]; then
         "name": "macdonalds",
         "restaurant_menu": {
           "menu_items": [
-            { "name": "fries large", "price": 300 },
-            { "name": "cheese burger", "price": 200 }
+            { "id": "awesome-papas", "name": "fries large", "price": 300 },
+            { "id": "second-yum", "name": "cheese burger", "price": 200 }
           ]
         }
       }

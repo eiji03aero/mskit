@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	errorscommon "common/errors"
 	restaurantdmn "order/domain/restaurant"
 
 	"github.com/eiji03aero/mskit/db/postgres"
@@ -67,6 +68,9 @@ func (r *Repository) FindById(id string) (restaurant *restaurantdmn.Restaurant, 
 	var dataStr string
 	err = r.db.QueryRow(query, id).Scan(&dataStr)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return restaurant, errorscommon.NewErrDataNotFound(restaurant, id)
+		}
 		return
 	}
 

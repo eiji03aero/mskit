@@ -13,3 +13,9 @@ func NewErrNotEnoughPropertiesSet(args [][]interface{}) error {
 
 	return fmt.Errorf("Not enough properties set: %s", propertiesString)
 }
+
+func NewErrUnknownParams(f interface{}, params interface{}) error {
+	funcName := GetFunctionName(f)
+	_, typeName := GetTypeName(params)
+	return fmt.Errorf("%s: unknown params %s", funcName, typeName)
+}

@@ -107,18 +107,15 @@
   - sagaDefinition SagaDefinition
 - methods
   - Step(opts ...interface{}) (\*SagaDefinitionBuilder)
-  - InvokeParticipant()
-  - OnReply()
-  - WithCompensation()
   - Build() (SagaDefinition, error)
 
-### SagaStepInvokeParticipantOption
-- Handler func(sagaInstance interface{}) (SagaStepResult)
+### SagaStepExecuteOption
+- Handler func(sagaInstance interface{}) (error)
 ### SagaStepCompensationOption
-- Handler func(sagaInstance interface{}) (SagaStepResult)
+- Handler func(sagaInstance interface{}) (error)
 ### SagaStep
 - properties
-  - invokeParticipantHandler func()
+  - executeHandler func()
   - compensationHandler func()
 - methods
   - Validate() error

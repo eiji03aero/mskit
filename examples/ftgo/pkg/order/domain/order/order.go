@@ -2,7 +2,8 @@ package order
 
 import (
 	"errors"
-	"fmt"
+
+	errorscommon "common/errors"
 
 	"github.com/eiji03aero/mskit"
 )
@@ -29,8 +30,10 @@ func (o *Order) Process(cmd interface{}) (mskit.Events, error) {
 	switch c := cmd.(type) {
 	case CreateOrder:
 		return o.processCreateOrder(c)
+	case RejectOrder:
+		return o.processRejectOrder(c)
 	default:
-		return nil, errors.New("not imp in Process")
+		return nil, errorscommon.NewErrNotSupportedParams(o.Process, c)
 	}
 }
 
@@ -39,7 +42,7 @@ func (o *Order) Apply(event interface{}) error {
 	case OrderCreated:
 		return o.applyOrderCreated(e)
 	default:
-		return errors.New(fmt.Sprintf("not implemented in Apply: %v", e))
+		return errorscommon.NewErrNotSupportedParams(o.Apply, e)
 	}
 }
 
@@ -54,6 +57,18 @@ func (o *Order) processCreateOrder(cmd CreateOrder) (mskit.Events, error) {
 			PaymentInformation:  cmd.PaymentInformation,
 			DeliveryInformation: cmd.DeliveryInformation,
 			OrderLineItems:      cmd.OrderLineItems,
+		},
+	)
+
+	return events, nil
+}
+
+func (o *Order) processRejectOrder(cmd RejectOrder) (mskit.Events, error) {
+	events := mskit.NewEventsSingle(
+		cmd.Id,
+		Order{},
+		OrderRejected{
+			Id: cmd.Id,
 		},
 	)
 
@@ -79,5 +94,10 @@ func (o *Order) applyOrderCreated(event OrderCreated) (err error) {
 		return err
 	}
 
+	return nil
+}
+
+func (o *Order) applyOrderRejected(event OrderRejected) (err error) {
+	o.OrderState = OrderState_Rejected
 	return nil
 }

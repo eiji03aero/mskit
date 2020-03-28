@@ -7,7 +7,11 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/klauspost/compress v1.10.1 // indirect
 	github.com/lib/pq v1.3.0
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/spf13/cobra v0.0.7
+	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/viper v1.6.2
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	go.mongodb.org/mongo-driver v1.3.0
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect

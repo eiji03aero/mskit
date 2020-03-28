@@ -10,7 +10,8 @@ import (
 	"order/service"
 	"order/transport/consumer"
 	httptransport "order/transport/http"
-	"order/transport/proxy"
+	consumerpxy "order/transport/proxy/consumer"
+	orderpxy "order/transport/proxy/order"
 	"order/transport/rpcendpoint"
 
 	"github.com/eiji03aero/mskit"
@@ -58,14 +59,20 @@ func main() {
 		panic(err)
 	}
 
-	pxy := proxy.New(eventBusClient)
+	orderProxy := orderpxy.New(eventBusClient)
+	consumerProxy := consumerpxy.New(eventBusClient)
 
 	svc := service.New(
 		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
 		restaurantrepo.New(db),
 	)
 
-	createOrderSagaManager := createorder.NewManager(sr, pxy)
+	createOrderSagaManager := createorder.NewManager(
+		sr,
+		svc,
+		orderProxy,
+		consumerProxy,
+	)
 	go createOrderSagaManager.Subscribe()
 
 	svc.InjectSagaManagers(

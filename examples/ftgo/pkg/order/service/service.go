@@ -1,8 +1,7 @@
 package service
 
 import (
-	orderdmn "order/domain/order"
-	restaurantdmn "order/domain/restaurant"
+	"order"
 	restaurantrepo "order/repository/restaurant"
 
 	"github.com/eiji03aero/mskit"
@@ -15,22 +14,10 @@ type service struct {
 	createOrderSagaManager mskit.SagaManager
 }
 
-type Service interface {
-	CreateOrder(params orderdmn.CreateOrder) (id string, err error)
-	GetOrder(id string) (order *orderdmn.Order, err error)
-	RejectOrder(cmd orderdmn.RejectOrder) (err error)
-	CreateRestaurant(restaurantdmn.Restaurant) (err error)
-	GetRestaurant(id string) (restaurant *restaurantdmn.Restaurant, err error)
-
-	InjectSagaManagers(
-		createOrderSaga mskit.SagaManager,
-	)
-}
-
 func New(
 	r *mskit.EventRepository,
 	rrepo *restaurantrepo.Repository,
-) Service {
+) order.Service {
 	return &service{
 		eventRepository:      r,
 		restaurantRepository: rrepo,

@@ -2,6 +2,7 @@ package service
 
 import (
 	logcommon "common/log"
+	"fmt"
 	orderdmn "order/domain/order"
 	"order/saga/createorder"
 
@@ -45,6 +46,33 @@ func (s *service) GetOrder(id string) (*orderdmn.Order, error) {
 
 	logcommon.PrintGet(order)
 	return order, err
+}
+
+func (s *service) GetOrderTotal(id string) (total int, err error) {
+	order, err := s.GetOrder(id)
+	if err != nil {
+		return
+	}
+
+	restaurant, err := s.GetRestaurant(order.RestaurantId)
+	if err != nil {
+		return
+	}
+
+	for _, oli := range order.OrderLineItems.LineItems {
+		menuItem, found := restaurant.GetItemById(oli.MenuItemId)
+		if !found {
+			err = fmt.Errorf(
+				"RestaurantMenuItem not found: id=%s restaurantId=%s",
+				oli.MenuItemId, restaurant.Id,
+			)
+			break
+		}
+
+		total += menuItem.Price * oli.Quantity
+	}
+
+	return
 }
 
 func (s *service) RejectOrder(cmd orderdmn.RejectOrder) (err error) {

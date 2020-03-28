@@ -1,49 +1,44 @@
 package createorder
 
 import (
-	"errors"
-	"order/transport/proxy"
+	"order"
 
 	"github.com/eiji03aero/mskit"
 )
 
+// create CreateOrderSaga and execute
+//     .step()
+//       .invokeParticipant(kitchenService.create, CreateOrderSagaState::makeCreateTicketCommand)
+//       .onReply(CreateTicketReply.class, CreateOrderSagaState::handleCreateTicketReply)
+//       .withCompensation(kitchenService.cancel, CreateOrderSagaState::makeCancelCreateTicketCommand)
+//     .step()
+//       .invokeParticipant(accountingService.authorize, CreateOrderSagaState::makeAuthorizeCommand)
+//     .step()
+//       .invokeParticipant(kitchenService.confirmCreate, CreateOrderSagaState::makeConfirmCreateTicketCommand)
+//     .step()
+//       .invokeParticipant(orderService.approve, CreateOrderSagaState::makeApproveOrderCommand)
+//     .build();
 func NewManager(
 	repository *mskit.SagaRepository,
-	pxy *proxy.Proxy,
+	svc order.Service,
+	opxy order.OrderProxy,
+	cpxy order.ConsumerProxy,
 ) mskit.SagaManager {
-	definition := createDefinition(
-		pxy,
-	)
-	return mskit.NewSagaManager(
-		definition,
-		repository,
-	)
-}
+	c := &client{
+		service:       svc,
+		orderProxy:    opxy,
+		consumerProxy: cpxy,
+	}
 
-func createDefinition(
-	pxy *proxy.Proxy,
-) *mskit.SagaDefinition {
 	definition, err := mskit.NewSagaDefinitionBuilder().
 		Step(
 			mskit.SagaStepCompensationOption{
-				Handler: func(ss interface{}) (err error) {
-					sagaState, err := assertStruct(ss)
-					if err != nil {
-						return
-					}
-
-					err = pxy.RejectOrder(sagaState.OrderId)
-
-					return
-				},
+				Handler: c.rejectOrderC,
 			},
 		).
 		Step(
 			mskit.SagaStepExecuteOption{
-				Handler: func(_ interface{}) (err error) {
-					err = errors.New("shippai")
-					return
-				},
+				Handler: c.validateOrderE,
 			},
 		).
 		Build()
@@ -51,5 +46,49 @@ func createDefinition(
 		panic(err)
 	}
 
-	return definition
+	return mskit.NewSagaManager(
+		definition,
+		repository,
+	)
+}
+
+type client struct {
+	service       order.Service
+	orderProxy    order.OrderProxy
+	consumerProxy order.ConsumerProxy
+}
+
+func (c *client) rejectOrderC(ss interface{}) (err error) {
+	sagaState, err := assertStruct(ss)
+	if err != nil {
+		return
+	}
+
+	err = c.orderProxy.RejectOrder(sagaState.OrderId)
+
+	return
+}
+
+func (c *client) validateOrderE(ss interface{}) (err error) {
+	sagaState, err := assertStruct(ss)
+	if err != nil {
+		return
+	}
+
+	order, err := c.service.GetOrder(sagaState.OrderId)
+	if err != nil {
+		return
+	}
+
+	total, err := c.service.GetOrderTotal(sagaState.OrderId)
+	if err != nil {
+		return
+	}
+
+	err = c.consumerProxy.ValidateOrder(order.ConsumerId, total)
+	if err != nil {
+		return
+	}
+
+	return
 }

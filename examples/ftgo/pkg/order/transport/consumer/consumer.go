@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"log"
 
+	"order"
+	restaurantdmn "order/domain/restaurant"
+
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
 	"github.com/streadway/amqp"
-	restaurantdmn "order/domain/restaurant"
-	ordersvc "order/service"
 )
 
 type consumer struct {
 	c   *rabbitmq.Client
-	svc ordersvc.Service
+	svc order.Service
 }
 
-func New(c *rabbitmq.Client, svc ordersvc.Service) *consumer {
+func New(c *rabbitmq.Client, svc order.Service) *consumer {
 	return &consumer{
 		c:   c,
 		svc: svc,

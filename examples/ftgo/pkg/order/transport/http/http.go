@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"path"
 
+	"order"
 	orderdmn "order/domain/order"
-	ordersvc "order/service"
 )
 
-func New(svc ordersvc.Service) *http.ServeMux {
+func New(svc order.Service) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.Handle("/orders", orders(svc))
 	mux.Handle("/orders/", ordersMember(svc))
@@ -20,7 +20,7 @@ func New(svc ordersvc.Service) *http.ServeMux {
 	return mux
 }
 
-func orders(svc ordersvc.Service) http.HandlerFunc {
+func orders(svc order.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
@@ -51,7 +51,7 @@ func orders(svc ordersvc.Service) http.HandlerFunc {
 	}
 }
 
-func ordersMember(svc ordersvc.Service) http.HandlerFunc {
+func ordersMember(svc order.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
 
@@ -75,7 +75,7 @@ func ordersMember(svc ordersvc.Service) http.HandlerFunc {
 	}
 }
 
-func restaurantsMember(svc ordersvc.Service) http.HandlerFunc {
+func restaurantsMember(svc order.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
 

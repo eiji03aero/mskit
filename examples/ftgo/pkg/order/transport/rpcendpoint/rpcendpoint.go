@@ -1,17 +1,17 @@
 package rpcendpoint
 
 import (
-	ordersvc "order/service"
+	"order"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
 )
 
 type client struct {
 	c   *rabbitmq.Client
-	svc ordersvc.Service
+	svc order.Service
 }
 
-func New(c *rabbitmq.Client, svc ordersvc.Service) *client {
+func New(c *rabbitmq.Client, svc order.Service) *client {
 	return &client{
 		c:   c,
 		svc: svc,

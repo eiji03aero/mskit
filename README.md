@@ -13,6 +13,11 @@
       - service
         - service.go
   - generate aggregate
+  - generate saga
+  - generate interface file on root
+
+- refactor
+  - cli/template related
 
 - saga
   - createOrder saga

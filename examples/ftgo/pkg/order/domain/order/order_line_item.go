@@ -5,7 +5,7 @@ import (
 )
 
 type OrderLineItem struct {
-	Quantity   int64  `json:"quantity"`
+	Quantity   int    `json:"quantity"`
 	MenuItemId string `json:"menu_item_id"`
 }
 

@@ -17,11 +17,9 @@ type proxy struct {
 	client *rabbitmq.Client
 }
 
-func New(
-	client *rabbitmq.Client,
-) {{ .PkgName }}.{{ .InterfaceName }} {
+func New(c *rabbitmq.Client) {{ .PkgName }}.{{ .InterfaceName }} {
 	return &proxy{
-		client: client,
+		client: c,
 	}
 }`
 }

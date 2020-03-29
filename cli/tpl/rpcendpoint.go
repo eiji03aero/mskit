@@ -7,27 +7,28 @@ import (
 	"{{ .PkgName }}/service"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
+	"github.com/streadway/amqp"
 )
 
-type rpcServer struct {
-	c   *rabbitmq.Client
-	svc service.Service
+type rpcEndpoint struct {
+	client  *rabbitmq.Client
+	service service.Service
 }
 
-func New(c *rabbitmq.Client, svc service.Service) *rpcServer {
-	return &client{
-		c:   c,
-		svc: svc,
+func New(c *rabbitmq.Client, svc service.Service) *rpcEndpoint {
+	return &rpcEndpoint{
+		client:  c,
+		service: svc,
 	}
 }
 
-func (rs *rpcServer) Run() {
+func (re *rpcEndpoint) Run() {
 	// Initilizing code comes here
 	// go rs.sample()
 }
 
-func (rs *rpcServer) sample() {
-	c.c.NewRPCEndpoint().
+func (re *rpcEndpoint) sample() {
+	re.client.NewRPCEndpoint().
 		Configure(
 			rabbitmq.QueueOption{
 				Name: "",

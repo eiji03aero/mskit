@@ -1,14 +1,15 @@
-package publisher
+package tpl
+
+func PublisherTemplate() string {
+	return `package publisher
 
 import (
 	"encoding/json"
 
-	restaurantdmn "restaurant/domain/restaurant"
-
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/errbdr"
 	"github.com/eiji03aero/mskit/utils/logger"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 	"github.com/streadway/amqp"
 )
 
@@ -23,9 +24,7 @@ func New(c *rabbitmq.Client) mskit.DomainEventPublisher {
 }
 
 func (p *publisher) Publish(event interface{}) (err error) {
-	logger.PrintFuncCall(
-		p.Publish,
-	)
+	logger.PrintFuncCall(p.Publish, event)
 
 	ej, err := json.Marshal(event)
 	if err != nil {
@@ -33,8 +32,8 @@ func (p *publisher) Publish(event interface{}) (err error) {
 	}
 
 	switch e := event.(type) {
-	case restaurantdmn.RestaurantCreated:
-		err = p.publishRestaurantCreated(e, ej)
+	case "sample":
+		err = p.publishSample(e, ej)
 	default:
 		err = errbdr.NewErrUnknownParams(p.Publish, e)
 	}
@@ -42,16 +41,17 @@ func (p *publisher) Publish(event interface{}) (err error) {
 	return
 }
 
-func (p *publisher) publishRestaurantCreated(event restaurantdmn.RestaurantCreated, eventJson []byte) (err error) {
+func (p *publisher) publishSample(event restaurantdmn.RestaurantCreated, eventJson []byte) (err error) {
 	return p.c.NewPublisher().
 		Configure(
 			rabbitmq.TopicPublisherOption{
-				ExchangeName: "topic-restaurant",
-				RoutingKey:   "restaurant.restaurant.created",
+				ExchangeName: "topic-sample",
+				RoutingKey:   "sample.sample.created",
 				Publishing: amqp.Publishing{
 					Body: eventJson,
 				},
 			},
 		).
 		Exec()
+}`
 }

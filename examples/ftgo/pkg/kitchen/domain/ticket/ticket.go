@@ -1,9 +1,8 @@
 package kitchen
 
 import (
-	errorscommon "common/errors"
-
 	"github.com/eiji03aero/mskit"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type Ticket struct {
@@ -23,7 +22,7 @@ func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 	case CreateTicket:
 		return t.processCreateTicket(c)
 	default:
-		return mskit.Events{}, errorscommon.NewErrNotSupportedParams(t.Process, c)
+		return mskit.Events{}, errbdr.NewErrUnknownParams(t.Process, c)
 	}
 }
 
@@ -32,7 +31,7 @@ func (t *Ticket) Apply(event interface{}) error {
 	case TicketCreated:
 		return t.applyTicketCreated(e)
 	default:
-		return errorscommon.NewErrNotSupportedParams(t.Apply, e)
+		return errbdr.NewErrUnknownParams(t.Apply, e)
 	}
 }
 

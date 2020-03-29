@@ -1,11 +1,18 @@
 package mskit
 
-import "log"
+import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+
+	"github.com/eiji03aero/mskit/utils/logger"
+)
 
 type sagaManager struct {
-	resultChannel  chan *SagaStepResult
-	repository     *SagaRepository
-	sagaDefinition *SagaDefinition
+	resultChannel   chan *SagaStepResult
+	repository      *SagaRepository
+	sagaDefinition  *SagaDefinition
+	sagaStateStruct interface{}
 }
 
 // SagaManager is an interface that manages saga operation of certain type
@@ -15,11 +22,12 @@ type SagaManager interface {
 }
 
 // NewSagaManager creates SagaManager object
-func NewSagaManager(sd *SagaDefinition, sr *SagaRepository) *sagaManager {
+func NewSagaManager(sr *SagaRepository, sd *SagaDefinition, sss interface{}) *sagaManager {
 	return &sagaManager{
-		resultChannel:  make(chan *SagaStepResult),
-		repository:     sr,
-		sagaDefinition: sd,
+		resultChannel:   make(chan *SagaStepResult),
+		repository:      sr,
+		sagaDefinition:  sd,
+		sagaStateStruct: sss,
 	}
 }
 
@@ -30,7 +38,7 @@ func (sm *sagaManager) Create(sagaState interface{}) (si *SagaInstance, err erro
 		return
 	}
 
-	log.Println("SagaManager#Create: id=", si.Id)
+	logger.PrintFuncCall(sm.Create, si.Id)
 
 	si.Data = sagaState
 	err = sm.repository.Save(si)
@@ -66,7 +74,10 @@ func (sm *sagaManager) processResult(result *SagaStepResult) (err error) {
 		return
 	}
 
-	log.Println("SagaManager#processResult: id=", si.Id)
+	err = sm.restoreData(si)
+	if err != nil {
+		return
+	}
 
 	err = si.processResult(result)
 	if err != nil {
@@ -86,24 +97,37 @@ func (sm *sagaManager) processResult(result *SagaStepResult) (err error) {
 	return
 }
 
+func (sm *sagaManager) restoreData(si *SagaInstance) (err error) {
+	dataStr, ok := si.Data.(string)
+	if !ok {
+		return fmt.Errorf("SagaManager#restoreData: invalid data", si)
+	}
+
+	stateStruct := reflect.New(reflect.TypeOf(sm.sagaStateStruct)).Interface()
+	err = json.Unmarshal([]byte(dataStr), stateStruct)
+	if err != nil {
+		return
+	}
+
+	si.Data = stateStruct
+	return
+}
+
 func (sm *sagaManager) executeStep(si *SagaInstance) (err error) {
 	for {
 		if si.checkFinishState(sm.sagaDefinition.Len()) {
-			log.Println("SagaManager#executeStep: finished", si.StepIndex)
+			logger.PrintFuncCall(sm.executeStep, logger.RedString("finished"), si)
 			break
 		}
 
 		step := sm.sagaDefinition.Get(si.StepIndex)
-		log.Println("SagaManager#executeStep: ", si, step)
 
 		if !si.checkStepHasHandler(step) {
-			log.Println("SagaManager#executeStep: skipping")
+			logger.PrintFuncCall(sm.executeStep, logger.RedString("skipping"), si)
 			// skip if step does not have handler
 			si.shiftIndex()
 			continue
 		}
-
-		log.Println("SagaManager#executeStep: gonna execute ", si)
 
 		result := &SagaStepResult{}
 		result.Id = si.Id

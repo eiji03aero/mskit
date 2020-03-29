@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	errorscommon "common/errors"
 	restaurantdmn "order/domain/restaurant"
 
 	"github.com/eiji03aero/mskit/db/postgres"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 const (
@@ -69,7 +69,7 @@ func (r *Repository) FindById(id string) (restaurant *restaurantdmn.Restaurant, 
 	err = r.db.QueryRow(query, id).Scan(&dataStr)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return restaurant, errorscommon.NewErrDataNotFound(restaurant, id)
+			return restaurant, errbdr.NewErrDataNotFound(restaurant, id)
 		}
 		return
 	}

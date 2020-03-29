@@ -1,7 +1,7 @@
 package mskit
 
 import (
-	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 // SagaStore defines interface to persist SagaInstance
@@ -17,13 +17,25 @@ func NewSagaRepository(ss SagaStore) *SagaRepository {
 }
 
 // Save persists SagaInstance
-func (sr *SagaRepository) Save(si *SagaInstance) error {
-	return sr.sagaStore.Save(si)
+func (sr *SagaRepository) Save(si *SagaInstance) (err error) {
+	err = sr.sagaStore.Save(si)
+	if err != nil {
+		return
+	}
+
+	logger.PrintFuncCall(sr.Save, si)
+	return
 }
 
 // Update saves updates of SagaInstance
-func (sr *SagaRepository) Update(si *SagaInstance) error {
-	return sr.sagaStore.Update(si)
+func (sr *SagaRepository) Update(si *SagaInstance) (err error) {
+	err = sr.sagaStore.Update(si)
+	if err != nil {
+		return
+	}
+
+	logger.PrintFuncCall(sr.Save, si)
+	return
 }
 
 // Load loads up data into SagaInstance
@@ -33,6 +45,6 @@ func (sr *SagaRepository) Load(id string, si *SagaInstance) (err error) {
 		return
 	}
 
-	utils.PrintlnWithJson("SagaRepository#Load:", si)
+	logger.PrintFuncCall(sr.Load, si)
 	return
 }

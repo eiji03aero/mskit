@@ -7,6 +7,7 @@ import (
 	"{{ .PkgName }}/service"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
+	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -22,19 +23,21 @@ func New(c *rabbitmq.Client, svc service.Service) *rpcEndpoint {
 	}
 }
 
-func (re *rpcEndpoint) Run() {
+func (re *rpcEndpoint) Run() (err error) {
 	// Initilizing code comes here
-	// go rs.sample()
+	// go re.sample()
+	return
 }
 
 func (re *rpcEndpoint) sample() {
 	re.client.NewRPCEndpoint().
 		Configure(
 			rabbitmq.QueueOption{
-				Name: "",
+				Name: "{{ .PkgName }}.rpc.",
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
+			logger.PrintFuncCall(re.sample, string(d.Body))
 			return rabbitmq.MakeSuccessResponse(p)
 		}).
 		Exec()

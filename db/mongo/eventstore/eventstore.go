@@ -65,7 +65,7 @@ func (c *Client) Save(event mskit.Event) error {
 
 func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
 	col := c.collection()
-	_, aggregateName := utils.GetTypeName(aggregate)
+	aggregateName := utils.GetTypeName(aggregate)
 
 	cur, err := col.Find(
 		context.Background(),

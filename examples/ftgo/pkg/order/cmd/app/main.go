@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	orderdmn "order/domain/order"
@@ -11,6 +10,7 @@ import (
 	"order/transport/consumer"
 	httptransport "order/transport/http"
 	consumerpxy "order/transport/proxy/consumer"
+	kitchenpxy "order/transport/proxy/kitchen"
 	orderpxy "order/transport/proxy/order"
 	"order/transport/rpcendpoint"
 
@@ -19,6 +19,7 @@ import (
 	"github.com/eiji03aero/mskit/db/postgres/eventstore"
 	"github.com/eiji03aero/mskit/db/postgres/sagastore"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 var (
@@ -61,6 +62,7 @@ func main() {
 
 	orderProxy := orderpxy.New(eventBusClient)
 	consumerProxy := consumerpxy.New(eventBusClient)
+	kitchenProxy := kitchenpxy.New(eventBusClient)
 
 	svc := service.New(
 		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
@@ -72,6 +74,7 @@ func main() {
 		svc,
 		orderProxy,
 		consumerProxy,
+		kitchenProxy,
 	)
 	go createOrderSagaManager.Subscribe()
 
@@ -90,6 +93,6 @@ func main() {
 	}
 
 	mux := httptransport.New(svc)
-	log.Println("server starting to listen ...")
+	logger.Println("server starting to listen ...")
 	http.ListenAndServe(":3000", mux)
 }

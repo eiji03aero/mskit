@@ -28,7 +28,7 @@ services:
     <<: *service-default
     container_name: ftgo-order
     depends_on:
-      - ftgo-kitchen-mongo
+      - ftgo-order-postgres
     working_dir: /app/examples/ftgo/pkg/order
     ports:
       - "3000:3000"
@@ -49,7 +49,6 @@ services:
     working_dir: /app/examples/ftgo/pkg/kitchen
     ports:
       - "3001:3001"
-    command: /bin/bash
   ftgo-kitchen-mongo:
     <<: *mongo-default
     container_name: ftgo-kitchen-mongo

@@ -1,7 +1,9 @@
-package utils
+package errbdr
 
 import (
 	"fmt"
+
+	"github.com/eiji03aero/mskit/utils"
 )
 
 func NewErrNotEnoughPropertiesSet(args [][]interface{}) error {
@@ -10,12 +12,16 @@ func NewErrNotEnoughPropertiesSet(args [][]interface{}) error {
 		pairString := fmt.Sprintf(" %s=%v", arg[0], arg[1])
 		propertiesString += pairString
 	}
-
 	return fmt.Errorf("Not enough properties set: %s", propertiesString)
 }
 
 func NewErrUnknownParams(f interface{}, params interface{}) error {
-	funcName := GetFunctionName(f)
-	_, typeName := GetTypeName(params)
+	funcName := utils.GetFunctionName(f)
+	typeName := utils.GetTypeName(params)
 	return fmt.Errorf("%s: unknown params %s", funcName, typeName)
+}
+
+func NewErrDataNotFound(v interface{}, id interface{}) error {
+	dataName := utils.GetTypeName(v)
+	return fmt.Errorf("Not found: dataName=%s id=%v", dataName, id)
 }

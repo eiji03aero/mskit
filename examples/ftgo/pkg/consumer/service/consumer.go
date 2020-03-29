@@ -1,10 +1,10 @@
 package service
 
 import (
-	logcommon "common/log"
 	consumerdmn "consumer/domain/consumer"
 
 	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func (s *service) CreateConsumer(cmd consumerdmn.CreateConsumer) (id string, err error) {
@@ -21,7 +21,7 @@ func (s *service) CreateConsumer(cmd consumerdmn.CreateConsumer) (id string, err
 		return
 	}
 
-	logcommon.PrintCreated(consumerAggregate)
+	logger.PrintResourceCreated(consumerAggregate)
 	return
 }
 
@@ -32,8 +32,8 @@ func (s *service) GetConsumer(id string) (consumer *consumerdmn.Consumer, err er
 		return
 	}
 
+	logger.PrintResourceGet(consumerAggregate)
 	consumer = consumerAggregate.Consumer
-	logcommon.PrintGet(consumer)
 	return consumer, nil
 }
 

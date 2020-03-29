@@ -1,7 +1,7 @@
 package createorder
 
 import (
-	"order"
+	orderroot "order"
 
 	"github.com/eiji03aero/mskit"
 )
@@ -20,14 +20,16 @@ import (
 //     .build();
 func NewManager(
 	repository *mskit.SagaRepository,
-	svc order.Service,
-	opxy order.OrderProxy,
-	cpxy order.ConsumerProxy,
+	svc orderroot.Service,
+	opxy orderroot.OrderProxy,
+	cpxy orderroot.ConsumerProxy,
+	kpxy orderroot.KitchenProxy,
 ) mskit.SagaManager {
 	c := &client{
 		service:       svc,
 		orderProxy:    opxy,
 		consumerProxy: cpxy,
+		kitchenProxy:  kpxy,
 	}
 
 	definition, err := mskit.NewSagaDefinitionBuilder().
@@ -41,21 +43,28 @@ func NewManager(
 				Handler: c.validateOrderE,
 			},
 		).
+		Step(
+			mskit.SagaStepExecuteOption{
+				Handler: c.createTicketE,
+			},
+		).
 		Build()
 	if err != nil {
 		panic(err)
 	}
 
 	return mskit.NewSagaManager(
-		definition,
 		repository,
+		definition,
+		state{},
 	)
 }
 
 type client struct {
-	service       order.Service
-	orderProxy    order.OrderProxy
-	consumerProxy order.ConsumerProxy
+	service       orderroot.Service
+	orderProxy    orderroot.OrderProxy
+	consumerProxy orderroot.ConsumerProxy
+	kitchenProxy  orderroot.KitchenProxy
 }
 
 func (c *client) rejectOrderC(ss interface{}) (err error) {
@@ -89,6 +98,30 @@ func (c *client) validateOrderE(ss interface{}) (err error) {
 	if err != nil {
 		return
 	}
+
+	return
+}
+
+func (c *client) createTicketE(ss interface{}) (err error) {
+	sagaState, err := assertStruct(ss)
+	if err != nil {
+		return
+	}
+
+	order, err := c.service.GetOrder(sagaState.OrderId)
+	if err != nil {
+		return
+	}
+
+	_, err = c.kitchenProxy.CreateTicket(
+		order.RestaurantId,
+		order.OrderLineItems.LineItems,
+	)
+	if err != nil {
+		return
+	}
+
+	// TODO: update ticketId on somewhere. on order?
 
 	return
 }

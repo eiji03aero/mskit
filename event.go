@@ -22,8 +22,8 @@ func NewEvent(
 	aggregate interface{},
 	event interface{},
 ) Event {
-	_, aggregateType := utils.GetTypeName(aggregate)
-	_, eventType := utils.GetTypeName(event)
+	aggregateType := utils.GetTypeName(aggregate)
+	eventType := utils.GetTypeName(event)
 
 	return Event{
 		Type:          eventType,

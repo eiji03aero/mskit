@@ -1,10 +1,10 @@
 package consumer
 
 import (
-	"errors"
+	"fmt"
 
-	errorscommon "common/errors"
 	"github.com/eiji03aero/mskit"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type ConsumerAggregate struct {
@@ -20,7 +20,7 @@ func NewConsumerAggregate() *ConsumerAggregate {
 
 func (ca *ConsumerAggregate) ValidateOrder(total int) error {
 	if total < 20 {
-		return errors.New("total too little")
+		return fmt.Errorf("total too little")
 	}
 	return nil
 }
@@ -34,7 +34,7 @@ func (c *ConsumerAggregate) Process(command interface{}) (mskit.Events, error) {
 	case CreateConsumer:
 		return c.processCreateConsumer(cmd)
 	default:
-		return mskit.Events{}, errorscommon.NewErrNotSupportedParams(c.Process, cmd)
+		return mskit.Events{}, errbdr.NewErrUnknownParams(c.Process, cmd)
 	}
 }
 
@@ -56,7 +56,7 @@ func (c *ConsumerAggregate) Apply(event interface{}) error {
 	case ConsumerCreated:
 		return c.applyConsumerCreated(e)
 	default:
-		return errorscommon.NewErrNotSupportedParams(c.Apply, e)
+		return errbdr.NewErrUnknownParams(c.Apply, e)
 	}
 }
 

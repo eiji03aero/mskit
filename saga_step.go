@@ -1,7 +1,7 @@
 package mskit
 
 import (
-	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 // SagaStepHandler defines the signature for handle function for step
@@ -32,7 +32,7 @@ func (sa *SagaStep) Configure(opts ...interface{}) {
 		case SagaStepCompensationOption:
 			sa.compensationHandler = o.Handler
 		default:
-			panic(utils.NewErrUnknownParams(sa.Configure, o))
+			panic(errbdr.NewErrUnknownParams(sa.Configure, o))
 		}
 	}
 }

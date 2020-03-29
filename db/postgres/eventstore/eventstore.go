@@ -80,7 +80,7 @@ func (c *Client) Save(event mskit.Event) error {
 }
 
 func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
-	_, aggregateName := utils.GetTypeName(aggregate)
+	aggregateName := utils.GetTypeName(aggregate)
 	query := postgres.BuildSelectStatement(
 		"mskit_events",
 		[]string{

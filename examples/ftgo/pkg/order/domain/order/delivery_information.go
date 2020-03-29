@@ -1,7 +1,7 @@
 package order
 
 import (
-	"common/errors"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type DeliveryInformation struct {
@@ -13,7 +13,7 @@ func (di *DeliveryInformation) Merge(obj interface{}) error {
 	case DeliveryInformation:
 		di.Address.Merge(o.Address)
 	default:
-		return errors.NewErrNotSupportedParams(di.Merge, o)
+		return errbdr.NewErrUnknownParams(di.Merge, o)
 	}
 	return nil
 }

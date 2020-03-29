@@ -1,7 +1,7 @@
 package order
 
 import (
-	"common/errors"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type PaymentInformation struct {
@@ -13,7 +13,7 @@ func (pi *PaymentInformation) Merge(obj interface{}) error {
 	case PaymentInformation:
 		pi.Token = o.Token
 	default:
-		return errors.NewErrNotSupportedParams(pi.Merge, o)
+		return errbdr.NewErrUnknownParams(pi.Merge, o)
 	}
 	return nil
 }

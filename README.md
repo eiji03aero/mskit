@@ -19,6 +19,10 @@
 - refactor
   - cli/template related
 
+- improve logging
+  - add level
+  - add color
+
 - saga
   - createOrder saga
     - add the initial rejectOrder step

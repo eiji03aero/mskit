@@ -2,9 +2,9 @@ package mskit
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 // SagaInstanceState defines state of SagaInstance
@@ -42,10 +42,8 @@ func NewSagaInstance() (si *SagaInstance, err error) {
 }
 
 func (si *SagaInstance) processResult(result *SagaStepResult) (err error) {
-	log.Println("SagaInstance#processResult: ", si, result)
-
 	if result.Error != nil && si.State == SagaInstanceState_Processing {
-		log.Println("SagaInstance#processResult: gonna abort")
+		logger.PrintFuncCall(si.processResult, logger.RedString("aborting"), si, result)
 		si.State = SagaInstanceState_Aborting
 		// Need to return, since current step might have compensation
 		return
@@ -96,10 +94,12 @@ func (si *SagaInstance) checkStepHasHandler(step *SagaStep) bool {
 func (si *SagaInstance) executeStepHandler(step *SagaStep) (err error) {
 	switch si.State {
 	case SagaInstanceState_Processing:
-		log.Println("SagaInstance#executeStephandler: gonna execute", si.Data)
+		funcName := utils.GetFunctionNameParent(step.executeHandler)
+		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("executing"), funcName, si.Data)
 		err = step.executeHandler(si.Data)
 	case SagaInstanceState_Aborting:
-		log.Println("SagaInstance#executeStephandler: gonna compensate", si.Data)
+		funcName := utils.GetFunctionNameParent(step.compensationHandler)
+		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("compensating"), funcName, si.Data)
 		err = step.compensationHandler(si.Data)
 	default:
 		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)

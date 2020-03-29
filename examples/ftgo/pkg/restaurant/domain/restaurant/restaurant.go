@@ -1,8 +1,8 @@
 package restaurant
 
 import (
-	errorscommon "common/errors"
 	"github.com/eiji03aero/mskit"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type Restaurant struct {
@@ -20,7 +20,7 @@ func (r *Restaurant) Process(cmd interface{}) (mskit.Events, error) {
 	case CreateRestaurant:
 		return r.processCreateRestaurant(c)
 	default:
-		return mskit.Events{}, errorscommon.NewErrNotSupportedParams(r.Process, c)
+		return mskit.Events{}, errbdr.NewErrUnknownParams(r.Process, c)
 	}
 }
 
@@ -43,7 +43,7 @@ func (r *Restaurant) Apply(event interface{}) error {
 	case RestaurantCreated:
 		return r.applyRestaurantCreated(e)
 	default:
-		return errorscommon.NewErrNotSupportedParams(r.Apply, e)
+		return errbdr.NewErrUnknownParams(r.Apply, e)
 	}
 }
 

@@ -1,11 +1,11 @@
 package service
 
 import (
-	logcommon "common/log"
-	kitchendmn "kitchen/domain/kitchen"
+	ticketdmn "kitchen/domain/ticket"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 type service struct {
@@ -13,7 +13,7 @@ type service struct {
 }
 
 type Service interface {
-	CreateTicket(cmd kitchendmn.CreateTicket) (id string, err error)
+	CreateTicket(cmd ticketdmn.CreateTicket) (id string, err error)
 }
 
 func New(r *mskit.EventRepository) Service {
@@ -22,17 +22,17 @@ func New(r *mskit.EventRepository) Service {
 	}
 }
 
-func (s *service) CreateTicket(cmd kitchendmn.CreateTicket) (id string, err error) {
+func (s *service) CreateTicket(cmd ticketdmn.CreateTicket) (id string, err error) {
 	id, err = utils.UUID()
 	if err != nil {
 		return id, err
 	}
 
-	ticket := &kitchendmn.Ticket{}
+	ticket := &ticketdmn.Ticket{}
 	cmd.Id = id
 
 	err = s.repository.ExecuteCommand(ticket, cmd)
 
-	logcommon.PrintCreated(ticket)
+	logger.PrintResourceCreated(ticket)
 	return
 }

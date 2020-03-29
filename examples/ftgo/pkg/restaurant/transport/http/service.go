@@ -7,6 +7,8 @@ import (
 
 	restaurantdmn "restaurant/domain/restaurant"
 	restaurantsvc "restaurant/service"
+
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func New(svc restaurantsvc.Service) *http.ServeMux {
@@ -20,6 +22,8 @@ func restaurants(svc restaurantsvc.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
+			logger.Println("POST /restaurants")
+
 			body, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)

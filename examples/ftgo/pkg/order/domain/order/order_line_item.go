@@ -1,7 +1,7 @@
 package order
 
 import (
-	errorscommon "common/errors"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type OrderLineItem struct {
@@ -15,7 +15,7 @@ func (oli *OrderLineItem) Merge(obj interface{}) error {
 		oli.Quantity = o.Quantity
 		oli.MenuItemId = o.MenuItemId
 	default:
-		return errorscommon.NewErrNotSupportedParams(oli.Merge, o)
+		return errbdr.NewErrUnknownParams(oli.Merge, o)
 	}
 	return nil
 }

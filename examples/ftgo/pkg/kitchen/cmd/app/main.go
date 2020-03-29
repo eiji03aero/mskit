@@ -1,13 +1,15 @@
 package main
 
 import (
-	logcommon "common/log"
-	kitchendmn "kitchen/domain/kitchen"
+	ticketdmn "kitchen/domain/ticket"
 	kitchensvc "kitchen/service"
+	"kitchen/transport/rpcendpoint"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/mongo"
 	"github.com/eiji03aero/mskit/db/mongo/eventstore"
+	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 var (
@@ -15,47 +17,33 @@ var (
 		Host: "ftgo-kitchen-mongo",
 		Port: "27017",
 	}
+	rabbitmqOption = rabbitmq.Option{
+		Host: "ftgo-rabbitmq",
+		Port: "5672",
+	}
 )
 
 func main() {
 	er := mskit.NewEventRegistry()
-	er.Set(kitchendmn.TicketCreated{})
+	er.Set(ticketdmn.TicketCreated{})
 
 	es, err := eventstore.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}
 
+	eventBusClient, err := rabbitmq.NewClient(rabbitmqOption)
+
 	svc := kitchensvc.New(
 		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
 	)
 
-	cmd := kitchendmn.CreateTicket{
-		RestaurantId: "mac",
-		TicketLineItems: kitchendmn.TicketLineItems{
-			LineItems: []kitchendmn.TicketLineItem{
-				kitchendmn.TicketLineItem{
-					Quantity:   2,
-					MenuItemId: "fries",
-				},
-				kitchendmn.TicketLineItem{
-					Quantity:   5,
-					MenuItemId: "fries L size",
-				},
-			},
-		},
-	}
-
-	id, err := svc.CreateTicket(cmd)
+	err = rpcendpoint.New(eventBusClient, svc).Run()
 	if err != nil {
 		panic(err)
 	}
 
-	ticket := kitchendmn.Ticket{}
-	err = es.Load(id, &ticket)
-	if err != nil {
-		panic(err)
-	}
-
-	logcommon.PrintJsonln(ticket)
+	logger.Println("server starting to listen ...")
+	bff := make(chan bool, 1)
+	<-bff
 }

@@ -1,11 +1,11 @@
 package service
 
 import (
-	logcommon "common/log"
 	restaurantdmn "restaurant/domain/restaurant"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 type service struct {
@@ -38,6 +38,6 @@ func (s *service) CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id strin
 		return
 	}
 
-	logcommon.PrintCreated(restaurant)
+	logger.PrintResourceCreated(restaurant)
 	return
 }

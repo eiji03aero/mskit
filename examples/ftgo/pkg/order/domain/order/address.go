@@ -1,7 +1,7 @@
 package order
 
 import (
-	"common/errors"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type Address struct {
@@ -13,7 +13,7 @@ func (a *Address) Merge(obj interface{}) error {
 	case Address:
 		a.ZipCode = o.ZipCode
 	default:
-		return errors.NewErrNotSupportedParams(a.Merge, o)
+		return errbdr.NewErrUnknownParams(a.Merge, o)
 	}
 	return nil
 }

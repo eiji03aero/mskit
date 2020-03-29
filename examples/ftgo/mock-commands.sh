@@ -47,10 +47,12 @@ if [ $command = "seed" ]; then
 
 elif [ $command = "createOrder" ]; then
   restaurant_id=$(value-or-get restaurant_id $2)
+  consumer_id=$(value-or-get consumer_id $3)
   curl $post_options $debug_options $save_res_options \
     -d $(printf '%s' $(cat <<- EOF
       {
         "restaurant_id": "$restaurant_id",
+        "consumer_id": "$consumer_id",
         "payment_information": { "token": "daiji na token" },
         "delivery_information": {
           "address": { "zip_code": "300-9999" }

@@ -16,6 +16,13 @@ if [ $cmd = 'up' ] && [ $# -le 1 ]; then
   execute-docker-compose up
   stop-docker-compose
 
+elif [ $cmd = 'services-restart' ]; then
+  execute-docker-compose restart \
+    ftgo-order \
+    ftgo-kitchen \
+    ftgo-restaurant \
+    ftgo-consumer
+
 elif [ $cmd = 'bash' ]; then
   execute-docker-compose exec -w /app/examples/ftgo ftgo-order /bin/bash
 

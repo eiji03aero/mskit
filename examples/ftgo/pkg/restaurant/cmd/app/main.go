@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	restaurantdmn "restaurant/domain/restaurant"
 	restaurantsvc "restaurant/service"
@@ -12,6 +11,7 @@ import (
 	"github.com/eiji03aero/mskit/db/mongo"
 	"github.com/eiji03aero/mskit/db/mongo/eventstore"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 var (
@@ -44,6 +44,6 @@ func main() {
 	svc := restaurantsvc.New(eventRepository, dep)
 	mux := httptransport.New(svc)
 
-	log.Println("server starting to listen ...")
+	logger.Println("server starting to listen ...")
 	http.ListenAndServe(":3002", mux)
 }

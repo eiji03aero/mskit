@@ -117,6 +117,28 @@ func (p *Project) initializeService(
 	return
 }
 
+func (p *Project) generatePublisher() (err error) {
+	dir := fmt.Sprintf("%s/transport/publisher", p.WorkingDir)
+
+	if _, err = os.Stat(dir); os.IsNotExist(err) {
+		if err = os.MkdirAll(dir, 0777); err != nil {
+			return
+		}
+	}
+
+	err = createFileWithTemplate(
+		dir,
+		"publisher.go",
+		tpl.PublisherTemplate(),
+		p,
+	)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (p *Project) generateRPCEndpoint() (err error) {
 	dir := fmt.Sprintf("%s/transport/rpcendpoint", p.WorkingDir)
 
@@ -189,16 +211,6 @@ func (p *Project) generateProxy(name string) (err error) {
 		proxyDir,
 		"proxy.go",
 		tpl.ProxyTemplate(),
-		data,
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	err = createFileWithTemplate(
-		proxyDir,
-		fmt.Sprintf("%s.go", data.LowerName),
-		tpl.ProxyImplTemplate(),
 		data,
 	)
 	if err != nil {

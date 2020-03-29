@@ -8,6 +8,8 @@ import (
 
 	consumerdmn "consumer/domain/consumer"
 	consumersvc "consumer/service"
+
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func New(svc consumersvc.Service) *http.ServeMux {
@@ -22,6 +24,8 @@ func consumers(svc consumersvc.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
+			logger.Println("POST /consumers")
+
 			body, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
@@ -56,6 +60,8 @@ func consumersMember(svc consumersvc.Service) http.HandlerFunc {
 
 		switch r.Method {
 		case "GET":
+			logger.Println("GET /consumers/")
+
 			consumer, err := svc.GetConsumer(id)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)

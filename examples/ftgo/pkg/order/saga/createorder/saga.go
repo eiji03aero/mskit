@@ -1,6 +1,8 @@
 package createorder
 
-import "encoding/json"
+import (
+	"fmt"
+)
 
 type state struct {
 	OrderId string `json:"order_id"`
@@ -13,13 +15,11 @@ func NewState(id string) *state {
 }
 
 func assertStruct(value interface{}) (s *state, err error) {
-	s = &state{}
-	str, ok := value.(string)
+	s, ok := value.(*state)
 	if !ok {
+		err = fmt.Errorf("createorder.assertStruct: invalid data", value)
 		return
 	}
-
-	err = json.Unmarshal([]byte(str), s)
 
 	return
 }

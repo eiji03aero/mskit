@@ -9,6 +9,7 @@ import (
 func init() {
 	rootCmd.AddCommand(generateCmd)
 
+	generateCmd.AddCommand(generatePublisherCmd)
 	generateCmd.AddCommand(generateRPCEndpointCmd)
 	generateCmd.AddCommand(generateProxyCmd)
 }
@@ -19,6 +20,18 @@ var generateCmd = &cobra.Command{
 	Long:  "Provides utility to generate assets",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("generate called")
+	},
+}
+
+var generatePublisherCmd = &cobra.Command{
+	Use:   "publisher",
+	Short: "Generates publisher template",
+	Long:  "Generates publisher template",
+	Run: func(cmd *cobra.Command, args []string) {
+		err := project.generatePublisher()
+		if err != nil {
+			panic(err)
+		}
 	},
 }
 

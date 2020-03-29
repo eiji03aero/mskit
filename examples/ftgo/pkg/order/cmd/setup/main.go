@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"github.com/eiji03aero/mskit/db/postgres"
 	"github.com/eiji03aero/mskit/db/postgres/eventstore"
 	"github.com/eiji03aero/mskit/db/postgres/sagastore"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func main() {
@@ -49,7 +49,7 @@ func main() {
 
 	for _, s := range statements {
 		result, err := db.Exec(s)
-		log.Println(s, result, err)
+		logger.Println(s, result, err)
 	}
 }
 

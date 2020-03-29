@@ -11,6 +11,8 @@ func ProxyTemplate() string {
 import (
 	"{{ .PkgName }}"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
+	"github.com/eiji03aero/mskit/utils/logger"
+	"github.com/streadway/amqp"
 )
 
 type proxy struct {
@@ -21,26 +23,15 @@ func New(c *rabbitmq.Client) {{ .PkgName }}.{{ .InterfaceName }} {
 	return &proxy{
 		client: c,
 	}
-}`
 }
 
-func ProxyImplTemplate() string {
-	return `package {{ .LowerName }}
-
-import (
-	"log"
-
-	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/streadway/amqp"
-)
-
 func (p *proxy) Method() (err error) {
-	log.Println("Method: ")
+	logger.PrintFuncCall(p.Method)
 
 	_, err = p.client.NewRPCClient().
 		Configure(
 			rabbitmq.PublishArgs{
-				RoutingKey: "",
+				RoutingKey: "target.rpc.",
 				Publishing: amqp.Publishing{},
 			},
 		).

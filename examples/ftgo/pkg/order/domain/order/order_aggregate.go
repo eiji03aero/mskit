@@ -1,11 +1,10 @@
 package order
 
 import (
-	"errors"
-
-	errorscommon "common/errors"
+	"fmt"
 
 	"github.com/eiji03aero/mskit"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type Order struct {
@@ -20,7 +19,7 @@ type Order struct {
 
 func (o *Order) Validate() (errs []error) {
 	if o.OrderLineItems.Len() < 1 {
-		errs = append(errs, errors.New("quantity of order line items not enough"))
+		errs = append(errs, fmt.Errorf("quantity of order line items not enough"))
 	}
 
 	return errs
@@ -33,7 +32,7 @@ func (o *Order) Process(cmd interface{}) (mskit.Events, error) {
 	case RejectOrder:
 		return o.processRejectOrder(c)
 	default:
-		return nil, errorscommon.NewErrNotSupportedParams(o.Process, c)
+		return nil, errbdr.NewErrUnknownParams(o.Process, c)
 	}
 }
 
@@ -42,7 +41,7 @@ func (o *Order) Apply(event interface{}) error {
 	case OrderCreated:
 		return o.applyOrderCreated(e)
 	default:
-		return errorscommon.NewErrNotSupportedParams(o.Apply, e)
+		return errbdr.NewErrUnknownParams(o.Apply, e)
 	}
 }
 
@@ -78,6 +77,8 @@ func (o *Order) processRejectOrder(cmd RejectOrder) (mskit.Events, error) {
 func (o *Order) applyOrderCreated(event OrderCreated) (err error) {
 	o.OrderState = OrderState_ApprovalPending
 	o.Id = event.Id
+	o.RestaurantId = event.RestaurantId
+	o.ConsumerId = event.ConsumerId
 
 	err = o.PaymentInformation.Merge(event.PaymentInformation)
 	if err != nil {

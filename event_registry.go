@@ -25,7 +25,7 @@ func NewEventRegistry() *EventRegistry {
 
 // Set registers new struct
 func (er *EventRegistry) Set(event interface{}) error {
-	rawType, name := utils.GetTypeName(event)
+	rawType, name := utils.GetType(event)
 	er.events[name] = rawType
 	return nil
 }

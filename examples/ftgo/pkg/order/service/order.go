@@ -1,12 +1,12 @@
 package service
 
 import (
-	logcommon "common/log"
 	"fmt"
 	orderdmn "order/domain/order"
 	"order/saga/createorder"
 
 	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (id string, err error) {
@@ -36,7 +36,7 @@ func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (id string, err error) {
 	sagaState := createorder.NewState(order.Id)
 	go s.createOrderSagaManager.Create(sagaState)
 
-	logcommon.PrintCreated(order)
+	logger.PrintResourceCreated(order)
 	return
 }
 
@@ -44,7 +44,7 @@ func (s *service) GetOrder(id string) (*orderdmn.Order, error) {
 	order := &orderdmn.Order{}
 	err := s.eventRepository.Load(id, order)
 
-	logcommon.PrintGet(order)
+	logger.PrintResourceGet(order)
 	return order, err
 }
 
@@ -87,6 +87,6 @@ func (s *service) RejectOrder(cmd orderdmn.RejectOrder) (err error) {
 		return
 	}
 
-	logcommon.PrintlnWithJson("order rejected: ", order)
+	logger.PrintResource(order, "rejected")
 	return
 }

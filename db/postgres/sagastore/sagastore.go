@@ -118,6 +118,7 @@ func (c *Client) Load(id string, si *mskit.SagaInstance) error {
 	query := postgres.BuildSelectStatement(
 		TableName,
 		[]string{
+			"step_index",
 			"state",
 			"data",
 		},
@@ -125,7 +126,7 @@ func (c *Client) Load(id string, si *mskit.SagaInstance) error {
 	query = query + fmt.Sprintf(" WHERE id = $1")
 
 	err := c.db.QueryRow(query, id).
-		Scan(&si.State, &si.Data)
+		Scan(&si.StepIndex, &si.State, &si.Data)
 	if err != nil {
 		return err
 	}

@@ -5,3 +5,7 @@ type CreateTicket struct {
 	RestaurantId    string          `json:"restaurant_id"`
 	TicketLineItems TicketLineItems `json:"ticket_line_items"`
 }
+
+type CancelTicket struct {
+	Id string `json:"id"`
+}

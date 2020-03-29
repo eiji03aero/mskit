@@ -15,7 +15,7 @@ const (
 	SagaInstanceState_Processing
 	SagaInstanceState_Aborting
 	SagaInstanceState_Aborted
-	SagaInstanceState_Done
+	SagaInstanceState_Completed
 )
 
 // SagaInstace is a struct to express an instance of saga
@@ -70,10 +70,12 @@ func (si *SagaInstance) checkFinishState(lenSteps int) bool {
 	i := si.StepIndex
 	switch {
 	case i < 0:
+		logger.PrintFuncCall(si.checkFinishState, logger.RedString("saga aborted"), si)
 		si.State = SagaInstanceState_Aborted
 		return true
 	case i >= lenSteps:
-		si.State = SagaInstanceState_Processing
+		logger.PrintFuncCall(si.checkFinishState, logger.RedString("saga completed"), si)
+		si.State = SagaInstanceState_Completed
 		return true
 	default:
 		return false
@@ -95,12 +97,12 @@ func (si *SagaInstance) executeStepHandler(step *SagaStep) (err error) {
 	switch si.State {
 	case SagaInstanceState_Processing:
 		funcName := utils.GetFunctionNameParent(step.executeHandler)
-		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("executing"), funcName, si.Data)
-		err = step.executeHandler(si.Data)
+		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("executing"), logger.CyanString(funcName), si)
+		err = step.executeHandler(si)
 	case SagaInstanceState_Aborting:
 		funcName := utils.GetFunctionNameParent(step.compensationHandler)
-		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("compensating"), funcName, si.Data)
-		err = step.compensationHandler(si.Data)
+		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("compensating"), logger.CyanString(funcName), si)
+		err = step.compensationHandler(si)
 	default:
 		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)
 	}

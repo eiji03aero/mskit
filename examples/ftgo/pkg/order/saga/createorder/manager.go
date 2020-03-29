@@ -1,16 +1,21 @@
 package createorder
 
 import (
+	"errors"
 	orderroot "order"
 
 	"github.com/eiji03aero/mskit"
 )
 
+type client struct {
+	repository    *mskit.SagaRepository
+	service       orderroot.Service
+	orderProxy    orderroot.OrderProxy
+	consumerProxy orderroot.ConsumerProxy
+	kitchenProxy  orderroot.KitchenProxy
+}
+
 // create CreateOrderSaga and execute
-//     .step()
-//       .invokeParticipant(kitchenService.create, CreateOrderSagaState::makeCreateTicketCommand)
-//       .onReply(CreateTicketReply.class, CreateOrderSagaState::handleCreateTicketReply)
-//       .withCompensation(kitchenService.cancel, CreateOrderSagaState::makeCancelCreateTicketCommand)
 //     .step()
 //       .invokeParticipant(accountingService.authorize, CreateOrderSagaState::makeAuthorizeCommand)
 //     .step()
@@ -26,6 +31,7 @@ func NewManager(
 	kpxy orderroot.KitchenProxy,
 ) mskit.SagaManager {
 	c := &client{
+		repository:    repository,
 		service:       svc,
 		orderProxy:    opxy,
 		consumerProxy: cpxy,
@@ -47,6 +53,16 @@ func NewManager(
 			mskit.SagaStepExecuteOption{
 				Handler: c.createTicketE,
 			},
+			mskit.SagaStepCompensationOption{
+				Handler: c.createTicketC,
+			},
+		).
+		Step(
+			mskit.SagaStepExecuteOption{
+				Handler: func(si *mskit.SagaInstance) (err error) {
+					return errors.New("shippaiiiiii")
+				},
+			},
 		).
 		Build()
 	if err != nil {
@@ -60,15 +76,8 @@ func NewManager(
 	)
 }
 
-type client struct {
-	service       orderroot.Service
-	orderProxy    orderroot.OrderProxy
-	consumerProxy orderroot.ConsumerProxy
-	kitchenProxy  orderroot.KitchenProxy
-}
-
-func (c *client) rejectOrderC(ss interface{}) (err error) {
-	sagaState, err := assertStruct(ss)
+func (c *client) rejectOrderC(si *mskit.SagaInstance) (err error) {
+	sagaState, err := assertStruct(si.Data)
 	if err != nil {
 		return
 	}
@@ -78,8 +87,8 @@ func (c *client) rejectOrderC(ss interface{}) (err error) {
 	return
 }
 
-func (c *client) validateOrderE(ss interface{}) (err error) {
-	sagaState, err := assertStruct(ss)
+func (c *client) validateOrderE(si *mskit.SagaInstance) (err error) {
+	sagaState, err := assertStruct(si.Data)
 	if err != nil {
 		return
 	}
@@ -102,8 +111,8 @@ func (c *client) validateOrderE(ss interface{}) (err error) {
 	return
 }
 
-func (c *client) createTicketE(ss interface{}) (err error) {
-	sagaState, err := assertStruct(ss)
+func (c *client) createTicketE(si *mskit.SagaInstance) (err error) {
+	sagaState, err := assertStruct(si.Data)
 	if err != nil {
 		return
 	}
@@ -113,7 +122,7 @@ func (c *client) createTicketE(ss interface{}) (err error) {
 		return
 	}
 
-	_, err = c.kitchenProxy.CreateTicket(
+	ticketId, err := c.kitchenProxy.CreateTicket(
 		order.RestaurantId,
 		order.OrderLineItems.LineItems,
 	)
@@ -121,7 +130,26 @@ func (c *client) createTicketE(ss interface{}) (err error) {
 		return
 	}
 
-	// TODO: update ticketId on somewhere. on order?
+	sagaState.TicketId = ticketId
+	si.Data = sagaState
+	err = c.repository.Update(si)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (c *client) createTicketC(si *mskit.SagaInstance) (err error) {
+	sagaState, err := assertStruct(si.Data)
+	if err != nil {
+		return
+	}
+
+	err = c.kitchenProxy.CancelTicket(sagaState.TicketId)
+	if err != nil {
+		return
+	}
 
 	return
 }

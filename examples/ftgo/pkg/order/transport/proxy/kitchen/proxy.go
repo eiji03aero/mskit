@@ -65,3 +65,33 @@ func (p *proxy) CreateTicket(
 
 	return
 }
+
+func (p *proxy) CancelTicket(id string) (err error) {
+	logger.PrintFuncCall(p.CancelTicket, id)
+
+	reqBody := struct {
+		Id string `json:"id"`
+	}{
+		Id: id,
+	}
+	cmdJson, err := json.Marshal(reqBody)
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "kitchen.rpc.cancel-ticket",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+	if err != nil {
+		return
+	}
+
+	return
+}

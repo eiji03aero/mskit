@@ -38,9 +38,10 @@ func PrintResource(
 	resource interface{},
 	rest ...interface{},
 ) {
+	resourceName := utils.GetTypeName(resource)
 	args := formatData(
 		[]interface{}{
-			resource,
+			CyanString(resourceName),
 		},
 		rest,
 	)

@@ -1,11 +1,12 @@
 package createorder
 
 import (
-	"fmt"
+	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
 type state struct {
-	OrderId string `json:"order_id"`
+	OrderId  string `json:"order_id"`
+	TicketId string `json:"ticket_id"`
 }
 
 func NewState(id string) *state {
@@ -17,7 +18,7 @@ func NewState(id string) *state {
 func assertStruct(value interface{}) (s *state, err error) {
 	s, ok := value.(*state)
 	if !ok {
-		err = fmt.Errorf("createorder.assertStruct: invalid data", value)
+		err = errbdr.NewErrUnknownParams(assertStruct, s)
 		return
 	}
 

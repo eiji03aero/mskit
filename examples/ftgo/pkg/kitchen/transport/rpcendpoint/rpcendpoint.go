@@ -3,8 +3,8 @@ package rpcendpoint
 import (
 	"encoding/json"
 
+	"kitchen"
 	ticketdmn "kitchen/domain/ticket"
-	"kitchen/service"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
 	"github.com/eiji03aero/mskit/utils/logger"
@@ -13,10 +13,10 @@ import (
 
 type rpcEndpoint struct {
 	client  *rabbitmq.Client
-	service service.Service
+	service kitchen.Service
 }
 
-func New(c *rabbitmq.Client, svc service.Service) *rpcEndpoint {
+func New(c *rabbitmq.Client, svc kitchen.Service) *rpcEndpoint {
 	return &rpcEndpoint{
 		client:  c,
 		service: svc,
@@ -25,6 +25,8 @@ func New(c *rabbitmq.Client, svc service.Service) *rpcEndpoint {
 
 func (re *rpcEndpoint) Run() (err error) {
 	go re.runCreateTicket()
+	go re.runCancelTicket()
+
 	return
 }
 
@@ -60,6 +62,32 @@ func (re *rpcEndpoint) runCreateTicket() {
 			}
 
 			p.Body = resJson
+
+			return rabbitmq.MakeSuccessResponse(p)
+		}).
+		Exec()
+}
+
+func (re *rpcEndpoint) runCancelTicket() {
+	re.client.NewRPCEndpoint().
+		Configure(
+			rabbitmq.QueueOption{
+				Name: "kitchen.rpc.cancel-ticket",
+			},
+		).
+		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
+			logger.PrintFuncCall(re.runCancelTicket, d.Body)
+
+			cmd := ticketdmn.CancelTicket{}
+			err := json.Unmarshal(d.Body, &cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p)
+			}
+
+			err = re.service.CancelTicket(cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p)
+			}
 
 			return rabbitmq.MakeSuccessResponse(p)
 		}).

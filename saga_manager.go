@@ -2,9 +2,9 @@ package mskit
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 
+	"github.com/eiji03aero/mskit/utils/errbdr"
 	"github.com/eiji03aero/mskit/utils/logger"
 )
 
@@ -100,7 +100,7 @@ func (sm *sagaManager) processResult(result *SagaStepResult) (err error) {
 func (sm *sagaManager) restoreData(si *SagaInstance) (err error) {
 	dataStr, ok := si.Data.(string)
 	if !ok {
-		return fmt.Errorf("SagaManager#restoreData: invalid data", si)
+		return errbdr.NewErrUnknownParams(sm.restoreData, si)
 	}
 
 	stateStruct := reflect.New(reflect.TypeOf(sm.sagaStateStruct)).Interface()
@@ -116,7 +116,6 @@ func (sm *sagaManager) restoreData(si *SagaInstance) (err error) {
 func (sm *sagaManager) executeStep(si *SagaInstance) (err error) {
 	for {
 		if si.checkFinishState(sm.sagaDefinition.Len()) {
-			logger.PrintFuncCall(sm.executeStep, logger.RedString("finished"), si)
 			break
 		}
 

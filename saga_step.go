@@ -4,8 +4,14 @@ import (
 	"github.com/eiji03aero/mskit/utils/errbdr"
 )
 
+// SagaStepResult expresses the result of SagaStepHandler
+type SagaStepResult struct {
+	Id    string
+	Error error
+}
+
 // SagaStepHandler defines the signature for handle function for step
-type SagaStepHandler func(sagaState interface{}) (err error)
+type SagaStepHandler func(sagaInstance *SagaInstance) (err error)
 
 // SagaStep is a struct to express one action of saga
 type SagaStep struct {
@@ -40,9 +46,4 @@ func (sa *SagaStep) Configure(opts ...interface{}) {
 // Validate returns error if SagaStep is not valid yet
 func (sa *SagaStep) Validate() error {
 	return nil
-}
-
-type SagaStepResult struct {
-	Id    string
-	Error error
 }

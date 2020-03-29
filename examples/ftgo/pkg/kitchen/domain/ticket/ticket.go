@@ -21,17 +21,10 @@ func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 	switch c := cmd.(type) {
 	case CreateTicket:
 		return t.processCreateTicket(c)
+	case CancelTicket:
+		return t.processCancelTicket(c)
 	default:
 		return mskit.Events{}, errbdr.NewErrUnknownParams(t.Process, c)
-	}
-}
-
-func (t *Ticket) Apply(event interface{}) error {
-	switch e := event.(type) {
-	case TicketCreated:
-		return t.applyTicketCreated(e)
-	default:
-		return errbdr.NewErrUnknownParams(t.Apply, e)
 	}
 }
 
@@ -49,6 +42,29 @@ func (t *Ticket) processCreateTicket(cmd CreateTicket) (mskit.Events, error) {
 	return events, nil
 }
 
+func (t *Ticket) processCancelTicket(cmd CancelTicket) (mskit.Events, error) {
+	events := mskit.NewEventsSingle(
+		cmd.Id,
+		Ticket{},
+		TicketCancelled{
+			Id: cmd.Id,
+		},
+	)
+
+	return events, nil
+}
+
+func (t *Ticket) Apply(event interface{}) error {
+	switch e := event.(type) {
+	case TicketCreated:
+		return t.applyTicketCreated(e)
+	case TicketCancelled:
+		return t.applyTicketCancelled(e)
+	default:
+		return errbdr.NewErrUnknownParams(t.Apply, e)
+	}
+}
+
 func (t *Ticket) applyTicketCreated(event TicketCreated) error {
 	t.Id = event.Id
 	t.RestaurantId = event.RestaurantId
@@ -56,6 +72,13 @@ func (t *Ticket) applyTicketCreated(event TicketCreated) error {
 
 	t.State = TicketState_CreatePending
 	t.PreviousState = TicketState_CreatePending
+
+	return nil
+}
+
+func (t *Ticket) applyTicketCancelled(event TicketCancelled) error {
+	t.State = TicketState_Canceled
+	t.PreviousState = t.State
 
 	return nil
 }

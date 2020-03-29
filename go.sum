@@ -22,6 +22,7 @@ github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZm
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/kitchen v0.0.0-20200327154638-eebd5420955a h1:nUEurwx5gKutFlfRJBUNa8q1b3S/ZRA73+NoYHSe6RE=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/kitchen v0.0.0-20200329010733-f8e590257449 h1:ICiucHa1LXgqOxaSSPZPYIPhobnRjkRD1Zqa+sYt/vw=
+github.com/eiji03aero/mskit/examples/ftgo/pkg/kitchen v0.0.0-20200329091537-26d4d51d21b2 h1:0xh8D+3jWYVoWw/Y3WGjvQuCJI4ldUV+v05Fwb1JjW4=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200223081024-a4d9cbcab3dd h1:t9JpcvJ3QWPzjGAGfT4ACUH4OQDcpf93FdphNap6/jo=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200224075851-421d3e90d969 h1:md/JghR2Wn5zFkvUzzhoWc/kt71CNqTdFxXFi9mHz7s=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200229042554-a2080c2a4c02 h1:UhBN5Wqrgtov5rHyVNt68+jxk5RZZ9jmW6PLUA3EaX4=

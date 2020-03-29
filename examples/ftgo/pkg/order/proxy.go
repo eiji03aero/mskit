@@ -17,4 +17,5 @@ type KitchenProxy interface {
 		restaurantId string,
 		lineItems []orderdmn.OrderLineItem,
 	) (ticketId string, err error)
+	CancelTicket(id string) (err error)
 }

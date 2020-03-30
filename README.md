@@ -15,6 +15,13 @@
 - saga
   - createOrder saga
 
+- refactor
+  - try simplify the initialization in cmd/app :(
+  - should think about how eventstore and sagastore dealing with restoring data from json
+
+- refactor services
+  - align the structure
+
 - setup tests
   - unit tests
   - add comments on exporteds
@@ -109,3 +116,28 @@
 - methods
   - Create(SagaDefinition) (SagaInstance)
   - Subscribe
+
+# CLI
+
+```sh
+# initialize service
+$ mskit init order
+
+# cd into service directory
+$ cd order
+
+# generate aggregate
+$ mskit generate aggregate Order
+
+# generate proxy
+$ mskit generate proxy Kitchen
+
+# generate rpcendpoint
+$ mskit generate rpcendpoint
+
+# generate publisher
+$ mskit generate publisher
+
+# generate consumer
+$ mskit generate consumer
+```

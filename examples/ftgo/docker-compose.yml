@@ -15,7 +15,10 @@ x-service-default: &service-default
     - -c
     - |
       echo wait for rabbitmq to get ready
-      while ! nc -z ftgo-rabbitmq 5672; do sleep 3s; done
+      while ! nc -z ftgo-rabbitmq 5672; do
+        echo waiting for rabbitmq...
+        sleep 3s
+      done
       echo Connected to rabbitmq
       make run
 
@@ -76,6 +79,18 @@ services:
   ftgo-consumer-mongo:
     <<: *mongo-default
     container_name: ftgo-consumer-mongo
+
+  ftgo-accounting:
+    <<: *service-default
+    container_name: ftgo-accounting
+    depends_on:
+      - ftgo-accounting-mongo
+    working_dir: /app/examples/ftgo/pkg/accounting
+    ports:
+      - "3004:3004"
+  ftgo-accounting-mongo:
+    <<: *mongo-default
+    container_name: ftgo-accounting-mongo
 
   ftgo-rabbitmq:
     container_name: ftgo-rabbitmq

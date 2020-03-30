@@ -4,7 +4,7 @@ func RPCEndpointTemplate() string {
 	return `package rpcendpoint
 
 import (
-	"{{ .PkgName }}/service"
+	"{{ .PkgName }}"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
 	"github.com/eiji03aero/mskit/utils/logger"
@@ -13,10 +13,10 @@ import (
 
 type rpcEndpoint struct {
 	client  *rabbitmq.Client
-	service service.Service
+	service {{ .PkgName }}.Service
 }
 
-func New(c *rabbitmq.Client, svc service.Service) *rpcEndpoint {
+func New(c *rabbitmq.Client, svc {{ .PkgName }}.Service) *rpcEndpoint {
 	return &rpcEndpoint{
 		client:  c,
 		service: svc,
@@ -24,8 +24,7 @@ func New(c *rabbitmq.Client, svc service.Service) *rpcEndpoint {
 }
 
 func (re *rpcEndpoint) Run() (err error) {
-	// Initilizing code comes here
-	// go re.sample()
+	go re.sample()
 	return
 }
 

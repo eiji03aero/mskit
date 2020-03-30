@@ -20,6 +20,7 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
+github.com/eiji03aero/mskit/examples/ftgo/pkg/consumer v0.0.0-20200329125241-9a73db08f856 h1:OffrEbwIlgdy6V7854fK9s/kuzKeN7ufd6cZ/QPZiko=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/kitchen v0.0.0-20200327154638-eebd5420955a h1:nUEurwx5gKutFlfRJBUNa8q1b3S/ZRA73+NoYHSe6RE=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/kitchen v0.0.0-20200329010733-f8e590257449 h1:ICiucHa1LXgqOxaSSPZPYIPhobnRjkRD1Zqa+sYt/vw=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/kitchen v0.0.0-20200329091537-26d4d51d21b2 h1:0xh8D+3jWYVoWw/Y3WGjvQuCJI4ldUV+v05Fwb1JjW4=
@@ -34,6 +35,7 @@ github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200320050438-8edac8
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200327002323-1009b873826f h1:BCZh4neoK1eKlwULcrGdQarympDCBk2K4ZFO0pkppe8=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200327154638-eebd5420955a h1:Ad0DnBO/ii9E6wJv+SOFd+PVHNEEMVOFS1Gpxr8NWwQ=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200329010733-f8e590257449 h1:B7NwKyGQRaOY2N344nNbuyIwyDcKSg6HCZmW7OfsepU=
+github.com/eiji03aero/mskit/examples/ftgo/pkg/order v0.0.0-20200329125241-9a73db08f856 h1:WyWs9vhrfWvTKsa7LLntLxBfLyjToggeTv0s30dFvV0=
 github.com/eiji03aero/mskit/examples/ftgo/pkg/restaurant v0.0.0-20200302132755-0ce3878a6038 h1:1dfDtn4SWkAeUn8lpZd7VG/iOlfjFnxyK1+xZuw3R8A=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
@@ -95,6 +97,8 @@ github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgf
 github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
+github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334 h1:VHgatEHNcBFEB7inlalqfNqw65aNkM1lGX2yt3NmbS8=
+github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334/go.mod h1:SK73tn/9oHe+/Y0h39VT4UCxmurVJkR5NA7kMEAOgSE=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=

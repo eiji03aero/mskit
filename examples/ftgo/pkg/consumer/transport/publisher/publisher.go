@@ -1,15 +1,14 @@
-package tpl
-
-func PublisherTemplate() string {
-	return `package publisher
+package publisher
 
 import (
 	"encoding/json"
 
+	consumerdmn "consumer/domain/consumer"
+
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/eiji03aero/mskit/utils/errbdr"
+	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -32,24 +31,23 @@ func (p *publisher) Publish(event interface{}) (err error) {
 	}
 
 	switch e := event.(type) {
-	case "sample":
-		return p.publishSample(e, ej)
+	case consumerdmn.ConsumerCreated:
+		return p.publishConsumerCreated(e, ej)
 	default:
 		return errbdr.NewErrUnknownParams(p.Publish, e)
 	}
 }
 
-func (p *publisher) publishSample(event interface{}, eventJson []byte) (err error) {
-	return p.c.NewPublisher().
+func (p *publisher) publishConsumerCreated(event consumerdmn.ConsumerCreated, eventJson []byte) (err error) {
+	return p.client.NewPublisher().
 		Configure(
 			rabbitmq.TopicPublisherOption{
-				ExchangeName: "topic-sample",
-				RoutingKey:   "sample.sample.created",
+				ExchangeName: "topic-consumer",
+				RoutingKey:   "consumer.consumer.created",
 				Publishing: amqp.Publishing{
 					Body: eventJson,
 				},
 			},
 		).
 		Exec()
-}`
 }

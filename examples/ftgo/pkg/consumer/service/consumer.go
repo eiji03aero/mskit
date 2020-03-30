@@ -16,7 +16,7 @@ func (s *service) CreateConsumer(cmd consumerdmn.CreateConsumer) (id string, err
 	consumerAggregate := consumerdmn.NewConsumerAggregate()
 	cmd.Id = id
 
-	s.eventRepository.ExecuteCommand(consumerAggregate, cmd)
+	err = s.eventRepository.ExecuteCommand(consumerAggregate, cmd)
 	if err != nil {
 		return
 	}

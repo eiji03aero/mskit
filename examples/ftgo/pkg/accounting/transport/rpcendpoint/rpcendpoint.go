@@ -1,10 +1,8 @@
 package rpcendpoint
 
 import (
+	"accounting"
 	"encoding/json"
-
-	consumerdmn "consumer/domain/consumer"
-	consumersvc "consumer/service"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
 	"github.com/eiji03aero/mskit/utils/logger"
@@ -12,40 +10,41 @@ import (
 )
 
 type rpcEndpoint struct {
-	c   *rabbitmq.Client
-	svc consumersvc.Service
+	client  *rabbitmq.Client
+	service accounting.Service
 }
 
-func New(c *rabbitmq.Client, svc consumersvc.Service) *rpcEndpoint {
+func New(c *rabbitmq.Client, svc accounting.Service) *rpcEndpoint {
 	return &rpcEndpoint{
-		c:   c,
-		svc: svc,
+		client:  c,
+		service: svc,
 	}
 }
 
 func (re *rpcEndpoint) Run() (err error) {
-	go re.runValidateOrder()
-
+	go re.runAuthorize()
 	return
 }
 
-func (re *rpcEndpoint) runValidateOrder() {
-	re.c.NewRPCEndpoint().
+func (re *rpcEndpoint) runAuthorize() {
+	re.client.NewRPCEndpoint().
 		Configure(
 			rabbitmq.QueueOption{
-				Name: "consumer.rpc.validate-order",
+				Name: "accounting.rpc.authorize",
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runValidateOrder, string(d.Body))
+			logger.PrintFuncCall(re.runAuthorize, string(d.Body))
 
-			command := consumerdmn.ValidateOrder{}
-			err := json.Unmarshal(d.Body, &command)
+			request := struct {
+				ConsumerId string `json:"consumer_id"`
+			}{}
+			err := json.Unmarshal(d.Body, &request)
 			if err != nil {
 				return rabbitmq.MakeFailResponse(p)
 			}
 
-			err = re.svc.ValidateOrder(command)
+			err = re.service.Authorize(request.ConsumerId)
 			if err != nil {
 				return rabbitmq.MakeFailResponse(p)
 			}

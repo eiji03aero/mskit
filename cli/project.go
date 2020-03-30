@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/eiji03aero/mskit/cli/tpl"
+	"github.com/iancoleman/strcase"
 )
 
 type Project struct {
@@ -89,6 +90,23 @@ func (p *Project) initializeService(
 		return
 	}
 
+	// -------------------- cmd --------------------
+	appDirectoryPath := fmt.Sprintf("%s/cmd/app", directoryPath)
+	err = os.MkdirAll(appDirectoryPath, 0777)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		appDirectoryPath,
+		"main.go",
+		tpl.CmdAppTemplate(),
+		p,
+	)
+	if err != nil {
+		return
+	}
+
 	// -------------------- domain --------------------
 	domainDirectoryPath := fmt.Sprintf("%s/domain", directoryPath)
 	err = os.MkdirAll(domainDirectoryPath, 0777)
@@ -117,6 +135,71 @@ func (p *Project) initializeService(
 	return
 }
 
+func (p *Project) generateAggregate(name string) (err error) {
+	data := struct {
+		Name          string
+		LowerName     string
+		AggregateName string
+		SnakeName     string
+		NameInitial   string
+	}{}
+	data.Name = name
+	data.LowerName = strings.ToLower(name)
+	data.AggregateName = name + "Aggregate"
+	data.SnakeName = strcase.ToSnake(name)
+	data.NameInitial = string([]rune(data.LowerName)[0])
+
+	dir := fmt.Sprintf("%s/domain/%s", p.WorkingDir, data.LowerName)
+
+	if _, err = os.Stat(dir); os.IsNotExist(err) {
+		if err = os.MkdirAll(dir, 0777); err != nil {
+			return
+		}
+	}
+
+	err = createFileWithTemplate(
+		dir,
+		data.LowerName+".go",
+		tpl.DomainEntityTemplate(),
+		data,
+	)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		dir,
+		data.LowerName+"_aggregate.go",
+		tpl.DomainAggregateTemplate(),
+		data,
+	)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		dir,
+		data.LowerName+"_commands.go",
+		tpl.DomainCommandsTemplate(),
+		data,
+	)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		dir,
+		data.LowerName+"_events.go",
+		tpl.DomainEventsTemplate(),
+		data,
+	)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (p *Project) generatePublisher() (err error) {
 	dir := fmt.Sprintf("%s/transport/publisher", p.WorkingDir)
 
@@ -130,6 +213,28 @@ func (p *Project) generatePublisher() (err error) {
 		dir,
 		"publisher.go",
 		tpl.PublisherTemplate(),
+		p,
+	)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (p *Project) generateConsumer() (err error) {
+	dir := fmt.Sprintf("%s/transport/consumer", p.WorkingDir)
+
+	if _, err = os.Stat(dir); os.IsNotExist(err) {
+		if err = os.MkdirAll(dir, 0777); err != nil {
+			return
+		}
+	}
+
+	err = createFileWithTemplate(
+		dir,
+		"consumer.go",
+		tpl.ConsumerTemplate(),
 		p,
 	)
 	if err != nil {

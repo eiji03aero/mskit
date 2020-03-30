@@ -19,3 +19,7 @@ type KitchenProxy interface {
 	) (ticketId string, err error)
 	CancelTicket(id string) (err error)
 }
+
+type AccountingProxy interface {
+	Authorize(consumerId string) (err error)
+}

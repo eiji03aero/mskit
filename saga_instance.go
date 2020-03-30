@@ -43,9 +43,9 @@ func NewSagaInstance() (si *SagaInstance, err error) {
 
 func (si *SagaInstance) processResult(result *SagaStepResult) (err error) {
 	if result.Error != nil && si.State == SagaInstanceState_Processing {
-		logger.PrintFuncCall(si.processResult, logger.RedString("aborting"), si, result)
+		logger.PrintFuncCall(si.processResult, logger.RedString("step failed, aborting. Error: "), result.Error.Error())
 		si.State = SagaInstanceState_Aborting
-		// Need to return, since current step might have compensation
+		// Need to return so that it wont run shiftIndex, since current step might have compensation
 		return
 	}
 
@@ -74,7 +74,7 @@ func (si *SagaInstance) checkFinishState(lenSteps int) bool {
 		si.State = SagaInstanceState_Aborted
 		return true
 	case i >= lenSteps:
-		logger.PrintFuncCall(si.checkFinishState, logger.RedString("saga completed"), si)
+		logger.PrintFuncCall(si.checkFinishState, logger.GreenString("saga completed"), si)
 		si.State = SagaInstanceState_Completed
 		return true
 	default:

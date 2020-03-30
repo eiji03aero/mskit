@@ -9,7 +9,9 @@ import (
 func init() {
 	rootCmd.AddCommand(generateCmd)
 
+	generateCmd.AddCommand(generateAggregateCmd)
 	generateCmd.AddCommand(generatePublisherCmd)
+	generateCmd.AddCommand(generateConsumerCmd)
 	generateCmd.AddCommand(generateRPCEndpointCmd)
 	generateCmd.AddCommand(generateProxyCmd)
 }
@@ -23,12 +25,38 @@ var generateCmd = &cobra.Command{
 	},
 }
 
+var generateAggregateCmd = &cobra.Command{
+	Use:   "aggregate",
+	Short: "Generates aggregate template",
+	Long:  "Generates aggregate template",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		name := args[0]
+		err := project.generateAggregate(name)
+		if err != nil {
+			panic(err)
+		}
+	},
+}
+
 var generatePublisherCmd = &cobra.Command{
 	Use:   "publisher",
 	Short: "Generates publisher template",
 	Long:  "Generates publisher template",
 	Run: func(cmd *cobra.Command, args []string) {
 		err := project.generatePublisher()
+		if err != nil {
+			panic(err)
+		}
+	},
+}
+
+var generateConsumerCmd = &cobra.Command{
+	Use:   "consumer",
+	Short: "Generates consumer template",
+	Long:  "Generates consumer template",
+	Run: func(cmd *cobra.Command, args []string) {
+		err := project.generateConsumer()
 		if err != nil {
 			panic(err)
 		}

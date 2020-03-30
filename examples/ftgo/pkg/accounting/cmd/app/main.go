@@ -1,13 +1,10 @@
 package main
 
 import (
-	"net/http"
-
-	consumerdmn "consumer/domain/consumer"
-	consumersvc "consumer/service"
-	httptransport "consumer/transport/http"
-	"consumer/transport/publisher"
-	"consumer/transport/rpcendpoint"
+	accountdmn "accounting/domain/account"
+	"accounting/service"
+	"accounting/transport/consumer"
+	"accounting/transport/rpcendpoint"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/mongo"
@@ -18,7 +15,7 @@ import (
 
 var (
 	dbOption = mongo.DBOption{
-		Host: "ftgo-consumer-mongo",
+		Host: "ftgo-accounting-mongo",
 		Port: "27017",
 	}
 	rabbitmqOption = rabbitmq.Option{
@@ -29,30 +26,32 @@ var (
 
 func main() {
 	er := mskit.NewEventRegistry()
-	er.Set(consumerdmn.ConsumerCreated{})
+	er.Set(accountdmn.AccountCreated{})
 
 	eb, err := rabbitmq.NewClient(rabbitmqOption)
 	if err != nil {
 		panic(err)
 	}
 
-	dep := publisher.New(eb)
-
 	es, err := eventstore.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}
-	erp := mskit.NewEventRepository(es, dep)
+	erp := mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{})
 
-	svc := consumersvc.New(erp)
+	svc := service.New(erp)
+
+	err = consumer.New(eb, svc).Run()
+	if err != nil {
+		panic(err)
+	}
 
 	err = rpcendpoint.New(eb, svc).Run()
 	if err != nil {
 		panic(err)
 	}
 
-	mux := httptransport.New(svc)
-
 	logger.Println("server starting to listen ...")
-	http.ListenAndServe(":3003", mux)
+	bff := make(chan bool)
+	<-bff
 }

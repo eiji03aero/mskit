@@ -9,6 +9,7 @@ import (
 	"order/service"
 	"order/transport/consumer"
 	httptransport "order/transport/http"
+	accountingpxy "order/transport/proxy/accounting"
 	consumerpxy "order/transport/proxy/consumer"
 	kitchenpxy "order/transport/proxy/kitchen"
 	orderpxy "order/transport/proxy/order"
@@ -55,14 +56,15 @@ func main() {
 	}
 	sr := mskit.NewSagaRepository(ss)
 
-	eventBusClient, err := rabbitmq.NewClient(rabbitmqOption)
+	eb, err := rabbitmq.NewClient(rabbitmqOption)
 	if err != nil {
 		panic(err)
 	}
 
-	orderProxy := orderpxy.New(eventBusClient)
-	consumerProxy := consumerpxy.New(eventBusClient)
-	kitchenProxy := kitchenpxy.New(eventBusClient)
+	orderProxy := orderpxy.New(eb)
+	consumerProxy := consumerpxy.New(eb)
+	kitchenProxy := kitchenpxy.New(eb)
+	accountingProxy := accountingpxy.New(eb)
 
 	svc := service.New(
 		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
@@ -75,6 +77,7 @@ func main() {
 		orderProxy,
 		consumerProxy,
 		kitchenProxy,
+		accountingProxy,
 	)
 	go createOrderSagaManager.Subscribe()
 
@@ -82,12 +85,12 @@ func main() {
 		createOrderSagaManager,
 	)
 
-	err = consumer.New(eventBusClient, svc).Run()
+	err = consumer.New(eb, svc).Run()
 	if err != nil {
 		panic(err)
 	}
 
-	err = rpcendpoint.New(eventBusClient, svc).Run()
+	err = rpcendpoint.New(eb, svc).Run()
 	if err != nil {
 		panic(err)
 	}

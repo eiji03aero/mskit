@@ -1,23 +1,21 @@
 package createorder
 
 import (
-	"errors"
 	orderroot "order"
 
 	"github.com/eiji03aero/mskit"
 )
 
 type client struct {
-	repository    *mskit.SagaRepository
-	service       orderroot.Service
-	orderProxy    orderroot.OrderProxy
-	consumerProxy orderroot.ConsumerProxy
-	kitchenProxy  orderroot.KitchenProxy
+	repository      *mskit.SagaRepository
+	service         orderroot.Service
+	orderProxy      orderroot.OrderProxy
+	consumerProxy   orderroot.ConsumerProxy
+	kitchenProxy    orderroot.KitchenProxy
+	accountingProxy orderroot.AccountingProxy
 }
 
 // create CreateOrderSaga and execute
-//     .step()
-//       .invokeParticipant(accountingService.authorize, CreateOrderSagaState::makeAuthorizeCommand)
 //     .step()
 //       .invokeParticipant(kitchenService.confirmCreate, CreateOrderSagaState::makeConfirmCreateTicketCommand)
 //     .step()
@@ -29,13 +27,15 @@ func NewManager(
 	opxy orderroot.OrderProxy,
 	cpxy orderroot.ConsumerProxy,
 	kpxy orderroot.KitchenProxy,
+	apxy orderroot.AccountingProxy,
 ) mskit.SagaManager {
 	c := &client{
-		repository:    repository,
-		service:       svc,
-		orderProxy:    opxy,
-		consumerProxy: cpxy,
-		kitchenProxy:  kpxy,
+		repository:      repository,
+		service:         svc,
+		orderProxy:      opxy,
+		consumerProxy:   cpxy,
+		kitchenProxy:    kpxy,
+		accountingProxy: apxy,
 	}
 
 	definition, err := mskit.NewSagaDefinitionBuilder().
@@ -59,9 +59,7 @@ func NewManager(
 		).
 		Step(
 			mskit.SagaStepExecuteOption{
-				Handler: func(si *mskit.SagaInstance) (err error) {
-					return errors.New("shippaiiiiii")
-				},
+				Handler: c.authorizeConsumerE,
 			},
 		).
 		Build()
@@ -147,6 +145,25 @@ func (c *client) createTicketC(si *mskit.SagaInstance) (err error) {
 	}
 
 	err = c.kitchenProxy.CancelTicket(sagaState.TicketId)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (c *client) authorizeConsumerE(si *mskit.SagaInstance) (err error) {
+	sagaState, err := assertStruct(si.Data)
+	if err != nil {
+		return
+	}
+
+	order, err := c.service.GetOrder(sagaState.OrderId)
+	if err != nil {
+		return
+	}
+
+	err = c.accountingProxy.Authorize(order.ConsumerId)
 	if err != nil {
 		return
 	}

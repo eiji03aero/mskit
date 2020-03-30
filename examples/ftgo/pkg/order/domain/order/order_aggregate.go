@@ -31,17 +31,10 @@ func (o *Order) Process(cmd interface{}) (mskit.Events, error) {
 		return o.processCreateOrder(c)
 	case RejectOrder:
 		return o.processRejectOrder(c)
+	case ApproveOrder:
+		return o.processApproveOrder(c)
 	default:
 		return nil, errbdr.NewErrUnknownParams(o.Process, c)
-	}
-}
-
-func (o *Order) Apply(event interface{}) error {
-	switch e := event.(type) {
-	case OrderCreated:
-		return o.applyOrderCreated(e)
-	default:
-		return errbdr.NewErrUnknownParams(o.Apply, e)
 	}
 }
 
@@ -74,6 +67,31 @@ func (o *Order) processRejectOrder(cmd RejectOrder) (mskit.Events, error) {
 	return events, nil
 }
 
+func (o *Order) processApproveOrder(cmd ApproveOrder) (mskit.Events, error) {
+	events := mskit.NewEventsSingle(
+		cmd.Id,
+		Order{},
+		OrderApproved{
+			Id: cmd.Id,
+		},
+	)
+
+	return events, nil
+}
+
+func (o *Order) Apply(event interface{}) error {
+	switch e := event.(type) {
+	case OrderCreated:
+		return o.applyOrderCreated(e)
+	case OrderRejected:
+		return o.applyOrderRejected(e)
+	case OrderApproved:
+		return o.applyOrderApproved(e)
+	default:
+		return errbdr.NewErrUnknownParams(o.Apply, e)
+	}
+}
+
 func (o *Order) applyOrderCreated(event OrderCreated) (err error) {
 	o.OrderState = OrderState_ApprovalPending
 	o.Id = event.Id
@@ -100,5 +118,10 @@ func (o *Order) applyOrderCreated(event OrderCreated) (err error) {
 
 func (o *Order) applyOrderRejected(event OrderRejected) (err error) {
 	o.OrderState = OrderState_Rejected
+	return nil
+}
+
+func (o *Order) applyOrderApproved(event OrderApproved) (err error) {
+	o.OrderState = OrderState_Approved
 	return nil
 }

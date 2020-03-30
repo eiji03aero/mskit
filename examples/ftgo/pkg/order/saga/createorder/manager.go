@@ -15,10 +15,6 @@ type client struct {
 	accountingProxy orderroot.AccountingProxy
 }
 
-// create CreateOrderSaga and execute
-//     .step()
-//       .invokeParticipant(orderService.approve, CreateOrderSagaState::makeApproveOrderCommand)
-//     .build();
 func NewManager(
 	repository *mskit.SagaRepository,
 	svc orderroot.Service,
@@ -63,6 +59,11 @@ func NewManager(
 		Step(
 			mskit.SagaStepExecuteOption{
 				Handler: c.confirmCreateTicketE,
+			},
+		).
+		Step(
+			mskit.SagaStepExecuteOption{
+				Handler: c.approveOrderE,
 			},
 		).
 		Build()
@@ -181,6 +182,20 @@ func (c *client) confirmCreateTicketE(si *mskit.SagaInstance) (err error) {
 	}
 
 	err = c.kitchenProxy.ConfirmTicket(sagaState.TicketId)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (c *client) approveOrderE(si *mskit.SagaInstance) (err error) {
+	sagaState, err := assertStruct(si.Data)
+	if err != nil {
+		return
+	}
+
+	err = c.orderProxy.ApproveOrder(sagaState.OrderId)
 	if err != nil {
 		return
 	}

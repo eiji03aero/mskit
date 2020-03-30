@@ -6,6 +6,7 @@ import (
 
 type OrderProxy interface {
 	RejectOrder(id string) (err error)
+	ApproveOrder(id string) (err error)
 }
 
 type ConsumerProxy interface {

@@ -25,7 +25,7 @@ func New(c *rabbitmq.Client, svc order.Service) *rpcEndpoint {
 
 func (re *rpcEndpoint) Run() (err error) {
 	go re.runRejectOrder()
-
+	go re.runApproveOrder()
 	return
 }
 
@@ -46,6 +46,32 @@ func (re *rpcEndpoint) runRejectOrder() {
 			}
 
 			err = re.svc.RejectOrder(command)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p)
+			}
+
+			return rabbitmq.MakeSuccessResponse(p)
+		}).
+		Exec()
+}
+
+func (re *rpcEndpoint) runApproveOrder() {
+	re.c.NewRPCEndpoint().
+		Configure(
+			rabbitmq.QueueOption{
+				Name: "order.rpc.approve-order",
+			},
+		).
+		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
+			logger.PrintFuncCall(re.runApproveOrder, string(d.Body))
+
+			command := orderdmn.ApproveOrder{}
+			err := json.Unmarshal(d.Body, &command)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p)
+			}
+
+			err = re.svc.ApproveOrder(command)
 			if err != nil {
 				return rabbitmq.MakeFailResponse(p)
 			}

@@ -12,3 +12,7 @@ type CreateOrder struct {
 type RejectOrder struct {
 	Id string `json:"id"`
 }
+
+type ApproveOrder struct {
+	Id string `json:"id"`
+}

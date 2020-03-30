@@ -90,3 +90,19 @@ func (s *service) RejectOrder(cmd orderdmn.RejectOrder) (err error) {
 	logger.PrintResource(order, "rejected")
 	return
 }
+
+func (s *service) ApproveOrder(cmd orderdmn.ApproveOrder) (err error) {
+	order := &orderdmn.Order{}
+	err = s.eventRepository.Load(cmd.Id, order)
+	if err != nil {
+		return
+	}
+
+	err = s.eventRepository.ExecuteCommand(order, cmd)
+	if err != nil {
+		return
+	}
+
+	logger.PrintResource(order, "confirmed")
+	return
+}

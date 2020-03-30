@@ -46,3 +46,27 @@ func (p *proxy) RejectOrder(id string) (err error) {
 
 	return
 }
+
+func (p *proxy) ApproveOrder(id string) (err error) {
+	logger.PrintFuncCall(p.ApproveOrder, id)
+
+	cmdJson, err := json.Marshal(orderdmn.ApproveOrder{
+		Id: id,
+	})
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "order.rpc.approve-order",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+
+	return
+}

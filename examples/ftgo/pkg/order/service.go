@@ -12,6 +12,7 @@ type Service interface {
 	GetOrder(id string) (order *orderdmn.Order, err error)
 	GetOrderTotal(id string) (total int, err error)
 	RejectOrder(cmd orderdmn.RejectOrder) (err error)
+	ApproveOrder(cmd orderdmn.ApproveOrder) (err error)
 
 	CreateRestaurant(restaurantdmn.Restaurant) (err error)
 	GetRestaurant(id string) (restaurant *restaurantdmn.Restaurant, err error)

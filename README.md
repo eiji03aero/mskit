@@ -6,7 +6,6 @@
   - none for now
 
 - cli
-  - generate aggregate
   - generate saga
 
 - improve logging
@@ -17,7 +16,13 @@
 
 - refactor
   - try simplify the initialization in cmd/app :(
+  - logging
+    - should add logging on
+      - publish, consume, rpcendpoint, rpcclient
   - should think about how eventstore and sagastore dealing with restoring data from json
+
+- rpc
+  - add timeout
 
 - refactor services
   - align the structure

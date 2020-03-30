@@ -46,3 +46,16 @@ func (s *service) CancelTicket(cmd ticketdmn.CancelTicket) (err error) {
 	logger.PrintResource(ticket, "cancelled ticket")
 	return
 }
+
+func (s *service) ConfirmTicket(cmd ticketdmn.ConfirmTicket) (err error) {
+	ticket := &ticketdmn.Ticket{}
+	err = s.eventRepository.Load(cmd.Id, ticket)
+	if err != nil {
+		return
+	}
+
+	err = s.eventRepository.ExecuteCommand(ticket, cmd)
+
+	logger.PrintResource(ticket, "confirmed ticket")
+	return
+}

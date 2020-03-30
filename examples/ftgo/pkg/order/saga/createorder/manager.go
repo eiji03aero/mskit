@@ -17,8 +17,6 @@ type client struct {
 
 // create CreateOrderSaga and execute
 //     .step()
-//       .invokeParticipant(kitchenService.confirmCreate, CreateOrderSagaState::makeConfirmCreateTicketCommand)
-//     .step()
 //       .invokeParticipant(orderService.approve, CreateOrderSagaState::makeApproveOrderCommand)
 //     .build();
 func NewManager(
@@ -60,6 +58,11 @@ func NewManager(
 		Step(
 			mskit.SagaStepExecuteOption{
 				Handler: c.authorizeConsumerE,
+			},
+		).
+		Step(
+			mskit.SagaStepExecuteOption{
+				Handler: c.confirmCreateTicketE,
 			},
 		).
 		Build()
@@ -164,6 +167,20 @@ func (c *client) authorizeConsumerE(si *mskit.SagaInstance) (err error) {
 	}
 
 	err = c.accountingProxy.Authorize(order.ConsumerId)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (c *client) confirmCreateTicketE(si *mskit.SagaInstance) (err error) {
+	sagaState, err := assertStruct(si.Data)
+	if err != nil {
+		return
+	}
+
+	err = c.kitchenProxy.ConfirmTicket(sagaState.TicketId)
 	if err != nil {
 		return
 	}

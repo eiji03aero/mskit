@@ -9,3 +9,7 @@ type CreateTicket struct {
 type CancelTicket struct {
 	Id string `json:"id"`
 }
+
+type ConfirmTicket struct {
+	Id string `json:"id"`
+}

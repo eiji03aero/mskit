@@ -23,6 +23,8 @@ func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 		return t.processCreateTicket(c)
 	case CancelTicket:
 		return t.processCancelTicket(c)
+	case ConfirmTicket:
+		return t.processConfirmTicket(c)
 	default:
 		return mskit.Events{}, errbdr.NewErrUnknownParams(t.Process, c)
 	}
@@ -54,12 +56,26 @@ func (t *Ticket) processCancelTicket(cmd CancelTicket) (mskit.Events, error) {
 	return events, nil
 }
 
+func (t *Ticket) processConfirmTicket(cmd ConfirmTicket) (mskit.Events, error) {
+	events := mskit.NewEventsSingle(
+		cmd.Id,
+		Ticket{},
+		TicketConfirmed{
+			Id: cmd.Id,
+		},
+	)
+
+	return events, nil
+}
+
 func (t *Ticket) Apply(event interface{}) error {
 	switch e := event.(type) {
 	case TicketCreated:
 		return t.applyTicketCreated(e)
 	case TicketCancelled:
 		return t.applyTicketCancelled(e)
+	case TicketConfirmed:
+		return t.applyTicketConfirmed(e)
 	default:
 		return errbdr.NewErrUnknownParams(t.Apply, e)
 	}
@@ -78,6 +94,13 @@ func (t *Ticket) applyTicketCreated(event TicketCreated) error {
 
 func (t *Ticket) applyTicketCancelled(event TicketCancelled) error {
 	t.State = TicketState_Canceled
+	t.PreviousState = t.State
+
+	return nil
+}
+
+func (t *Ticket) applyTicketConfirmed(event TicketConfirmed) error {
+	t.State = TicketState_Preparing
 	t.PreviousState = t.State
 
 	return nil

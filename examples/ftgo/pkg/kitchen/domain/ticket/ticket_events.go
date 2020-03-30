@@ -9,3 +9,7 @@ type TicketCreated struct {
 type TicketCancelled struct {
 	Id string `json:"id"`
 }
+
+type TicketConfirmed struct {
+	Id string `json:"id"`
+}

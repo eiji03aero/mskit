@@ -26,6 +26,7 @@ func New(c *rabbitmq.Client, svc kitchen.Service) *rpcEndpoint {
 func (re *rpcEndpoint) Run() (err error) {
 	go re.runCreateTicket()
 	go re.runCancelTicket()
+	go re.runConfirmTicket()
 
 	return
 }
@@ -85,6 +86,32 @@ func (re *rpcEndpoint) runCancelTicket() {
 			}
 
 			err = re.service.CancelTicket(cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p)
+			}
+
+			return rabbitmq.MakeSuccessResponse(p)
+		}).
+		Exec()
+}
+
+func (re *rpcEndpoint) runConfirmTicket() {
+	re.client.NewRPCEndpoint().
+		Configure(
+			rabbitmq.QueueOption{
+				Name: "kitchen.rpc.confirm-ticket",
+			},
+		).
+		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
+			logger.PrintFuncCall(re.runConfirmTicket, d.Body)
+
+			cmd := ticketdmn.ConfirmTicket{}
+			err := json.Unmarshal(d.Body, &cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p)
+			}
+
+			err = re.service.ConfirmTicket(cmd)
 			if err != nil {
 				return rabbitmq.MakeFailResponse(p)
 			}

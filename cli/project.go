@@ -64,7 +64,7 @@ func (p *Project) initializeService(
 		return fmt.Errorf("directory exists: ", directoryPath)
 	}
 
-	err = os.MkdirAll(directoryPath, 0777)
+	err = createDir(directoryPath)
 	if err != nil {
 		return
 	}
@@ -92,7 +92,7 @@ func (p *Project) initializeService(
 
 	// -------------------- cmd --------------------
 	appDirectoryPath := fmt.Sprintf("%s/cmd/app", directoryPath)
-	err = os.MkdirAll(appDirectoryPath, 0777)
+	err = createDir(appDirectoryPath)
 	if err != nil {
 		return
 	}
@@ -109,7 +109,7 @@ func (p *Project) initializeService(
 
 	// -------------------- domain --------------------
 	domainDirectoryPath := fmt.Sprintf("%s/domain", directoryPath)
-	err = os.MkdirAll(domainDirectoryPath, 0777)
+	err = createDir(domainDirectoryPath)
 	if err != nil {
 		return
 	}
@@ -117,7 +117,7 @@ func (p *Project) initializeService(
 	// -------------------- service --------------------
 	serviceDirectoryPath := fmt.Sprintf("%s/service", directoryPath)
 
-	err = os.MkdirAll(serviceDirectoryPath, 0777)
+	err = createDir(serviceDirectoryPath)
 	if err != nil {
 		return
 	}
@@ -151,10 +151,9 @@ func (p *Project) generateAggregate(name string) (err error) {
 
 	dir := fmt.Sprintf("%s/domain/%s", p.WorkingDir, data.LowerName)
 
-	if _, err = os.Stat(dir); os.IsNotExist(err) {
-		if err = os.MkdirAll(dir, 0777); err != nil {
-			return
-		}
+	err = createDir(dir)
+	if err != nil {
+		return
 	}
 
 	err = createFileWithTemplate(
@@ -203,10 +202,9 @@ func (p *Project) generateAggregate(name string) (err error) {
 func (p *Project) generatePublisher() (err error) {
 	dir := fmt.Sprintf("%s/transport/publisher", p.WorkingDir)
 
-	if _, err = os.Stat(dir); os.IsNotExist(err) {
-		if err = os.MkdirAll(dir, 0777); err != nil {
-			return
-		}
+	err = createDir(dir)
+	if err != nil {
+		return
 	}
 
 	err = createFileWithTemplate(
@@ -225,10 +223,9 @@ func (p *Project) generatePublisher() (err error) {
 func (p *Project) generateConsumer() (err error) {
 	dir := fmt.Sprintf("%s/transport/consumer", p.WorkingDir)
 
-	if _, err = os.Stat(dir); os.IsNotExist(err) {
-		if err = os.MkdirAll(dir, 0777); err != nil {
-			return
-		}
+	err = createDir(dir)
+	if err != nil {
+		return
 	}
 
 	err = createFileWithTemplate(
@@ -247,10 +244,9 @@ func (p *Project) generateConsumer() (err error) {
 func (p *Project) generateRPCEndpoint() (err error) {
 	dir := fmt.Sprintf("%s/transport/rpcendpoint", p.WorkingDir)
 
-	if _, err = os.Stat(dir); os.IsNotExist(err) {
-		if err = os.MkdirAll(dir, 0777); err != nil {
-			return
-		}
+	err = createDir(dir)
+	if err != nil {
+		return
 	}
 
 	err = createFileWithTemplate(
@@ -306,10 +302,10 @@ func (p *Project) generateProxy(name string) (err error) {
 
 	// -------------------- transport/proxy --------------------
 	proxyDir := fmt.Sprintf("%s/transport/proxy/%s", dir, data.LowerName)
-	if _, err = os.Stat(proxyDir); os.IsNotExist(err) {
-		if err = os.MkdirAll(proxyDir, 0777); err != nil {
-			panic(err)
-		}
+
+	err = createDir(proxyDir)
+	if err != nil {
+		return
 	}
 
 	err = createFileWithTemplate(
@@ -320,6 +316,50 @@ func (p *Project) generateProxy(name string) (err error) {
 	)
 	if err != nil {
 		panic(err)
+	}
+
+	return
+}
+
+func (p *Project) generateSaga(name string) (err error) {
+	dir := p.WorkingDir
+	data := struct {
+		Name      string
+		PkgName   string
+		LowerName string
+	}{
+		Name:      name,
+		PkgName:   p.PkgName,
+		LowerName: strings.ToLower(name),
+	}
+
+	// -------------------- saga --------------------
+	sagaDir := fmt.Sprintf("%s/saga", dir)
+	sagaImplDir := fmt.Sprintf("%s/%s", sagaDir, data.LowerName)
+
+	err = createDir(sagaImplDir)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		sagaImplDir,
+		"manager.go",
+		tpl.SagaManagerTemplate(),
+		data,
+	)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		sagaImplDir,
+		"state.go",
+		tpl.SagaStateTemplate(),
+		data,
+	)
+	if err != nil {
+		return
 	}
 
 	return

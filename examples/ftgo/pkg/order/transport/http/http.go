@@ -61,7 +61,7 @@ func ordersMember(svc order.Service) http.HandlerFunc {
 
 		switch r.Method {
 		case "GET":
-			logger.Println("GET /orders/")
+			logger.Println("GET /orders/", id)
 
 			order, err := svc.GetOrder(id)
 			if err != nil {
@@ -77,6 +77,31 @@ func ordersMember(svc order.Service) http.HandlerFunc {
 				return
 			}
 			w.Write(orderJson)
+
+		case "PATCH":
+			logger.Println("PATCH /orders/", id)
+
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			cmd := orderdmn.ReviseOrder{Id: id}
+			err = json.Unmarshal(body, &cmd)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			err = svc.ReviseOrder(cmd)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
 		}
 	}
 }

@@ -42,12 +42,12 @@ func (re *rpcEndpoint) runValidateOrder() {
 			command := consumerdmn.ValidateOrder{}
 			err := json.Unmarshal(d.Body, &command)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			err = re.svc.ValidateOrder(command)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			return rabbitmq.MakeSuccessResponse(p)

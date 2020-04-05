@@ -6,6 +6,7 @@ import (
 	orderdmn "order/domain/order"
 	restaurantrepo "order/repository/restaurant"
 	"order/saga/createorder"
+	"order/saga/reviseorder"
 	"order/service"
 	"order/transport/consumer"
 	httptransport "order/transport/http"
@@ -43,18 +44,26 @@ func main() {
 		panic(err)
 	}
 
-	er := mskit.NewEventRegistry()
-	er.Set(orderdmn.OrderCreated{})
+	eventRegistry := mskit.NewEventRegistry()
+	eventRegistry.Set(orderdmn.OrderCreated{})
+	eventRegistry.Set(orderdmn.OrderRejected{})
+	eventRegistry.Set(orderdmn.OrderApproved{})
+	eventRegistry.Set(orderdmn.OrderRevisionBegan{})
+	eventRegistry.Set(orderdmn.UndoOrderRevisionBegan{})
+	eventRegistry.Set(orderdmn.OrderRevisionConfirmed{})
+	eventRegistry.Set(orderdmn.OrderTicketIdSet{})
 
-	es, err := eventstore.New(dbOption, er)
+	eventStore, err := eventstore.New(dbOption, eventRegistry)
 	if err != nil {
 		panic(err)
 	}
-	ss, err := sagastore.New(dbOption)
+	sagaStore, err := sagastore.New(dbOption)
 	if err != nil {
 		panic(err)
 	}
-	sr := mskit.NewSagaRepository(ss)
+	eventRepository := mskit.NewEventRepository(eventStore, &mskit.StubDomainEventPublisher{})
+	sagaRepository := mskit.NewSagaRepository(sagaStore)
+	restaurantRepository := restaurantrepo.New(db)
 
 	eb, err := rabbitmq.NewClient(rabbitmqOption)
 	if err != nil {
@@ -67,12 +76,12 @@ func main() {
 	accountingProxy := accountingpxy.New(eb)
 
 	svc := service.New(
-		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
-		restaurantrepo.New(db),
+		eventRepository,
+		restaurantRepository,
 	)
 
 	createOrderSagaManager := createorder.NewManager(
-		sr,
+		sagaRepository,
 		svc,
 		orderProxy,
 		consumerProxy,
@@ -81,8 +90,18 @@ func main() {
 	)
 	go createOrderSagaManager.Subscribe()
 
+	reviseOrderSagaManager := reviseorder.NewManager(
+		sagaRepository,
+		svc,
+		orderProxy,
+		kitchenProxy,
+		accountingProxy,
+	)
+	go reviseOrderSagaManager.Subscribe()
+
 	svc.InjectSagaManagers(
 		createOrderSagaManager,
+		reviseOrderSagaManager,
 	)
 
 	err = consumer.New(eb, svc).Run()

@@ -1,5 +1,10 @@
 package mskit
 
+import (
+	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
+)
+
 // EventRepository manages Event
 type EventRepository struct {
 	eventStore EventStore
@@ -46,6 +51,9 @@ func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) e
 		if err != nil {
 			return err
 		}
+
+		eventName := utils.GetTypeName(e.Data)
+		logger.Println(logger.YellowString("Publishing event:"), logger.CyanString(eventName), e.Data)
 
 		err = r.publisher.Publish(e.Data)
 		if err != nil {

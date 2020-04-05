@@ -63,17 +63,23 @@ func (c *Client) Save(event mskit.Event) error {
 	return nil
 }
 
-func (c *Client) Load(id string, aggregate mskit.Aggregate) error {
+func (c *Client) Load(id string, aggregate mskit.Aggregate) (err error) {
 	col := c.collection()
 	aggregateName := utils.GetTypeName(aggregate)
+	filter := bson.D{
+		{Key: "aggregate_type", Value: aggregateName},
+		{Key: "aggregate_id", Value: id},
+	}
 
-	cur, err := col.Find(
-		context.Background(),
-		bson.D{
-			{Key: "aggregate_type", Value: aggregateName},
-			{Key: "aggregate_id", Value: id},
-		},
-	)
+	ctx := context.Background()
+
+	// TODO: better way to check not found for aggregate, rather than running FindOne
+	err = col.FindOne(ctx, filter).Err()
+	if err != nil {
+		return err
+	}
+
+	cur, err := col.Find(ctx, filter)
 	if err != nil {
 		return err
 	}

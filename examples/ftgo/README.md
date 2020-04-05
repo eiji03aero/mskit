@@ -1,86 +1,15 @@
-# ftgo
+# FTGO
 - from: https://www.manning.com/books/microservices-patterns
 
-# Todo
+# Usage
 
-# Services
-## OrderService
-### Aggregates
-- Order
-  - properties
-    - orderLineItems []OrderLineItem
-    - state OrderState
-    - deliveryInformation DeliveryInformation
-    - paymentInformation PaymentInformation
+```sh
+# Build and up docker compose
+$ ./docker-compose.sh up
 
-    - consumerId string
-    - restaurantId string
-    - orderMinimum Money
-### ValueObject
-- OrderState
-  - enum
-    - unknown, approved, approval_pending, canceled, cancel_pending, rejected, revision_pending
-- OrderLineItems
-  - properties
-    - lineItems []OrderLineItem
-- OrderLineItem
-  - properties
-    - menuItemId string
-    - quantity int
-- DeliveryInformation
-  - properties
-    - address Address
-- PaymentInformation
-  - properties
-    - token string
-- Address
-  - properties
-    - zipCode string
+# sh into container
+$ ./docker-compose.sh bash
 
-## KitchenService
-### Aggregates
-- Ticket
-  - properties
-    - state TicketState
-    - previousState TicketState
-    - restaurantId string
-    - ticketLineItems TicketLineItems
-    - readyBy time
-    - acceptTime time
-    - preparingTime time
-    - pickedUpTime time
-    - readyForPickupTime time
-
-### ValueObject
-- TicketState
-  - enum
-    - create_pending, awaiting_acceptance, accepted, preparing, ready_for_pickup, picked_up, cancel_pending, cancelled, revision_pending,
-- TicketLineItems
-  - properties
-    - lineItems []TicketLineItem
-- TicketLineItem
-  - properties
-    quantity int
-    menuItemId string
-
-# Common
-- Money
-
-# Apis
-## create order
-- OrderService#createOrder
-  - arguments
-    - CreateOrder{}
-      - consumerId
-      - restaurantId
-      - lineItems []OrderMenuItem
-  - flow
-    - verify if restaurant exists
-      - if not returns error
-    - verify menuItems
-      - if not returns error
-      - map through the line_items
-        - make restaurant find each item, if not found return error
-        - create menuItem
-    - repo.ExecuteCommand
-    - create CreateOrderSaga and execute
+# have come commands in action
+in-container $ ./mock-commands seed
+```

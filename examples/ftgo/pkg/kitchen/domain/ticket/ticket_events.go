@@ -13,3 +13,17 @@ type TicketCancelled struct {
 type TicketConfirmed struct {
 	Id string `json:"id"`
 }
+
+type TicketRevisionBegan struct {
+	Id              string          `json:"id"`
+	TicketLineItems TicketLineItems `json:"ticket_line_items"`
+}
+
+type UndoTicketRevisionBegan struct {
+	Id string `json:"id"`
+}
+
+type TicketRevisionConfirmed struct {
+	Id              string          `json:"id"`
+	TicketLineItems TicketLineItems `json:"ticket_line_items"`
+}

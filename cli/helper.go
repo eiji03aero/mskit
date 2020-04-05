@@ -32,6 +32,25 @@ func createFileWithTemplate(
 	return
 }
 
+func createDir(
+	dirPath string,
+) (err error) {
+	_, err = os.Stat(dirPath)
+	if err == nil {
+		return
+	}
+	if !os.IsNotExist(err) {
+		return
+	}
+
+	err = os.MkdirAll(dirPath, 0755)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func appendToFile(filePath string, content string) (err error) {
 	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {

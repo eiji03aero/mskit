@@ -34,19 +34,19 @@ func (re *rpcEndpoint) runAuthorize() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runAuthorize, string(d.Body))
-
 			request := struct {
 				ConsumerId string `json:"consumer_id"`
 			}{}
+			logger.PrintFuncCall(re.runAuthorize, string(d.Body))
+
 			err := json.Unmarshal(d.Body, &request)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			err = re.service.Authorize(request.ConsumerId)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			return rabbitmq.MakeSuccessResponse(p)

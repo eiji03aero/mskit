@@ -13,11 +13,18 @@ type Service interface {
 	GetOrderTotal(id string) (total int, err error)
 	RejectOrder(cmd orderdmn.RejectOrder) (err error)
 	ApproveOrder(cmd orderdmn.ApproveOrder) (err error)
+	ReviseOrder(cmd orderdmn.ReviseOrder) (err error)
+	BeginReviseOrder(cmd orderdmn.BeginReviseOrder) (err error)
+	UndoBeginReviseOrder(cmd orderdmn.UndoBeginReviseOrder) (err error)
+	ConfirmReviseOrder(cmd orderdmn.ConfirmReviseOrder) (err error)
+
+	HandleTicketCreated(cmd orderdmn.HandleTicketCreated) (err error)
 
 	CreateRestaurant(restaurantdmn.Restaurant) (err error)
 	GetRestaurant(id string) (restaurant *restaurantdmn.Restaurant, err error)
 
 	InjectSagaManagers(
-		createOrderSaga mskit.SagaManager,
+		createOrderSagaManager mskit.SagaManager,
+		reviseOrderSagaManager mskit.SagaManager,
 	)
 }

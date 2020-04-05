@@ -26,6 +26,11 @@ var (
 func main() {
 	er := mskit.NewEventRegistry()
 	er.Set(ticketdmn.TicketCreated{})
+	er.Set(ticketdmn.TicketCancelled{})
+	er.Set(ticketdmn.TicketConfirmed{})
+	er.Set(ticketdmn.TicketRevisionBegan{})
+	er.Set(ticketdmn.UndoTicketRevisionBegan{})
+	er.Set(ticketdmn.TicketRevisionConfirmed{})
 
 	es, err := eventstore.New(dbOption, er)
 	if err != nil {

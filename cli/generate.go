@@ -14,6 +14,7 @@ func init() {
 	generateCmd.AddCommand(generateConsumerCmd)
 	generateCmd.AddCommand(generateRPCEndpointCmd)
 	generateCmd.AddCommand(generateProxyCmd)
+	generateCmd.AddCommand(generateSagaCmd)
 }
 
 var generateCmd = &cobra.Command{
@@ -83,6 +84,20 @@ var generateProxyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
 		err := project.generateProxy(name)
+		if err != nil {
+			panic(err)
+		}
+	},
+}
+
+var generateSagaCmd = &cobra.Command{
+	Use:   "saga",
+	Short: "Generates saga template",
+	Long:  "Generates saga template",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		name := args[0]
+		err := project.generateSaga(name)
 		if err != nil {
 			panic(err)
 		}

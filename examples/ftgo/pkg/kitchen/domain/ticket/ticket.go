@@ -25,6 +25,12 @@ func (t *Ticket) Process(cmd interface{}) (mskit.Events, error) {
 		return t.processCancelTicket(c)
 	case ConfirmTicket:
 		return t.processConfirmTicket(c)
+	case BeginReviseTicket:
+		return t.processBeginReviseTicket(c)
+	case UndoBeginReviseTicket:
+		return t.processUndoBeginReviseTicket(c)
+	case ConfirmReviseTicket:
+		return t.processConfirmReviseTicket(c)
 	default:
 		return mskit.Events{}, errbdr.NewErrUnknownParams(t.Process, c)
 	}
@@ -68,6 +74,60 @@ func (t *Ticket) processConfirmTicket(cmd ConfirmTicket) (mskit.Events, error) {
 	return events, nil
 }
 
+func (t *Ticket) processBeginReviseTicket(cmd BeginReviseTicket) (events mskit.Events, err error) {
+	switch t.State {
+	case TicketState_Accepted:
+		fallthrough
+	case TicketState_AwaitingAcceptance:
+		events = mskit.NewEventsSingle(
+			cmd.Id,
+			Ticket{},
+			TicketRevisionBegan{
+				Id: cmd.Id,
+			},
+		)
+	default:
+		err = errbdr.NewErrUnsupportedStateTransition(t, t.State)
+	}
+
+	return
+}
+
+func (t *Ticket) processUndoBeginReviseTicket(cmd UndoBeginReviseTicket) (events mskit.Events, err error) {
+	switch t.State {
+	case TicketState_RevisionPending:
+		events = mskit.NewEventsSingle(
+			cmd.Id,
+			Ticket{},
+			UndoTicketRevisionBegan{
+				Id: cmd.Id,
+			},
+		)
+	default:
+		err = errbdr.NewErrUnsupportedStateTransition(t, t.State)
+	}
+
+	return
+}
+
+func (t *Ticket) processConfirmReviseTicket(cmd ConfirmReviseTicket) (events mskit.Events, err error) {
+	switch t.State {
+	case TicketState_RevisionPending:
+		events = mskit.NewEventsSingle(
+			cmd.Id,
+			Ticket{},
+			TicketRevisionConfirmed{
+				Id:              cmd.Id,
+				TicketLineItems: cmd.TicketLineItems,
+			},
+		)
+	default:
+		err = errbdr.NewErrUnsupportedStateTransition(t, t.State)
+	}
+
+	return
+}
+
 func (t *Ticket) Apply(event interface{}) error {
 	switch e := event.(type) {
 	case TicketCreated:
@@ -76,6 +136,12 @@ func (t *Ticket) Apply(event interface{}) error {
 		return t.applyTicketCancelled(e)
 	case TicketConfirmed:
 		return t.applyTicketConfirmed(e)
+	case TicketRevisionBegan:
+		return t.applyTicketRevisionBegan(e)
+	case UndoTicketRevisionBegan:
+		return t.applyUndoTicketRevisionBegan(e)
+	case TicketRevisionConfirmed:
+		return t.applyTicketRevisionConfirmed(e)
 	default:
 		return errbdr.NewErrUnknownParams(t.Apply, e)
 	}
@@ -86,22 +152,42 @@ func (t *Ticket) applyTicketCreated(event TicketCreated) error {
 	t.RestaurantId = event.RestaurantId
 	t.TicketLineItems = event.TicketLineItems
 
-	t.State = TicketState_CreatePending
 	t.PreviousState = TicketState_CreatePending
+	t.State = TicketState_CreatePending
 
 	return nil
 }
 
 func (t *Ticket) applyTicketCancelled(event TicketCancelled) error {
-	t.State = TicketState_Canceled
 	t.PreviousState = t.State
+	t.State = TicketState_Canceled
 
 	return nil
 }
 
 func (t *Ticket) applyTicketConfirmed(event TicketConfirmed) error {
-	t.State = TicketState_Preparing
 	t.PreviousState = t.State
+	t.State = TicketState_AwaitingAcceptance
+
+	return nil
+}
+
+func (t *Ticket) applyTicketRevisionBegan(event TicketRevisionBegan) error {
+	t.PreviousState = t.State
+	t.State = TicketState_RevisionPending
+
+	return nil
+}
+
+func (t *Ticket) applyUndoTicketRevisionBegan(event UndoTicketRevisionBegan) error {
+	t.State = t.PreviousState
+
+	return nil
+}
+
+func (t *Ticket) applyTicketRevisionConfirmed(event TicketRevisionConfirmed) error {
+	t.State = t.PreviousState
+	t.TicketLineItems = event.TicketLineItems
 
 	return nil
 }

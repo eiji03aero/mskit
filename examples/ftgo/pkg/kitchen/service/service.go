@@ -34,9 +34,20 @@ func (s *service) CreateTicket(cmd ticketdmn.CreateTicket) (id string, err error
 	return
 }
 
+func (s *service) GetTicket(id string) (ticket *ticketdmn.Ticket, err error) {
+	ticket = &ticketdmn.Ticket{}
+
+	err = s.eventRepository.Load(id, ticket)
+	if err != nil {
+		return
+	}
+
+	logger.PrintResourceGet(ticket)
+	return
+}
+
 func (s *service) CancelTicket(cmd ticketdmn.CancelTicket) (err error) {
-	ticket := &ticketdmn.Ticket{}
-	err = s.eventRepository.Load(cmd.Id, ticket)
+	ticket, err := s.GetTicket(cmd.Id)
 	if err != nil {
 		return
 	}
@@ -48,8 +59,7 @@ func (s *service) CancelTicket(cmd ticketdmn.CancelTicket) (err error) {
 }
 
 func (s *service) ConfirmTicket(cmd ticketdmn.ConfirmTicket) (err error) {
-	ticket := &ticketdmn.Ticket{}
-	err = s.eventRepository.Load(cmd.Id, ticket)
+	ticket, err := s.GetTicket(cmd.Id)
 	if err != nil {
 		return
 	}
@@ -57,5 +67,41 @@ func (s *service) ConfirmTicket(cmd ticketdmn.ConfirmTicket) (err error) {
 	err = s.eventRepository.ExecuteCommand(ticket, cmd)
 
 	logger.PrintResource(ticket, "confirmed ticket")
+	return
+}
+
+func (s *service) BeginReviseTicket(cmd ticketdmn.BeginReviseTicket) (err error) {
+	ticket, err := s.GetTicket(cmd.Id)
+	if err != nil {
+		return
+	}
+
+	err = s.eventRepository.ExecuteCommand(ticket, cmd)
+
+	logger.PrintResource(ticket, "begin revise ticket")
+	return
+}
+
+func (s *service) UndoBeginReviseTicket(cmd ticketdmn.UndoBeginReviseTicket) (err error) {
+	ticket, err := s.GetTicket(cmd.Id)
+	if err != nil {
+		return
+	}
+
+	err = s.eventRepository.ExecuteCommand(ticket, cmd)
+
+	logger.PrintResource(ticket, "undo begin revise ticket")
+	return
+}
+
+func (s *service) ConfirmReviseTicket(cmd ticketdmn.ConfirmReviseTicket) (err error) {
+	ticket, err := s.GetTicket(cmd.Id)
+	if err != nil {
+		return
+	}
+
+	err = s.eventRepository.ExecuteCommand(ticket, cmd)
+
+	logger.PrintResource(ticket, "confirm revise ticket")
 	return
 }

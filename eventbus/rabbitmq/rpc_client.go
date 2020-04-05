@@ -1,6 +1,8 @@
 package rabbitmq
 
 import (
+	"errors"
+
 	"github.com/eiji03aero/mskit/utils"
 	"github.com/streadway/amqp"
 )
@@ -72,6 +74,15 @@ func (rc *RPCClient) Exec() (delivery amqp.Delivery, err error) {
 			delivery = d
 			break
 		}
+	}
+
+	if !IsSuccessResponse(delivery) {
+		errMsg := getErrorMessage(delivery)
+		if errMsg == "" {
+			errMsg = "rpc failed"
+		}
+
+		err = errors.New(errMsg)
 	}
 
 	return

@@ -12,6 +12,7 @@ type service struct {
 	restaurantRepository *restaurantrepo.Repository
 
 	createOrderSagaManager mskit.SagaManager
+	reviseOrderSagaManager mskit.SagaManager
 }
 
 func New(
@@ -26,6 +27,8 @@ func New(
 
 func (s *service) InjectSagaManagers(
 	createOrderSagaManager mskit.SagaManager,
+	reviseOrderSagaManager mskit.SagaManager,
 ) {
 	s.createOrderSagaManager = createOrderSagaManager
+	s.reviseOrderSagaManager = reviseOrderSagaManager
 }

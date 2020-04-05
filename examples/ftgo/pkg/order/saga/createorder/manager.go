@@ -2,12 +2,13 @@ package createorder
 
 import (
 	orderroot "order"
+	orderdmn "order/domain/order"
 
 	"github.com/eiji03aero/mskit"
 )
 
 type client struct {
-	repository      *mskit.SagaRepository
+	sagaRepository  *mskit.SagaRepository
 	service         orderroot.Service
 	orderProxy      orderroot.OrderProxy
 	consumerProxy   orderroot.ConsumerProxy
@@ -16,7 +17,7 @@ type client struct {
 }
 
 func NewManager(
-	repository *mskit.SagaRepository,
+	sagaRepository *mskit.SagaRepository,
 	svc orderroot.Service,
 	opxy orderroot.OrderProxy,
 	cpxy orderroot.ConsumerProxy,
@@ -24,7 +25,7 @@ func NewManager(
 	apxy orderroot.AccountingProxy,
 ) mskit.SagaManager {
 	c := &client{
-		repository:      repository,
+		sagaRepository:  sagaRepository,
 		service:         svc,
 		orderProxy:      opxy,
 		consumerProxy:   cpxy,
@@ -72,7 +73,7 @@ func NewManager(
 	}
 
 	return mskit.NewSagaManager(
-		repository,
+		sagaRepository,
 		definition,
 		state{},
 	)
@@ -126,7 +127,7 @@ func (c *client) createTicketE(si *mskit.SagaInstance) (err error) {
 
 	ticketId, err := c.kitchenProxy.CreateTicket(
 		order.RestaurantId,
-		order.OrderLineItems.LineItems,
+		order.OrderLineItems,
 	)
 	if err != nil {
 		return
@@ -134,7 +135,15 @@ func (c *client) createTicketE(si *mskit.SagaInstance) (err error) {
 
 	sagaState.TicketId = ticketId
 	si.Data = sagaState
-	err = c.repository.Update(si)
+	err = c.sagaRepository.Update(si)
+	if err != nil {
+		return
+	}
+
+	err = c.service.HandleTicketCreated(orderdmn.HandleTicketCreated{
+		Id:       sagaState.OrderId,
+		TicketId: sagaState.TicketId,
+	})
 	if err != nil {
 		return
 	}

@@ -70,3 +70,76 @@ func (p *proxy) ApproveOrder(id string) (err error) {
 
 	return
 }
+
+func (p *proxy) BeginReviseOrder(id string) (err error) {
+	logger.PrintFuncCall(p.BeginReviseOrder, id)
+
+	cmdJson, err := json.Marshal(orderdmn.BeginReviseOrder{
+		Id: id,
+	})
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "order.rpc.begin-revise-order",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+
+	return
+}
+
+func (p *proxy) UndoBeginReviseOrder(id string) (err error) {
+	logger.PrintFuncCall(p.UndoBeginReviseOrder, id)
+
+	cmdJson, err := json.Marshal(orderdmn.UndoBeginReviseOrder{
+		Id: id,
+	})
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "order.rpc.undo-begin-revise-order",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+
+	return
+}
+
+func (p *proxy) ConfirmReviseOrder(id string, orderLineItems orderdmn.OrderLineItems) (err error) {
+	logger.PrintFuncCall(p.ConfirmReviseOrder, id)
+
+	cmdJson, err := json.Marshal(orderdmn.ConfirmReviseOrder{
+		Id:             id,
+		OrderLineItems: orderLineItems,
+	})
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "order.rpc.confirm-revise-order",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+
+	return
+}

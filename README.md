@@ -3,19 +3,15 @@
 
 # Todo
 - review namings
-  - none for now
-
-- cli
-  - generate saga
-
-- saga
-  - cancelorder saga
+  - Compensation to SagaStepCompensateOption
 
 - refactor
   - try simplify the initialization in cmd/app :(
   - logging
     - should add logging on
       - publish, consume, rpcendpoint, rpcclient
+    - cover missing case
+      - when forgot to add event to registry
   - should think about how eventstore and sagastore dealing with restoring data from json
   - registry could be utilized more?
 
@@ -39,6 +35,7 @@
 # Concerns
 - better implementation for saga?
   - should remain to be flexible (capable of using messaging/http/grpc)
+- better way to detect not found on aggregates load with mongo
 
 # Features
 - Event sourcing

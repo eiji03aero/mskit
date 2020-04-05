@@ -13,6 +13,7 @@ fi
 res_file="./response.txt"
 debug_options="--dump-header -"
 post_options="-X POST"
+patch_options="-X PATCH"
 save_res_options="-s -o $res_file"
 
 command="${1}"
@@ -21,7 +22,7 @@ show-response-body () {
   echo $(cat $res_file)
 }
 
-value-or-get () {
+get-by-key-or-value () {
   key=$1
   value=$2
 
@@ -46,8 +47,8 @@ if [ $command = "seed" ]; then
   ./mock-commands.sh createOrder
 
 elif [ $command = "createOrder" ]; then
-  restaurant_id=$(value-or-get restaurant_id $2)
-  consumer_id=$(value-or-get consumer_id $3)
+  restaurant_id=$(get-by-key-or-value restaurant_id $2)
+  consumer_id=$(get-by-key-or-value consumer_id $3)
   curl $post_options $debug_options $save_res_options \
     -d $(printf '%s' $(cat <<- EOF
       {
@@ -73,6 +74,21 @@ elif [ $command = "getOrder" ]; then
   curl $debug_options \
     ftgo-order:3000/orders/$2
 
+elif [ $command = "reviseOrder" ]; then
+  order_id=$(get-by-key-or-value order_id $3)
+  curl $patch_options $debug_options \
+    -d $(printf '%s' $(cat <<- EOF
+      {
+        "order_line_items": {
+          "line_items": [
+            { "menu_item_id": "awesome-papas", "quantity": 8 }
+          ]
+        }
+      }
+EOF
+    )) \
+    ftgo-order:3000/orders/$order_id
+
 elif [ $command = "createRestaurant" ]; then
   curl $post_options $debug_options $save_res_options \
     -d '
@@ -91,7 +107,7 @@ elif [ $command = "createRestaurant" ]; then
   store-id-from-file restaurant_id
 
 elif [ $command = "getRestaurant" ]; then
-  id=$(value-or-get restaurant_id $2)
+  id=$(get-by-key-or-value restaurant_id $2)
   curl $debug_options \
     ftgo-order:3000/restaurants/$id
 
@@ -107,7 +123,7 @@ elif [ $command = "createConsumer" ]; then
   store-id-from-file consumer_id
 
 elif [ $command = "getConsumer" ]; then
-  id=$(value-or-get consumer_id $2)
+  id=$(get-by-key-or-value consumer_id $2)
   curl $debug_options \
     ftgo-consumer:3003/consumers/$id
 fi

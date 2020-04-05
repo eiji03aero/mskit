@@ -16,3 +16,26 @@ type RejectOrder struct {
 type ApproveOrder struct {
 	Id string `json:"id"`
 }
+
+type ReviseOrder struct {
+	Id             string         `json:"id"`
+	OrderLineItems OrderLineItems `json:"order_line_items"`
+}
+
+type BeginReviseOrder struct {
+	Id string `json:"id"`
+}
+
+type UndoBeginReviseOrder struct {
+	Id string `json:"id"`
+}
+
+type HandleTicketCreated struct {
+	Id       string `json:"id"`
+	TicketId string `json:"ticket_id"`
+}
+
+type ConfirmReviseOrder struct {
+	Id             string         `json:"id"`
+	OrderLineItems OrderLineItems `json:"order_line_items"`
+}

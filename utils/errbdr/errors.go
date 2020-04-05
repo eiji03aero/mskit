@@ -25,3 +25,8 @@ func NewErrDataNotFound(v interface{}, id interface{}) error {
 	dataName := utils.GetTypeName(v)
 	return fmt.Errorf("Not found: dataName=%s id=%v", dataName, id)
 }
+
+func NewErrUnsupportedStateTransition(obj interface{}, state interface{}) error {
+	objName := utils.GetTypeName(obj)
+	return fmt.Errorf("Unsupported state transition: obj=%s state=%v", objName, state)
+}

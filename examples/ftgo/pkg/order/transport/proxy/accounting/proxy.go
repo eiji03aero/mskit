@@ -2,7 +2,6 @@ package accounting
 
 import (
 	"encoding/json"
-	"errors"
 	"order"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
@@ -33,7 +32,7 @@ func (p *proxy) Authorize(consumerId string) (err error) {
 		return
 	}
 
-	delivery, err := p.client.NewRPCClient().
+	_, err = p.client.NewRPCClient().
 		Configure(
 			rabbitmq.PublishArgs{
 				RoutingKey: "accounting.rpc.authorize",
@@ -44,11 +43,6 @@ func (p *proxy) Authorize(consumerId string) (err error) {
 		).
 		Exec()
 	if err != nil {
-		return
-	}
-
-	if !rabbitmq.IsSuccessResponse(delivery) {
-		err = errors.New("authorize failed")
 		return
 	}
 

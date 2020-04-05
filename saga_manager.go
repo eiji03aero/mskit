@@ -122,7 +122,7 @@ func (sm *sagaManager) executeStep(si *SagaInstance) (err error) {
 		step := sm.sagaDefinition.Get(si.StepIndex)
 
 		if !si.checkStepHasHandler(step) {
-			logger.PrintFuncCall(sm.executeStep, logger.RedString("skipping"), si)
+			logger.PrintFuncCall(sm.executeStep, logger.YellowString("skipping, since no handler to execute"), si)
 			// skip if step does not have handler
 			si.shiftIndex()
 			continue

@@ -19,3 +19,7 @@ func CyanString(s string, rest ...interface{}) string {
 func GreenString(s string, rest ...interface{}) string {
 	return color.GreenString(s, rest...)
 }
+
+func YellowString(s string, rest ...interface{}) string {
+	return color.YellowString(s, rest...)
+}

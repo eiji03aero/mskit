@@ -97,11 +97,11 @@ func (si *SagaInstance) executeStepHandler(step *SagaStep) (err error) {
 	switch si.State {
 	case SagaInstanceState_Processing:
 		funcName := utils.GetFunctionNameParent(step.executeHandler)
-		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("executing"), logger.CyanString(funcName), si)
+		logger.PrintFuncCall(si.executeStepHandler, logger.YellowString("executing"), logger.CyanString(funcName), si)
 		err = step.executeHandler(si)
 	case SagaInstanceState_Aborting:
 		funcName := utils.GetFunctionNameParent(step.compensationHandler)
-		logger.PrintFuncCall(si.executeStepHandler, logger.RedString("compensating"), logger.CyanString(funcName), si)
+		logger.PrintFuncCall(si.executeStepHandler, logger.YellowString("compensating"), logger.CyanString(funcName), si)
 		err = step.compensationHandler(si)
 	default:
 		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)

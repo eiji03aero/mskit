@@ -16,3 +16,20 @@ type OrderRejected struct {
 type OrderApproved struct {
 	Id string `json:"id"`
 }
+
+type OrderRevisionBegan struct {
+	Id string `json:"id"`
+}
+
+type UndoOrderRevisionBegan struct {
+	Id string `json:"id"`
+}
+
+type OrderRevisionConfirmed struct {
+	Id             string         `json:"id"`
+	OrderLineItems OrderLineItems `json:"order_line_items"`
+}
+
+type OrderTicketIdSet struct {
+	TicketId string `json:"ticket_id"`
+}

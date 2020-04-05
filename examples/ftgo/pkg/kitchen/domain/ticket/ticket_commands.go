@@ -13,3 +13,17 @@ type CancelTicket struct {
 type ConfirmTicket struct {
 	Id string `json:"id"`
 }
+
+type BeginReviseTicket struct {
+	Id              string          `json:"id"`
+	TicketLineItems TicketLineItems `json:"ticket_line_items"`
+}
+
+type UndoBeginReviseTicket struct {
+	Id string `json:"id"`
+}
+
+type ConfirmReviseTicket struct {
+	Id              string          `json:"id"`
+	TicketLineItems TicketLineItems `json:"ticket_line_items"`
+}

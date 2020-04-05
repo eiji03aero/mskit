@@ -27,6 +27,9 @@ func (re *rpcEndpoint) Run() (err error) {
 	go re.runCreateTicket()
 	go re.runCancelTicket()
 	go re.runConfirmTicket()
+	go re.runBeginReviseTicket()
+	go re.runUndoBeginReviseTicket()
+	go re.runConfirmReviseTicket()
 
 	return
 }
@@ -44,12 +47,12 @@ func (re *rpcEndpoint) runCreateTicket() {
 			cmd := ticketdmn.CreateTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			ticketId, err := re.service.CreateTicket(cmd)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			response := struct {
@@ -59,7 +62,7 @@ func (re *rpcEndpoint) runCreateTicket() {
 			}
 			resJson, err := json.Marshal(response)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			p.Body = resJson
@@ -82,12 +85,12 @@ func (re *rpcEndpoint) runCancelTicket() {
 			cmd := ticketdmn.CancelTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			err = re.service.CancelTicket(cmd)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			return rabbitmq.MakeSuccessResponse(p)
@@ -108,12 +111,90 @@ func (re *rpcEndpoint) runConfirmTicket() {
 			cmd := ticketdmn.ConfirmTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			err = re.service.ConfirmTicket(cmd)
 			if err != nil {
-				return rabbitmq.MakeFailResponse(p)
+				return rabbitmq.MakeFailResponse(p, err)
+			}
+
+			return rabbitmq.MakeSuccessResponse(p)
+		}).
+		Exec()
+}
+
+func (re *rpcEndpoint) runBeginReviseTicket() {
+	re.client.NewRPCEndpoint().
+		Configure(
+			rabbitmq.QueueOption{
+				Name: "kitchen.rpc.begin-revise-ticket",
+			},
+		).
+		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
+			logger.PrintFuncCall(re.runBeginReviseTicket, d.Body)
+
+			cmd := ticketdmn.BeginReviseTicket{}
+			err := json.Unmarshal(d.Body, &cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p, err)
+			}
+
+			err = re.service.BeginReviseTicket(cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p, err)
+			}
+
+			return rabbitmq.MakeSuccessResponse(p)
+		}).
+		Exec()
+}
+
+func (re *rpcEndpoint) runUndoBeginReviseTicket() {
+	re.client.NewRPCEndpoint().
+		Configure(
+			rabbitmq.QueueOption{
+				Name: "kitchen.rpc.undo-begin-revise-ticket",
+			},
+		).
+		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
+			logger.PrintFuncCall(re.runUndoBeginReviseTicket, d.Body)
+
+			cmd := ticketdmn.UndoBeginReviseTicket{}
+			err := json.Unmarshal(d.Body, &cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p, err)
+			}
+
+			err = re.service.UndoBeginReviseTicket(cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p, err)
+			}
+
+			return rabbitmq.MakeSuccessResponse(p)
+		}).
+		Exec()
+}
+
+func (re *rpcEndpoint) runConfirmReviseTicket() {
+	re.client.NewRPCEndpoint().
+		Configure(
+			rabbitmq.QueueOption{
+				Name: "kitchen.rpc.confirm-revise-ticket",
+			},
+		).
+		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
+			logger.PrintFuncCall(re.runConfirmReviseTicket, d.Body)
+
+			cmd := ticketdmn.ConfirmReviseTicket{}
+			err := json.Unmarshal(d.Body, &cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p, err)
+			}
+
+			err = re.service.ConfirmReviseTicket(cmd)
+			if err != nil {
+				return rabbitmq.MakeFailResponse(p, err)
 			}
 
 			return rabbitmq.MakeSuccessResponse(p)

@@ -23,17 +23,18 @@ func New(c *rabbitmq.Client) order.KitchenProxy {
 
 func (p *proxy) CreateTicket(
 	restaurantId string,
-	lineItems []orderdmn.OrderLineItem,
+	orderLineItems orderdmn.OrderLineItems,
 ) (ticketId string, err error) {
-	logger.PrintFuncCall(p.CreateTicket, restaurantId, lineItems)
-
 	reqBody := struct {
-		Id        string                   `json:"restaurant_id"`
-		LineItems []orderdmn.OrderLineItem `json:"line_items"`
+		Id              string                  `json:"restaurant_id"`
+		TicketLineItems orderdmn.OrderLineItems `json:"ticket_line_items"`
 	}{
-		Id:        restaurantId,
-		LineItems: lineItems,
+		Id:              restaurantId,
+		TicketLineItems: orderLineItems,
 	}
+
+	logger.PrintFuncCall(p.CreateTicket, reqBody)
+
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
 		return
@@ -67,13 +68,14 @@ func (p *proxy) CreateTicket(
 }
 
 func (p *proxy) CancelTicket(id string) (err error) {
-	logger.PrintFuncCall(p.CancelTicket, id)
-
 	reqBody := struct {
 		Id string `json:"id"`
 	}{
 		Id: id,
 	}
+
+	logger.PrintFuncCall(p.CancelTicket, reqBody)
+
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
 		return
@@ -97,13 +99,14 @@ func (p *proxy) CancelTicket(id string) (err error) {
 }
 
 func (p *proxy) ConfirmTicket(id string) (err error) {
-	logger.PrintFuncCall(p.CancelTicket, id)
-
 	reqBody := struct {
 		Id string `json:"id"`
 	}{
 		Id: id,
 	}
+
+	logger.PrintFuncCall(p.CancelTicket, reqBody)
+
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
 		return
@@ -113,6 +116,103 @@ func (p *proxy) ConfirmTicket(id string) (err error) {
 		Configure(
 			rabbitmq.PublishArgs{
 				RoutingKey: "kitchen.rpc.confirm-ticket",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (p *proxy) BeginReviseTicket(ticketId string, orderLineItems orderdmn.OrderLineItems) (err error) {
+	reqBody := struct {
+		Id              string                  `json:"id"`
+		TicketLineItems orderdmn.OrderLineItems `json:"ticket_line_items"`
+	}{
+		Id:              ticketId,
+		TicketLineItems: orderLineItems,
+	}
+
+	logger.PrintFuncCall(p.BeginReviseTicket, reqBody)
+
+	cmdJson, err := json.Marshal(reqBody)
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "kitchen.rpc.begin-revise-ticket",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (p *proxy) UndoBeginReviseTicket(ticketId string) (err error) {
+	reqBody := struct {
+		Id string `json:"id"`
+	}{
+		Id: ticketId,
+	}
+
+	logger.PrintFuncCall(p.BeginReviseTicket, reqBody)
+
+	cmdJson, err := json.Marshal(reqBody)
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "kitchen.rpc.undo-begin-revise-ticket",
+				Publishing: amqp.Publishing{
+					Body: cmdJson,
+				},
+			},
+		).
+		Exec()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (p *proxy) ConfirmReviseTicket(ticketId string, orderLineItems orderdmn.OrderLineItems) (err error) {
+	reqBody := struct {
+		Id              string                  `json:"id"`
+		TicketLineItems orderdmn.OrderLineItems `json:"ticket_line_items"`
+	}{
+		Id:              ticketId,
+		TicketLineItems: orderLineItems,
+	}
+
+	logger.PrintFuncCall(p.BeginReviseTicket, reqBody)
+
+	cmdJson, err := json.Marshal(reqBody)
+	if err != nil {
+		return
+	}
+
+	_, err = p.client.NewRPCClient().
+		Configure(
+			rabbitmq.PublishArgs{
+				RoutingKey: "kitchen.rpc.confirm-revise-ticket",
 				Publishing: amqp.Publishing{
 					Body: cmdJson,
 				},

@@ -5,7 +5,7 @@ type TicketState int
 const (
 	TicketState_Unknown TicketState = iota
 	TicketState_CreatePending
-	TicketState_Awaiting_Acceptance
+	TicketState_AwaitingAcceptance
 	TicketState_Accepted
 	TicketState_Preparing
 	TicketState_ReadyForPickup

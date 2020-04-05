@@ -3,17 +3,14 @@
 
 # Todo
 - review namings
-  - Compensation to SagaStepCompensateOption
+  - none
 
 - refactor
   - try simplify the initialization in cmd/app :(
-  - logging
-    - should add logging on
-      - publish, consume, rpcendpoint, rpcclient
-    - cover missing case
-      - when forgot to add event to registry
+    - gave up for now
   - should think about how eventstore and sagastore dealing with restoring data from json
   - registry could be utilized more?
+    - put it in utils
 
 - rpc
   - add timeout
@@ -66,4 +63,7 @@ $ mskit generate publisher
 
 # generate consumer
 $ mskit generate consumer
+
+# generate saga
+$ mskit generate saga CreateOrder
 ```

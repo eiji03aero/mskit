@@ -17,7 +17,7 @@ type publisher struct {
 	client *rabbitmq.Client
 }
 
-func New(c *rabbitmq.Client) mskit.DomainEventPublisher {
+func New(c *rabbitmq.Client) mskit.EventPublisher {
 	return &publisher{
 		client: c,
 	}

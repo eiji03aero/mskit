@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -55,6 +56,12 @@ func (rs *RPCEndpoint) Exec() (err error) {
 	}
 
 	for d := range msgs {
+		logger.Println(
+			logger.YellowString("RPCEndpoint received request:"),
+			logger.CyanString(rs.QueueOption.Name),
+			d.Body,
+		)
+
 		publishing := rs.DeliveryHandler(d)
 		publishing.CorrelationId = d.CorrelationId
 		err = Publish(channel, "", PublishArgs{

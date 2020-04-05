@@ -24,8 +24,8 @@ type SagaStepExecuteOption struct {
 	Handler SagaStepHandler
 }
 
-// SagaStepCompensationOption is struct to set compensationHandler in SagaStep
-type SagaStepCompensationOption struct {
+// SagaStepCompensateOption is struct to set compensationHandler in SagaStep
+type SagaStepCompensateOption struct {
 	Handler SagaStepHandler
 }
 
@@ -35,7 +35,7 @@ func (sa *SagaStep) Configure(opts ...interface{}) {
 		switch o := opt.(type) {
 		case SagaStepExecuteOption:
 			sa.executeHandler = o.Handler
-		case SagaStepCompensationOption:
+		case SagaStepCompensateOption:
 			sa.compensationHandler = o.Handler
 		default:
 			panic(errbdr.NewErrUnknownParams(sa.Configure, o))

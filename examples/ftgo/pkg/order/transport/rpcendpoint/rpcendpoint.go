@@ -7,7 +7,6 @@ import (
 	orderdmn "order/domain/order"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -40,8 +39,6 @@ func (re *rpcEndpoint) runRejectOrder() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runRejectOrder, string(d.Body))
-
 			command := orderdmn.RejectOrder{}
 			err := json.Unmarshal(d.Body, &command)
 			if err != nil {
@@ -66,8 +63,6 @@ func (re *rpcEndpoint) runApproveOrder() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runApproveOrder, string(d.Body))
-
 			command := orderdmn.ApproveOrder{}
 			err := json.Unmarshal(d.Body, &command)
 			if err != nil {
@@ -92,8 +87,6 @@ func (re *rpcEndpoint) runBeginReviseOrder() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runBeginReviseOrder, string(d.Body))
-
 			command := orderdmn.BeginReviseOrder{}
 			err := json.Unmarshal(d.Body, &command)
 			if err != nil {
@@ -118,8 +111,6 @@ func (re *rpcEndpoint) runUndoBeginReviseOrder() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runUndoBeginReviseOrder, string(d.Body))
-
 			command := orderdmn.UndoBeginReviseOrder{}
 			err := json.Unmarshal(d.Body, &command)
 			if err != nil {
@@ -144,8 +135,6 @@ func (re *rpcEndpoint) runConfirmReviseOrder() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runConfirmReviseOrder, string(d.Body))
-
 			command := orderdmn.ConfirmReviseOrder{}
 			err := json.Unmarshal(d.Body, &command)
 			if err != nil {

@@ -34,7 +34,7 @@ func NewManager(
 			mskit.SagaStepExecuteOption{
 				Handler: c.beginReviseOrderE,
 			},
-			mskit.SagaStepCompensationOption{
+			mskit.SagaStepCompensateOption{
 				Handler: c.beginReviseOrderC,
 			},
 		).
@@ -42,7 +42,7 @@ func NewManager(
 			mskit.SagaStepExecuteOption{
 				Handler: c.beginReviseTicketE,
 			},
-			mskit.SagaStepCompensationOption{
+			mskit.SagaStepCompensateOption{
 				Handler: c.beginReviseTicketC,
 			},
 		).

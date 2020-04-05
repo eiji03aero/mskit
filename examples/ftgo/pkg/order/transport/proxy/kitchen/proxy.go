@@ -7,7 +7,6 @@ import (
 	orderdmn "order/domain/order"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -32,8 +31,6 @@ func (p *proxy) CreateTicket(
 		Id:              restaurantId,
 		TicketLineItems: orderLineItems,
 	}
-
-	logger.PrintFuncCall(p.CreateTicket, reqBody)
 
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
@@ -74,8 +71,6 @@ func (p *proxy) CancelTicket(id string) (err error) {
 		Id: id,
 	}
 
-	logger.PrintFuncCall(p.CancelTicket, reqBody)
-
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
 		return
@@ -104,8 +99,6 @@ func (p *proxy) ConfirmTicket(id string) (err error) {
 	}{
 		Id: id,
 	}
-
-	logger.PrintFuncCall(p.CancelTicket, reqBody)
 
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
@@ -138,8 +131,6 @@ func (p *proxy) BeginReviseTicket(ticketId string, orderLineItems orderdmn.Order
 		TicketLineItems: orderLineItems,
 	}
 
-	logger.PrintFuncCall(p.BeginReviseTicket, reqBody)
-
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
 		return
@@ -168,8 +159,6 @@ func (p *proxy) UndoBeginReviseTicket(ticketId string) (err error) {
 	}{
 		Id: ticketId,
 	}
-
-	logger.PrintFuncCall(p.BeginReviseTicket, reqBody)
 
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
@@ -201,8 +190,6 @@ func (p *proxy) ConfirmReviseTicket(ticketId string, orderLineItems orderdmn.Ord
 		Id:              ticketId,
 		TicketLineItems: orderLineItems,
 	}
-
-	logger.PrintFuncCall(p.BeginReviseTicket, reqBody)
 
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {

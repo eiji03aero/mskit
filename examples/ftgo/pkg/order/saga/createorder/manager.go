@@ -35,7 +35,7 @@ func NewManager(
 
 	definition, err := mskit.NewSagaDefinitionBuilder().
 		Step(
-			mskit.SagaStepCompensationOption{
+			mskit.SagaStepCompensateOption{
 				Handler: c.rejectOrderC,
 			},
 		).
@@ -48,7 +48,7 @@ func NewManager(
 			mskit.SagaStepExecuteOption{
 				Handler: c.createTicketE,
 			},
-			mskit.SagaStepCompensationOption{
+			mskit.SagaStepCompensateOption{
 				Handler: c.createTicketC,
 			},
 		).

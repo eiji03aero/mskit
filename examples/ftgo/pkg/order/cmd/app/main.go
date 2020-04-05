@@ -61,7 +61,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	eventRepository := mskit.NewEventRepository(eventStore, &mskit.StubDomainEventPublisher{})
+	eventRepository := mskit.NewEventRepository(eventStore, &mskit.StubEventPublisher{})
 	sagaRepository := mskit.NewSagaRepository(sagaStore)
 	restaurantRepository := restaurantrepo.New(db)
 

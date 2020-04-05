@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -50,6 +51,11 @@ func (p *Publisher) Exec() error {
 		return err
 	}
 
+	logger.Println(
+		logger.YellowString("Publishing message:"),
+		logger.CyanString(p.PublishArgs.RoutingKey),
+		p.PublishArgs.Publishing.Body,
+	)
 	err = Publish(channel, p.ExchangeOption.Name, p.PublishArgs)
 	if err != nil {
 		return err

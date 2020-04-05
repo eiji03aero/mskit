@@ -37,7 +37,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	erp := mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{})
+	erp := mskit.NewEventRepository(es, &mskit.StubEventPublisher{})
 
 	svc := service.New(erp)
 

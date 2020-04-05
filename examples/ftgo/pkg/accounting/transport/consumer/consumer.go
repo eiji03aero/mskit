@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -37,8 +36,6 @@ func (c *consumer) runConsumerCreated() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) {
-			logger.PrintFuncCall(c.runConsumerCreated, d.Body)
-
 			response := struct {
 				Id string `json:"id"`
 			}{}

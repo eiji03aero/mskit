@@ -40,7 +40,7 @@ func main() {
 	eventBusClient, err := rabbitmq.NewClient(rabbitmqOption)
 
 	svc := kitchensvc.New(
-		mskit.NewEventRepository(es, &mskit.StubDomainEventPublisher{}),
+		mskit.NewEventRepository(es, &mskit.StubEventPublisher{}),
 	)
 
 	err = rpcendpoint.New(eventBusClient, svc).Run()

@@ -8,7 +8,6 @@ import (
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
 	"github.com/eiji03aero/mskit/utils/errbdr"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -16,17 +15,13 @@ type publisher struct {
 	c *rabbitmq.Client
 }
 
-func New(c *rabbitmq.Client) mskit.DomainEventPublisher {
+func New(c *rabbitmq.Client) mskit.EventPublisher {
 	return &publisher{
 		c: c,
 	}
 }
 
 func (p *publisher) Publish(event interface{}) (err error) {
-	logger.PrintFuncCall(
-		p.Publish,
-	)
-
 	ej, err := json.Marshal(event)
 	if err != nil {
 		return

@@ -5,7 +5,6 @@ import (
 	"order"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -20,13 +19,12 @@ func New(c *rabbitmq.Client) order.AccountingProxy {
 }
 
 func (p *proxy) Authorize(consumerId string) (err error) {
-	logger.PrintFuncCall(p.Authorize, consumerId)
-
 	reqBody := struct {
 		ConsumerId string `json:"consumer_id"`
 	}{
 		ConsumerId: consumerId,
 	}
+
 	cmdJson, err := json.Marshal(reqBody)
 	if err != nil {
 		return

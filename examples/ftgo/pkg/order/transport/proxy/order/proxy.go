@@ -7,7 +7,6 @@ import (
 	orderdmn "order/domain/order"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -24,8 +23,6 @@ func New(
 }
 
 func (p *proxy) RejectOrder(id string) (err error) {
-	logger.PrintFuncCall(p.RejectOrder, id)
-
 	cmdJson, err := json.Marshal(orderdmn.RejectOrder{
 		Id: id,
 	})
@@ -48,8 +45,6 @@ func (p *proxy) RejectOrder(id string) (err error) {
 }
 
 func (p *proxy) ApproveOrder(id string) (err error) {
-	logger.PrintFuncCall(p.ApproveOrder, id)
-
 	cmdJson, err := json.Marshal(orderdmn.ApproveOrder{
 		Id: id,
 	})
@@ -72,8 +67,6 @@ func (p *proxy) ApproveOrder(id string) (err error) {
 }
 
 func (p *proxy) BeginReviseOrder(id string) (err error) {
-	logger.PrintFuncCall(p.BeginReviseOrder, id)
-
 	cmdJson, err := json.Marshal(orderdmn.BeginReviseOrder{
 		Id: id,
 	})
@@ -96,8 +89,6 @@ func (p *proxy) BeginReviseOrder(id string) (err error) {
 }
 
 func (p *proxy) UndoBeginReviseOrder(id string) (err error) {
-	logger.PrintFuncCall(p.UndoBeginReviseOrder, id)
-
 	cmdJson, err := json.Marshal(orderdmn.UndoBeginReviseOrder{
 		Id: id,
 	})
@@ -120,8 +111,6 @@ func (p *proxy) UndoBeginReviseOrder(id string) (err error) {
 }
 
 func (p *proxy) ConfirmReviseOrder(id string, orderLineItems orderdmn.OrderLineItems) (err error) {
-	logger.PrintFuncCall(p.ConfirmReviseOrder, id)
-
 	cmdJson, err := json.Marshal(orderdmn.ConfirmReviseOrder{
 		Id:             id,
 		OrderLineItems: orderLineItems,

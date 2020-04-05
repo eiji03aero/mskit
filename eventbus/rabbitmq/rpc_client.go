@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -63,6 +64,11 @@ func (rc *RPCClient) Exec() (delivery amqp.Delivery, err error) {
 	rc.PublishArgs.Publishing.ReplyTo = replyQueue.Name
 	rc.PublishArgs.Publishing.CorrelationId = corrId
 
+	logger.Println(
+		logger.YellowString("RPCClient sending request:"),
+		logger.CyanString(rc.PublishArgs.RoutingKey),
+		rc.PublishArgs.Publishing.Body,
+	)
 	// Please take care of us default exchange, I'm too lazy :(
 	err = Publish(channel, "", rc.PublishArgs)
 	if err != nil {

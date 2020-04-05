@@ -10,14 +10,14 @@ import (
 
 type service struct {
 	eventRepository *mskit.EventRepository
-	publisher       mskit.DomainEventPublisher
+	publisher       mskit.EventPublisher
 }
 
 type Service interface {
 	CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id string, err error)
 }
 
-func New(r *mskit.EventRepository, p mskit.DomainEventPublisher) Service {
+func New(r *mskit.EventRepository, p mskit.EventPublisher) Service {
 	return &service{
 		eventRepository: r,
 		publisher:       p,

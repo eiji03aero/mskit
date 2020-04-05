@@ -7,7 +7,6 @@ import (
 	consumersvc "consumer/service"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -37,8 +36,6 @@ func (re *rpcEndpoint) runValidateOrder() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runValidateOrder, string(d.Body))
-
 			command := consumerdmn.ValidateOrder{}
 			err := json.Unmarshal(d.Body, &command)
 			if err != nil {

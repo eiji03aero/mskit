@@ -7,7 +7,6 @@ import (
 	restaurantdmn "order/domain/restaurant"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -24,8 +23,6 @@ func New(
 }
 
 func (p *proxy) ValidateOrder(orderId string, total int) (err error) {
-	logger.PrintFuncCall(p.ValidateOrder, orderId, total)
-
 	cmdJson, err := json.Marshal(restaurantdmn.ValidateOrder{
 		OrderId: orderId,
 		Total:   total,

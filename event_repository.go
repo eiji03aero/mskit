@@ -1,18 +1,13 @@
 package mskit
 
-import (
-	"github.com/eiji03aero/mskit/utils"
-	"github.com/eiji03aero/mskit/utils/logger"
-)
-
 // EventRepository manages Event
 type EventRepository struct {
 	eventStore EventStore
-	publisher  DomainEventPublisher
+	publisher  EventPublisher
 }
 
 // NewEventRepository creates new struct
-func NewEventRepository(eventStore EventStore, publisher DomainEventPublisher) *EventRepository {
+func NewEventRepository(eventStore EventStore, publisher EventPublisher) *EventRepository {
 	return &EventRepository{
 		eventStore: eventStore,
 		publisher:  publisher,
@@ -51,9 +46,6 @@ func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) e
 		if err != nil {
 			return err
 		}
-
-		eventName := utils.GetTypeName(e.Data)
-		logger.Println(logger.YellowString("Publishing event:"), logger.CyanString(eventName), e.Data)
 
 		err = r.publisher.Publish(e.Data)
 		if err != nil {

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -37,7 +36,6 @@ func (re *rpcEndpoint) runAuthorize() {
 			request := struct {
 				ConsumerId string `json:"consumer_id"`
 			}{}
-			logger.PrintFuncCall(re.runAuthorize, string(d.Body))
 
 			err := json.Unmarshal(d.Body, &request)
 			if err != nil {

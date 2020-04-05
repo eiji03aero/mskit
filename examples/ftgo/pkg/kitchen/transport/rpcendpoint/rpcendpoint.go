@@ -7,7 +7,6 @@ import (
 	ticketdmn "kitchen/domain/ticket"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -42,8 +41,6 @@ func (re *rpcEndpoint) runCreateTicket() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runCreateTicket, d.Body)
-
 			cmd := ticketdmn.CreateTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
@@ -80,8 +77,6 @@ func (re *rpcEndpoint) runCancelTicket() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runCancelTicket, d.Body)
-
 			cmd := ticketdmn.CancelTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
@@ -106,8 +101,6 @@ func (re *rpcEndpoint) runConfirmTicket() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runConfirmTicket, d.Body)
-
 			cmd := ticketdmn.ConfirmTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
@@ -132,8 +125,6 @@ func (re *rpcEndpoint) runBeginReviseTicket() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runBeginReviseTicket, d.Body)
-
 			cmd := ticketdmn.BeginReviseTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
@@ -158,8 +149,6 @@ func (re *rpcEndpoint) runUndoBeginReviseTicket() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runUndoBeginReviseTicket, d.Body)
-
 			cmd := ticketdmn.UndoBeginReviseTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {
@@ -184,8 +173,6 @@ func (re *rpcEndpoint) runConfirmReviseTicket() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.runConfirmReviseTicket, d.Body)
-
 			cmd := ticketdmn.ConfirmReviseTicket{}
 			err := json.Unmarshal(d.Body, &cmd)
 			if err != nil {

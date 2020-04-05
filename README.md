@@ -9,9 +9,6 @@
   - try simplify the initialization in cmd/app :(
     - gave up for now
 
-- refactor services
-  - align the structure
-
 - setup tests
   - unit tests
   - add comments on exporteds

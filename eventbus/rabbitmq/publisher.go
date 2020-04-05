@@ -52,7 +52,7 @@ func (p *Publisher) Exec() error {
 	}
 
 	logger.Println(
-		logger.YellowString("Publishing message:"),
+		logger.YellowString("Publish message"),
 		logger.CyanString(p.PublishArgs.RoutingKey),
 		p.PublishArgs.Publishing.Body,
 	)

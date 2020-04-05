@@ -7,7 +7,6 @@ import (
 	"{{ .PkgName }}"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -36,7 +35,6 @@ func (re *rpcEndpoint) sample() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) (p amqp.Publishing) {
-			logger.PrintFuncCall(re.sample, string(d.Body))
 			return rabbitmq.MakeSuccessResponse(p)
 		}).
 		Exec()

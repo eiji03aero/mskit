@@ -6,7 +6,6 @@ import (
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
-	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 type service struct {
@@ -30,7 +29,6 @@ func (s *service) CreateTicket(cmd ticketdmn.CreateTicket) (id string, err error
 
 	err = s.eventRepository.ExecuteCommand(ticket, cmd)
 
-	logger.PrintResourceCreated(ticket)
 	return
 }
 
@@ -42,7 +40,6 @@ func (s *service) GetTicket(id string) (ticket *ticketdmn.Ticket, err error) {
 		return
 	}
 
-	logger.PrintResourceGet(ticket)
 	return
 }
 
@@ -54,7 +51,6 @@ func (s *service) CancelTicket(cmd ticketdmn.CancelTicket) (err error) {
 
 	err = s.eventRepository.ExecuteCommand(ticket, cmd)
 
-	logger.PrintResource(ticket, "cancelled ticket")
 	return
 }
 
@@ -66,7 +62,6 @@ func (s *service) ConfirmTicket(cmd ticketdmn.ConfirmTicket) (err error) {
 
 	err = s.eventRepository.ExecuteCommand(ticket, cmd)
 
-	logger.PrintResource(ticket, "confirmed ticket")
 	return
 }
 
@@ -78,7 +73,6 @@ func (s *service) BeginReviseTicket(cmd ticketdmn.BeginReviseTicket) (err error)
 
 	err = s.eventRepository.ExecuteCommand(ticket, cmd)
 
-	logger.PrintResource(ticket, "begin revise ticket")
 	return
 }
 
@@ -90,7 +84,6 @@ func (s *service) UndoBeginReviseTicket(cmd ticketdmn.UndoBeginReviseTicket) (er
 
 	err = s.eventRepository.ExecuteCommand(ticket, cmd)
 
-	logger.PrintResource(ticket, "undo begin revise ticket")
 	return
 }
 
@@ -102,6 +95,5 @@ func (s *service) ConfirmReviseTicket(cmd ticketdmn.ConfirmReviseTicket) (err er
 
 	err = s.eventRepository.ExecuteCommand(ticket, cmd)
 
-	logger.PrintResource(ticket, "confirm revise ticket")
 	return
 }

@@ -5,7 +5,6 @@ import (
 	restaurantdmn "order/domain/restaurant"
 
 	"github.com/eiji03aero/mskit/utils/errbdr"
-	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func (s *service) CreateRestaurant(restaurant restaurantdmn.Restaurant) (err error) {
@@ -14,7 +13,6 @@ func (s *service) CreateRestaurant(restaurant restaurantdmn.Restaurant) (err err
 		return
 	}
 
-	logger.PrintResourceCreated(restaurant)
 	return
 }
 
@@ -24,7 +22,6 @@ func (s *service) GetRestaurant(id string) (restaurant *restaurantdmn.Restaurant
 		return
 	}
 
-	logger.PrintResourceGet(restaurant)
 	return
 }
 

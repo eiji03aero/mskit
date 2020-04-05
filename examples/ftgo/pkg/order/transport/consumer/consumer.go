@@ -38,8 +38,6 @@ func (c *consumer) runRestaurantCreated() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) {
-			logger.PrintFuncCall(c.runRestaurantCreated, d.Body)
-
 			var restaurant restaurantdmn.Restaurant
 			err := json.Unmarshal(d.Body, &restaurant)
 			if err != nil {

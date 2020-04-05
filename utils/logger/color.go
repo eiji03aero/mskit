@@ -8,8 +8,16 @@ func RedString(s string, rest ...interface{}) string {
 	return color.RedString(s, rest...)
 }
 
+func HiRedString(s string, rest ...interface{}) string {
+	return color.HiRedString(s, rest...)
+}
+
 func BlueString(s string, rest ...interface{}) string {
 	return color.BlueString(s, rest...)
+}
+
+func HiBlueString(s string, rest ...interface{}) string {
+	return color.HiBlueString(s, rest...)
 }
 
 func CyanString(s string, rest ...interface{}) string {

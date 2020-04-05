@@ -57,7 +57,7 @@ func (rs *RPCEndpoint) Exec() (err error) {
 
 	for d := range msgs {
 		logger.Println(
-			logger.YellowString("RPCEndpoint received request:"),
+			logger.YellowString("Receive rpc request"),
 			logger.CyanString(rs.QueueOption.Name),
 			d.Body,
 		)

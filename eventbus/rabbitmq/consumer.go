@@ -101,7 +101,11 @@ func (c *Consumer) Exec() (err error) {
 
 func (c *Consumer) handleDelivery(deliveries <-chan amqp.Delivery) {
 	for d := range deliveries {
-		logger.Println(logger.YellowString("Consuming delivery:"), logger.CyanString(d.RoutingKey), d.Body)
+		logger.Println(
+			logger.YellowString("Consume delivery"),
+			logger.CyanString(d.RoutingKey),
+			d.Body,
+		)
 		c.DeliveryHandler(d)
 	}
 	c.done <- nil

@@ -8,7 +8,6 @@ import (
 	accountdmn "accounting/domain/account"
 
 	"github.com/eiji03aero/mskit/utils"
-	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func (s *service) CreateAccount(cmd accountdmn.CreateAccount) (id string, err error) {
@@ -25,7 +24,6 @@ func (s *service) CreateAccount(cmd accountdmn.CreateAccount) (id string, err er
 		return
 	}
 
-	logger.PrintResourceCreated(accountAggregate)
 	return
 }
 

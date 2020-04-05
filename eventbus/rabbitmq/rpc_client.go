@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"errors"
+	"time"
 
 	"github.com/eiji03aero/mskit/utils"
 	"github.com/eiji03aero/mskit/utils/logger"
@@ -65,7 +66,7 @@ func (rc *RPCClient) Exec() (delivery amqp.Delivery, err error) {
 	rc.PublishArgs.Publishing.CorrelationId = corrId
 
 	logger.Println(
-		logger.YellowString("RPCClient sending request:"),
+		logger.YellowString("Send rpc request"),
 		logger.CyanString(rc.PublishArgs.RoutingKey),
 		rc.PublishArgs.Publishing.Body,
 	)
@@ -75,11 +76,27 @@ func (rc *RPCClient) Exec() (delivery amqp.Delivery, err error) {
 		return
 	}
 
-	for d := range msgs {
-		if corrId == d.CorrelationId {
-			delivery = d
-			break
+	deliveryChan := make(chan amqp.Delivery, 1)
+
+	go func() {
+		for d := range msgs {
+			if corrId == d.CorrelationId {
+				deliveryChan <- d
+				break
+			}
 		}
+	}()
+
+	select {
+	case delivery = <-deliveryChan:
+	case <-time.After(60 * time.Second):
+		err = errors.New("rpc request timed out")
+		logger.Println(
+			logger.RedString(err.Error()),
+			logger.CyanString(rc.PublishArgs.RoutingKey),
+			rc.PublishArgs.Publishing.Body,
+		)
+		return
 	}
 
 	if !IsSuccessResponse(delivery) {

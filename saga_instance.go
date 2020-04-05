@@ -43,7 +43,10 @@ func NewSagaInstance() (si *SagaInstance, err error) {
 
 func (si *SagaInstance) processResult(result *SagaStepResult) (err error) {
 	if result.Error != nil && si.State == SagaInstanceState_Processing {
-		logger.PrintFuncCall(si.processResult, logger.RedString("step failed, aborting. Error: "), result.Error.Error())
+		logger.Println(
+			logger.RedString("SagaStep failed, aborting"),
+			logger.HiRedString(result.Error.Error()),
+		)
 		si.State = SagaInstanceState_Aborting
 		// Need to return so that it wont run shiftIndex, since current step might have compensation
 		return
@@ -61,7 +64,7 @@ func (si *SagaInstance) shiftIndex() (err error) {
 	case SagaInstanceState_Aborting:
 		si.StepIndex--
 	default:
-		return fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)
+		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)
 	}
 	return
 }
@@ -70,11 +73,17 @@ func (si *SagaInstance) checkFinishState(lenSteps int) bool {
 	i := si.StepIndex
 	switch {
 	case i < 0:
-		logger.PrintFuncCall(si.checkFinishState, logger.RedString("saga aborted"), si)
+		logger.Println(
+			logger.RedString("Saga aborted"),
+			si,
+		)
 		si.State = SagaInstanceState_Aborted
 		return true
 	case i >= lenSteps:
-		logger.PrintFuncCall(si.checkFinishState, logger.GreenString("saga completed"), si)
+		logger.Println(
+			logger.GreenString("Saga completed"),
+			si,
+		)
 		si.State = SagaInstanceState_Completed
 		return true
 	default:
@@ -97,11 +106,19 @@ func (si *SagaInstance) executeStepHandler(step *SagaStep) (err error) {
 	switch si.State {
 	case SagaInstanceState_Processing:
 		funcName := utils.GetFunctionNameParent(step.executeHandler)
-		logger.PrintFuncCall(si.executeStepHandler, logger.YellowString("executing"), logger.CyanString(funcName), si)
+		logger.Println(
+			logger.HiBlueString("SagaInstance execute"),
+			logger.CyanString(funcName),
+			si,
+		)
 		err = step.executeHandler(si)
 	case SagaInstanceState_Aborting:
 		funcName := utils.GetFunctionNameParent(step.compensationHandler)
-		logger.PrintFuncCall(si.executeStepHandler, logger.YellowString("compensating"), logger.CyanString(funcName), si)
+		logger.Println(
+			logger.HiBlueString("SagaInstance compensate"),
+			logger.CyanString(funcName),
+			si,
+		)
 		err = step.compensationHandler(si)
 	default:
 		err = fmt.Errorf("inproper state for saga instance. id=%s state=%d", si.Id, si.State)

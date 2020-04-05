@@ -5,7 +5,6 @@ import (
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/utils"
-	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 type service struct {
@@ -38,6 +37,5 @@ func (s *service) CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id strin
 		return
 	}
 
-	logger.PrintResourceCreated(restaurant)
 	return
 }

@@ -7,7 +7,6 @@ import (
 	"order/saga/reviseorder"
 
 	"github.com/eiji03aero/mskit/utils"
-	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (id string, err error) {
@@ -37,7 +36,6 @@ func (s *service) CreateOrder(cmd orderdmn.CreateOrder) (id string, err error) {
 	sagaState := createorder.NewState(order.Id)
 	go s.createOrderSagaManager.Create(sagaState)
 
-	logger.PrintResourceCreated(order)
 	return
 }
 
@@ -45,7 +43,6 @@ func (s *service) GetOrder(id string) (*orderdmn.Order, error) {
 	order := &orderdmn.Order{}
 	err := s.eventRepository.Load(id, order)
 
-	logger.PrintResourceGet(order)
 	return order, err
 }
 
@@ -87,7 +84,6 @@ func (s *service) RejectOrder(cmd orderdmn.RejectOrder) (err error) {
 		return
 	}
 
-	logger.PrintResource(order, "rejected")
 	return
 }
 
@@ -102,7 +98,6 @@ func (s *service) ApproveOrder(cmd orderdmn.ApproveOrder) (err error) {
 		return
 	}
 
-	logger.PrintResource(order, "confirmed")
 	return
 }
 
@@ -115,7 +110,6 @@ func (s *service) ReviseOrder(cmd orderdmn.ReviseOrder) (err error) {
 	sagaState := reviseorder.NewState(order.Id, order.OrderLineItems)
 	go s.reviseOrderSagaManager.Create(sagaState)
 
-	logger.PrintResource(order, "revise")
 	return
 }
 
@@ -130,7 +124,6 @@ func (s *service) BeginReviseOrder(cmd orderdmn.BeginReviseOrder) (err error) {
 		return
 	}
 
-	logger.PrintResource(order, "revise began")
 	return
 }
 
@@ -145,7 +138,6 @@ func (s *service) UndoBeginReviseOrder(cmd orderdmn.UndoBeginReviseOrder) (err e
 		return
 	}
 
-	logger.PrintResource(order, "undo revise began")
 	return
 }
 
@@ -160,7 +152,6 @@ func (s *service) ConfirmReviseOrder(cmd orderdmn.ConfirmReviseOrder) (err error
 		return
 	}
 
-	logger.PrintResource(order, "confirm revise order")
 	return
 }
 
@@ -175,6 +166,5 @@ func (s *service) HandleTicketCreated(cmd orderdmn.HandleTicketCreated) (err err
 		return
 	}
 
-	logger.PrintResource(order, "handle ticket created")
 	return
 }

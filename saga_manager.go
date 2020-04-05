@@ -33,12 +33,15 @@ func NewSagaManager(sr *SagaRepository, sd *SagaDefinition, sss interface{}) *sa
 
 // Create creates new SagaInstance and triggers flow
 func (sm *sagaManager) Create(sagaState interface{}) (si *SagaInstance, err error) {
+	logger.Println(
+		logger.HiBlueString("Create Saga"),
+		si,
+	)
+
 	si, err = NewSagaInstance()
 	if err != nil {
 		return
 	}
-
-	logger.PrintFuncCall(sm.Create, si.Id)
 
 	si.Data = sagaState
 	err = sm.repository.Save(si)
@@ -122,7 +125,10 @@ func (sm *sagaManager) executeStep(si *SagaInstance) (err error) {
 		step := sm.sagaDefinition.Get(si.StepIndex)
 
 		if !si.checkStepHasHandler(step) {
-			logger.PrintFuncCall(sm.executeStep, logger.YellowString("skipping, since no handler to execute"), si)
+			logger.Println(
+				logger.YellowString("SagaStep no handler to call, skipping"),
+				si,
+			)
 			// skip if step does not have handler
 			si.shiftIndex()
 			continue

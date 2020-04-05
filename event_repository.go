@@ -1,5 +1,10 @@
 package mskit
 
+import (
+	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
+)
+
 // EventRepository manages Event
 type EventRepository struct {
 	eventStore EventStore
@@ -16,6 +21,12 @@ func NewEventRepository(eventStore EventStore, publisher EventPublisher) *EventR
 
 // Save saves Event
 func (r *EventRepository) Save(aggregate Aggregate, event Event) error {
+	logger.Println(
+		logger.HiBlueString("Save event on aggregate"),
+		logger.CyanString(event.AggregateType),
+		event.Data,
+	)
+
 	err := aggregate.Apply(event.Data)
 	if err != nil {
 		return err
@@ -30,12 +41,18 @@ func (r *EventRepository) Save(aggregate Aggregate, event Event) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
 // ExecuteCommand executes, saves and publishes data
 func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) error {
+	aggregateName := utils.GetTypeName(aggregate)
+	logger.Println(
+		logger.HiBlueString("Execute command on aggregate"),
+		logger.CyanString(aggregateName),
+		cmd,
+	)
+
 	events, err := aggregate.Process(cmd)
 	if err != nil {
 		return err
@@ -52,16 +69,21 @@ func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) e
 			return err
 		}
 	}
-
 	return nil
 }
 
 // Load loads up data for aggregate
 func (r *EventRepository) Load(id string, aggregate Aggregate) error {
+	aggregateName := utils.GetTypeName(aggregate)
+	logger.Println(
+		logger.HiBlueString("Load aggregate"),
+		logger.CyanString(aggregateName),
+		aggregate,
+	)
+
 	err := r.eventStore.Load(id, aggregate)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

@@ -69,7 +69,7 @@ func PrintResourceCreated(
 	args := formatArgsRest(
 		[]interface{}{
 			CyanString(resourceName),
-			BlueString("created"),
+			HiBlueString("created"),
 			resource,
 		},
 		rest,
@@ -86,7 +86,7 @@ func PrintResourceGet(
 	args := formatArgsRest(
 		[]interface{}{
 			CyanString(resourceName),
-			BlueString("get"),
+			HiBlueString("get"),
 			resource,
 		},
 		rest,

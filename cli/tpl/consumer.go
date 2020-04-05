@@ -7,7 +7,6 @@ import (
 	"{{ .PkgName }}"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -38,7 +37,7 @@ func (c *consumer) runSample() {
 			},
 		).
 		OnDelivery(func(d amqp.Delivery) {
-			logger.PrintFuncCall(c.runSample, d.Body)
+			// logic here
 		}).
 		Exec()
 }`

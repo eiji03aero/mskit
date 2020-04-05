@@ -8,12 +8,6 @@
 - refactor
   - try simplify the initialization in cmd/app :(
     - gave up for now
-  - should think about how eventstore and sagastore dealing with restoring data from json
-  - registry could be utilized more?
-    - put it in utils
-
-- rpc
-  - add timeout
 
 - refactor services
   - align the structure

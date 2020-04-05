@@ -1,11 +1,11 @@
 package mskit
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 
 	"github.com/eiji03aero/mskit/utils"
+	"github.com/eiji03aero/mskit/utils/logger"
 )
 
 // EventMap is a map to hold Event structs
@@ -31,10 +31,14 @@ func (er *EventRegistry) Set(event interface{}) error {
 }
 
 // Get returns pointer to the struct that was registered by Set
-func (er *EventRegistry) Get(name string) (interface{}, error) {
+func (er *EventRegistry) Get(name string) (event interface{}, err error) {
 	rawType, ok := er.events[name]
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("not registered event: %s", name))
+		err = fmt.Errorf("Not registered event %s", name)
+		logger.Println(logger.RedString(err.Error()))
+		return
 	}
-	return reflect.New(rawType).Interface(), nil
+
+	event = reflect.New(rawType).Interface()
+	return
 }

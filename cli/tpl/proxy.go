@@ -11,7 +11,6 @@ func ProxyTemplate() string {
 import (
 	"{{ .PkgName }}"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
-	"github.com/eiji03aero/mskit/utils/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -26,8 +25,6 @@ func New(c *rabbitmq.Client) {{ .PkgName }}.{{ .InterfaceName }} {
 }
 
 func (p *proxy) Method() (err error) {
-	logger.PrintFuncCall(p.Method)
-
 	_, err = p.client.NewRPCClient().
 		Configure(
 			rabbitmq.PublishArgs{

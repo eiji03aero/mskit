@@ -1,6 +1,7 @@
 package service
 
 import (
+	restaurantroot "restaurant"
 	restaurantdmn "restaurant/domain/restaurant"
 
 	"github.com/eiji03aero/mskit"
@@ -12,11 +13,7 @@ type service struct {
 	publisher       mskit.EventPublisher
 }
 
-type Service interface {
-	CreateRestaurant(cmd restaurantdmn.CreateRestaurant) (id string, err error)
-}
-
-func New(r *mskit.EventRepository, p mskit.EventPublisher) Service {
+func New(r *mskit.EventRepository, p mskit.EventPublisher) restaurantroot.Service {
 	return &service{
 		eventRepository: r,
 		publisher:       p,

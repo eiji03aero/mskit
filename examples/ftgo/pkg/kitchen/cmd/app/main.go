@@ -37,13 +37,13 @@ func main() {
 		panic(err)
 	}
 
-	eventBusClient, err := rabbitmq.NewClient(rabbitmqOption)
+	eb, err := rabbitmq.NewClient(rabbitmqOption)
 
 	svc := kitchensvc.New(
 		mskit.NewEventRepository(es, &mskit.StubEventPublisher{}),
 	)
 
-	err = rpcendpoint.New(eventBusClient, svc).Run()
+	err = rpcendpoint.New(eb, svc).Run()
 	if err != nil {
 		panic(err)
 	}

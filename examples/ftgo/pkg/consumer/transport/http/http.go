@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"path"
 
+	consumerroot "consumer"
 	consumerdmn "consumer/domain/consumer"
-	consumersvc "consumer/service"
 
 	"github.com/eiji03aero/mskit/utils/logger"
 )
 
-func New(svc consumersvc.Service) *http.ServeMux {
+func New(svc consumerroot.Service) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.Handle("/consumers", consumers(svc))
 	mux.Handle("/consumers/", consumersMember(svc))
@@ -20,7 +20,7 @@ func New(svc consumersvc.Service) *http.ServeMux {
 	return mux
 }
 
-func consumers(svc consumersvc.Service) http.HandlerFunc {
+func consumers(svc consumerroot.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
@@ -54,7 +54,7 @@ func consumers(svc consumersvc.Service) http.HandlerFunc {
 	}
 }
 
-func consumersMember(svc consumersvc.Service) http.HandlerFunc {
+func consumersMember(svc consumerroot.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
 

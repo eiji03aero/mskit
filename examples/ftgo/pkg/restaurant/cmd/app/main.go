@@ -29,19 +29,19 @@ func main() {
 	er := mskit.NewEventRegistry()
 	er.Set(restaurantdmn.RestaurantCreated{})
 
-	eventBusClient, err := rabbitmq.NewClient(rabbitmqOption)
+	eb, err := rabbitmq.NewClient(rabbitmqOption)
 	if err != nil {
 		panic(err)
 	}
-	dep := publisher.New(eventBusClient)
+	dep := publisher.New(eb)
 
 	es, err := eventstore.New(dbOption, er)
 	if err != nil {
 		panic(err)
 	}
-	eventRepository := mskit.NewEventRepository(es, dep)
+	erp := mskit.NewEventRepository(es, dep)
 
-	svc := restaurantsvc.New(eventRepository, dep)
+	svc := restaurantsvc.New(erp, dep)
 	mux := httptransport.New(svc)
 
 	logger.Println("server starting to listen ...")

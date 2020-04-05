@@ -5,20 +5,20 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	restaurantroot "restaurant"
 	restaurantdmn "restaurant/domain/restaurant"
-	restaurantsvc "restaurant/service"
 
 	"github.com/eiji03aero/mskit/utils/logger"
 )
 
-func New(svc restaurantsvc.Service) *http.ServeMux {
+func New(svc restaurantroot.Service) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.Handle("/restaurants", restaurants(svc))
 
 	return mux
 }
 
-func restaurants(svc restaurantsvc.Service) http.HandlerFunc {
+func restaurants(svc restaurantroot.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":

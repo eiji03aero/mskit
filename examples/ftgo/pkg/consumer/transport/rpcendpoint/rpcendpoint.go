@@ -3,22 +3,22 @@ package rpcendpoint
 import (
 	"encoding/json"
 
+	consumerroot "consumer"
 	consumerdmn "consumer/domain/consumer"
-	consumersvc "consumer/service"
 
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
 	"github.com/streadway/amqp"
 )
 
 type rpcEndpoint struct {
-	c   *rabbitmq.Client
-	svc consumersvc.Service
+	client  *rabbitmq.Client
+	service consumerroot.Service
 }
 
-func New(c *rabbitmq.Client, svc consumersvc.Service) *rpcEndpoint {
+func New(c *rabbitmq.Client, svc consumerroot.Service) *rpcEndpoint {
 	return &rpcEndpoint{
-		c:   c,
-		svc: svc,
+		client:  c,
+		service: svc,
 	}
 }
 
@@ -29,7 +29,7 @@ func (re *rpcEndpoint) Run() (err error) {
 }
 
 func (re *rpcEndpoint) runValidateOrder() {
-	re.c.NewRPCEndpoint().
+	re.client.NewRPCEndpoint().
 		Configure(
 			rabbitmq.QueueOption{
 				Name: "consumer.rpc.validate-order",
@@ -42,7 +42,7 @@ func (re *rpcEndpoint) runValidateOrder() {
 				return rabbitmq.MakeFailResponse(p, err)
 			}
 
-			err = re.svc.ValidateOrder(command)
+			err = re.service.ValidateOrder(command)
 			if err != nil {
 				return rabbitmq.MakeFailResponse(p, err)
 			}

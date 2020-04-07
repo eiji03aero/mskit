@@ -61,7 +61,7 @@ func (p *Project) initializeService(
 	}
 
 	if _, err = os.Stat(directoryPath); os.IsExist(err) {
-		return fmt.Errorf("directory exists: ", directoryPath)
+		return fmt.Errorf("directory exists: %s", directoryPath)
 	}
 
 	err = createDir(directoryPath)
@@ -101,6 +101,16 @@ func (p *Project) initializeService(
 		appDirectoryPath,
 		"main.go",
 		tpl.CmdAppTemplate(),
+		p,
+	)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		appDirectoryPath,
+		"env.go",
+		tpl.CmdEnvTemplate(),
 		p,
 	)
 	if err != nil {

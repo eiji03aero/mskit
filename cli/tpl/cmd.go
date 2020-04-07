@@ -19,7 +19,7 @@ func CmdEnvTemplate() string {
 	return `package main
 
 import (
-	"github.com/keyseyhightower/envconfig"
+	"github.com/kelseyhightower/envconfig"
 )
 
 func init() {

@@ -17,20 +17,6 @@ func Println(
 	log.Println(args...)
 }
 
-func PrintFail(
-	msg string,
-	args ...interface{},
-) {
-	args = formatArgsRest(
-		[]interface{}{
-			RedString(msg),
-		},
-		args,
-	)
-
-	log.Println(args...)
-}
-
 func PrintFuncCall(
 	f interface{},
 	rest ...interface{},
@@ -39,6 +25,23 @@ func PrintFuncCall(
 	args := formatArgsRest(
 		[]interface{}{
 			CyanString(fname),
+		},
+		rest,
+	)
+
+	log.Println(args...)
+}
+
+func PrintFuncError(
+	f interface{},
+	err error,
+	rest ...interface{},
+) {
+	fname := utils.GetFunctionNameParent(f)
+	args := formatArgsRest(
+		[]interface{}{
+			CyanString(fname),
+			RedString(err.Error()),
 		},
 		rest,
 	)

@@ -99,6 +99,12 @@ func (rc *RPCClient) Exec() (delivery amqp.Delivery, err error) {
 		return
 	}
 
+	logger.Println(
+		logger.YellowString("Receive rpc response"),
+		logger.CyanString(rc.PublishArgs.RoutingKey),
+		delivery.Body,
+	)
+
 	if !IsSuccessResponse(delivery) {
 		errMsg := getErrorMessage(delivery)
 		if errMsg == "" {

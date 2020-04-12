@@ -20,16 +20,16 @@ func NewEventRepository(eventStore EventStore, publisher EventPublisher) *EventR
 }
 
 // Save saves Event
-func (r *EventRepository) Save(aggregate Aggregate, event Event) error {
+func (r *EventRepository) save(aggregate Aggregate, event Event) (err error) {
 	logger.Println(
 		logger.HiBlueString("Save event on aggregate"),
 		logger.CyanString(event.AggregateType),
 		event.Data,
 	)
 
-	err := aggregate.Apply(event.Data)
+	err = aggregate.Apply(event.Data)
 	if err != nil {
-		return err
+		return
 	}
 
 	errors := aggregate.Validate()
@@ -39,13 +39,31 @@ func (r *EventRepository) Save(aggregate Aggregate, event Event) error {
 
 	err = r.eventStore.Save(event)
 	if err != nil {
-		return err
+		return
 	}
+
+	return nil
+}
+
+// SaveEvents saves Event and publish
+func (r *EventRepository) Save(aggregate Aggregate, events Events) (err error) {
+	for _, e := range events {
+		err = r.save(aggregate, e)
+		if err != nil {
+			return
+		}
+
+		err = r.publisher.Publish(e.Data)
+		if err != nil {
+			return
+		}
+	}
+
 	return nil
 }
 
 // ExecuteCommand executes, saves and publishes data
-func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) error {
+func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) (err error) {
 	aggregateName := utils.GetTypeName(aggregate)
 	logger.Println(
 		logger.HiBlueString("Execute command on aggregate"),
@@ -55,25 +73,19 @@ func (r *EventRepository) ExecuteCommand(aggregate Aggregate, cmd interface{}) e
 
 	events, err := aggregate.Process(cmd)
 	if err != nil {
-		return err
+		return
 	}
 
-	for _, e := range events {
-		err = r.Save(aggregate, e)
-		if err != nil {
-			return err
-		}
-
-		err = r.publisher.Publish(e.Data)
-		if err != nil {
-			return err
-		}
+	err = r.Save(aggregate, events)
+	if err != nil {
+		return
 	}
-	return nil
+
+	return
 }
 
 // Load loads up data for aggregate
-func (r *EventRepository) Load(id string, aggregate Aggregate) error {
+func (r *EventRepository) Load(id string, aggregate Aggregate) (err error) {
 	aggregateName := utils.GetTypeName(aggregate)
 	logger.Println(
 		logger.HiBlueString("Load aggregate"),
@@ -81,9 +93,9 @@ func (r *EventRepository) Load(id string, aggregate Aggregate) error {
 		aggregate,
 	)
 
-	err := r.eventStore.Load(id, aggregate)
+	err = r.eventStore.Load(id, aggregate)
 	if err != nil {
-		return err
+		return
 	}
-	return nil
+	return
 }

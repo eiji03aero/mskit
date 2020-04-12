@@ -22,7 +22,7 @@ type {{ .AggregateName }} struct {
 
 func New{{ .AggregateName }}() *{{ .AggregateName }} {
 	return &{{ .AggregateName }}{
-		{{ .Name }}: &{{ .Name }}{}
+		{{ .Name }}: &{{ .Name }}{},
 	}
 }
 

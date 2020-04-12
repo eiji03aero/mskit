@@ -37,7 +37,7 @@ func (p *publisher) Publish(event interface{}) (err error) {
 }
 
 func (p *publisher) publishSample(event interface{}, eventJson []byte) (err error) {
-	return p.c.NewPublisher().
+	return p.client.NewPublisher().
 		Configure(
 			rabbitmq.TopicPublisherOption{
 				ExchangeName: "topic-sample",

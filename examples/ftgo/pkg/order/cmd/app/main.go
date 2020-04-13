@@ -3,18 +3,18 @@ package main
 import (
 	"net/http"
 
+	"order/adapter/consumer"
+	httpadapter "order/adapter/http"
+	accountingpxy "order/adapter/proxy/accounting"
+	consumerpxy "order/adapter/proxy/consumer"
+	kitchenpxy "order/adapter/proxy/kitchen"
+	orderpxy "order/adapter/proxy/order"
+	"order/adapter/rpcendpoint"
 	orderdmn "order/domain/order"
 	restaurantrepo "order/repository/restaurant"
 	"order/saga/createorder"
 	"order/saga/reviseorder"
 	"order/service"
-	"order/transport/consumer"
-	httptransport "order/transport/http"
-	accountingpxy "order/transport/proxy/accounting"
-	consumerpxy "order/transport/proxy/consumer"
-	kitchenpxy "order/transport/proxy/kitchen"
-	orderpxy "order/transport/proxy/order"
-	"order/transport/rpcendpoint"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/postgres"
@@ -114,7 +114,7 @@ func main() {
 		panic(err)
 	}
 
-	mux := httptransport.New(svc)
+	mux := httpadapter.New(svc)
 	logger.Println("server starting to listen ...")
 	http.ListenAndServe(":3000", mux)
 }

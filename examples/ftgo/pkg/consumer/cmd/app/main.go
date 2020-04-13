@@ -3,11 +3,11 @@ package main
 import (
 	"net/http"
 
+	httpadapter "consumer/adapter/http"
+	"consumer/adapter/publisher"
+	"consumer/adapter/rpcendpoint"
 	consumerdmn "consumer/domain/consumer"
 	consumersvc "consumer/service"
-	httptransport "consumer/transport/http"
-	"consumer/transport/publisher"
-	"consumer/transport/rpcendpoint"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/mongo"
@@ -51,7 +51,7 @@ func main() {
 		panic(err)
 	}
 
-	mux := httptransport.New(svc)
+	mux := httpadapter.New(svc)
 
 	logger.Println("server starting to listen ...")
 	http.ListenAndServe(":3003", mux)

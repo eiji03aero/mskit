@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	StatusCode_Success int32 = 200
-	StatusCode_Fail    int32 = 400
+	StatusCode_Success  int32 = 200
+	StatusCode_Fail     int32 = 400
+	StatusCode_NotFound int32 = 404
 )
 
 func MakeSuccessResponse(p amqp.Publishing) amqp.Publishing {
@@ -26,8 +27,25 @@ func MakeFailResponse(p amqp.Publishing, opts ...interface{}) (pr amqp.Publishin
 	return
 }
 
+func MakeNotFoundResponse(p amqp.Publishing, opts ...interface{}) (pr amqp.Publishing) {
+	pr = setStatusCode(p, StatusCode_NotFound)
+
+	for _, opt := range opts {
+		switch o := opt.(type) {
+		case error:
+			pr = setErrorMessage(pr, o.Error())
+		}
+	}
+
+	return
+}
+
 func IsSuccessResponse(d amqp.Delivery) bool {
 	return d.Headers["status_code"] == StatusCode_Success
+}
+
+func IsNotFoundResponse(d amqp.Delivery) bool {
+	return d.Headers["status_code"] == StatusCode_NotFound
 }
 
 func setStatusCode(p amqp.Publishing, code int32) amqp.Publishing {

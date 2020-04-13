@@ -1,10 +1,10 @@
 package main
 
 import (
+	"accounting/adapter/consumer"
+	"accounting/adapter/rpcendpoint"
 	accountdmn "accounting/domain/account"
 	"accounting/service"
-	"accounting/transport/consumer"
-	"accounting/transport/rpcendpoint"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/mongo"

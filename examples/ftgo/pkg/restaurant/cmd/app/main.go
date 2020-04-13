@@ -2,10 +2,10 @@ package main
 
 import (
 	"net/http"
+	httpadapter "restaurant/adapter/http"
+	"restaurant/adapter/publisher"
 	restaurantdmn "restaurant/domain/restaurant"
 	restaurantsvc "restaurant/service"
-	httptransport "restaurant/transport/http"
-	"restaurant/transport/publisher"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/mongo"
@@ -42,7 +42,7 @@ func main() {
 	erp := mskit.NewEventRepository(es, dep)
 
 	svc := restaurantsvc.New(erp, dep)
-	mux := httptransport.New(svc)
+	mux := httpadapter.New(svc)
 
 	logger.Println("server starting to listen ...")
 	http.ListenAndServe(":3002", mux)

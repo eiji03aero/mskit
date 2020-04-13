@@ -1,9 +1,9 @@
 package main
 
 import (
+	"kitchen/adapter/rpcendpoint"
 	ticketdmn "kitchen/domain/ticket"
 	kitchensvc "kitchen/service"
-	"kitchen/transport/rpcendpoint"
 
 	"github.com/eiji03aero/mskit"
 	"github.com/eiji03aero/mskit/db/mongo"

@@ -45,7 +45,7 @@ func (p *Project) acquirePkgName() (err error) {
 	return
 }
 
-// -------------------- commands --------------------
+// -------------------- initialize --------------------
 func (p *Project) initializeService(
 	directoryPath string,
 	pkgName string,
@@ -79,7 +79,6 @@ func (p *Project) initializeService(
 		return
 	}
 
-	// -------------------- root --------------------
 	err = createFileWithTemplate(
 		directoryPath,
 		"service.go",
@@ -90,7 +89,6 @@ func (p *Project) initializeService(
 		return
 	}
 
-	// -------------------- cmd --------------------
 	appDirectoryPath := fmt.Sprintf("%s/cmd/app", directoryPath)
 	err = createDir(appDirectoryPath)
 	if err != nil {
@@ -117,14 +115,12 @@ func (p *Project) initializeService(
 		return
 	}
 
-	// -------------------- domain --------------------
 	domainDirectoryPath := fmt.Sprintf("%s/domain", directoryPath)
 	err = createDir(domainDirectoryPath)
 	if err != nil {
 		return
 	}
 
-	// -------------------- service --------------------
 	serviceDirectoryPath := fmt.Sprintf("%s/service", directoryPath)
 
 	err = createDir(serviceDirectoryPath)
@@ -145,6 +141,7 @@ func (p *Project) initializeService(
 	return
 }
 
+// -------------------- domain --------------------
 func (p *Project) generateAggregate(name string) (err error) {
 	data := struct {
 		Name          string
@@ -209,8 +206,9 @@ func (p *Project) generateAggregate(name string) (err error) {
 	return
 }
 
+// -------------------- adapters --------------------
 func (p *Project) generatePublisher() (err error) {
-	dir := fmt.Sprintf("%s/transport/publisher", p.WorkingDir)
+	dir := fmt.Sprintf("%s/adapter/publisher", p.WorkingDir)
 
 	err = createDir(dir)
 	if err != nil {
@@ -231,7 +229,7 @@ func (p *Project) generatePublisher() (err error) {
 }
 
 func (p *Project) generateConsumer() (err error) {
-	dir := fmt.Sprintf("%s/transport/consumer", p.WorkingDir)
+	dir := fmt.Sprintf("%s/adapter/consumer", p.WorkingDir)
 
 	err = createDir(dir)
 	if err != nil {
@@ -252,7 +250,7 @@ func (p *Project) generateConsumer() (err error) {
 }
 
 func (p *Project) generateRPCEndpoint() (err error) {
-	dir := fmt.Sprintf("%s/transport/rpcendpoint", p.WorkingDir)
+	dir := fmt.Sprintf("%s/adapter/rpcendpoint", p.WorkingDir)
 
 	err = createDir(dir)
 	if err != nil {
@@ -286,7 +284,6 @@ func (p *Project) generateProxy(name string) (err error) {
 		InterfaceName: fmt.Sprintf("%sProxy", name),
 	}
 
-	// -------------------- root --------------------
 	fileName := "proxy.go"
 	rootFilePath := fmt.Sprintf("%s/%s", dir, fileName)
 	if _, err = os.Stat(rootFilePath); os.IsNotExist(err) {
@@ -310,8 +307,7 @@ func (p *Project) generateProxy(name string) (err error) {
 		panic(err)
 	}
 
-	// -------------------- transport/proxy --------------------
-	proxyDir := fmt.Sprintf("%s/transport/proxy/%s", dir, data.LowerName)
+	proxyDir := fmt.Sprintf("%s/adapter/proxy/%s", dir, data.LowerName)
 
 	err = createDir(proxyDir)
 	if err != nil {
@@ -331,6 +327,7 @@ func (p *Project) generateProxy(name string) (err error) {
 	return
 }
 
+// -------------------- saga --------------------
 func (p *Project) generateSaga(name string) (err error) {
 	dir := p.WorkingDir
 	data := struct {
@@ -343,7 +340,6 @@ func (p *Project) generateSaga(name string) (err error) {
 		LowerName: strings.ToLower(name),
 	}
 
-	// -------------------- saga --------------------
 	sagaDir := fmt.Sprintf("%s/saga", dir)
 	sagaImplDir := fmt.Sprintf("%s/%s", sagaDir, data.LowerName)
 

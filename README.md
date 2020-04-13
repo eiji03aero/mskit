@@ -6,6 +6,9 @@
   - none
 
 - refactor
+  - adapt domain service and refactor domain directory
+    - add aggregates and services directory
+    - take auth service as reference
   - try simplify the initialization in cmd/app :(
     - gave up for now
 

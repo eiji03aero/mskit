@@ -90,7 +90,7 @@ func (r *EventRepository) Load(id string, aggregate Aggregate) (err error) {
 	logger.Println(
 		logger.HiBlueString("Load aggregate"),
 		logger.CyanString(aggregateName),
-		aggregate,
+		id,
 	)
 
 	err = r.eventStore.Load(id, aggregate)

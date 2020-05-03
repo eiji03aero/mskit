@@ -90,7 +90,7 @@ func (rc *RPCClient) Exec() (delivery amqp.Delivery, err error) {
 	select {
 	case delivery = <-deliveryChan:
 	case <-time.After(60 * time.Second):
-		err = errors.New("rpc request timed out")
+		err = errors.New("RPC request timed out")
 		logger.Println(
 			logger.RedString(err.Error()),
 			logger.CyanString(rc.PublishArgs.RoutingKey),
@@ -99,20 +99,27 @@ func (rc *RPCClient) Exec() (delivery amqp.Delivery, err error) {
 		return
 	}
 
+	if !IsSuccessResponse(delivery) {
+		errMsg := getErrorMessage(delivery)
+		if errMsg == "" {
+			errMsg = "rpc not succeed"
+		}
+
+		logger.Println(
+			logger.RedString("RPC failed"),
+			logger.CyanString(rc.PublishArgs.RoutingKey),
+			errMsg,
+		)
+
+		err = errors.New(errMsg)
+		return
+	}
+
 	logger.Println(
 		logger.YellowString("Receive rpc response"),
 		logger.CyanString(rc.PublishArgs.RoutingKey),
 		delivery.Body,
 	)
-
-	if !IsSuccessResponse(delivery) {
-		errMsg := getErrorMessage(delivery)
-		if errMsg == "" {
-			errMsg = "rpc failed"
-		}
-
-		err = errors.New(errMsg)
-	}
 
 	return
 }

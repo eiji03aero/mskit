@@ -30,14 +30,14 @@ func ({{ .NameInitial }} *{{ .AggregateName }}) Validate() (errs []error) {
 	return
 }
 
-func ({{ .NameInitial }} *{{ .AggregateName }}) Process(command interface{}) (mskit.Events, error) {
+func ({{ .NameInitial }} *{{ .AggregateName }}) Process(command interface{}) (events mskit.Events, err error) {
 	switch cmd := command.(type) {
 	default:
-		return mskit.Events{}, errbdr.NewErrUnknownParams({{ .NameInitial }}.Process, cmd)
+		return nil, errbdr.NewErrUnknownParams({{ .NameInitial }}.Process, cmd)
 	}
 }
 
-func ({{ .NameInitial }} *{{ .AggregateName }}) Apply(event interface{}) error {
+func ({{ .NameInitial }} *{{ .AggregateName }}) Apply(event interface{}) (err error) {
 	switch e := event.(type) {
 	default:
 		return errbdr.NewErrUnknownParams({{ .NameInitial }}.Apply, e)

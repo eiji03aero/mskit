@@ -1,5 +1,19 @@
 package order
 
+import (
+	"github.com/eiji03aero/mskit/facade"
+)
+
+func init() {
+	facade.RegisterEvent(OrderCreated{})
+	facade.RegisterEvent(OrderRejected{})
+	facade.RegisterEvent(OrderApproved{})
+	facade.RegisterEvent(OrderRevisionBegan{})
+	facade.RegisterEvent(UndoOrderRevisionBegan{})
+	facade.RegisterEvent(OrderRevisionConfirmed{})
+	facade.RegisterEvent(OrderTicketIdSet{})
+}
+
 type OrderCreated struct {
 	Id                  string              `json:"id"`
 	ConsumerId          string              `json:"consumer_id"`

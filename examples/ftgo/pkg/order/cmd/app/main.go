@@ -10,7 +10,6 @@ import (
 	kitchenpxy "order/adapter/proxy/kitchen"
 	orderpxy "order/adapter/proxy/order"
 	"order/adapter/rpcendpoint"
-	orderdmn "order/domain/order"
 	restaurantrepo "order/repository/restaurant"
 	"order/saga/createorder"
 	"order/saga/reviseorder"
@@ -21,6 +20,7 @@ import (
 	"github.com/eiji03aero/mskit/db/postgres/eventstore"
 	"github.com/eiji03aero/mskit/db/postgres/sagastore"
 	"github.com/eiji03aero/mskit/eventbus/rabbitmq"
+	"github.com/eiji03aero/mskit/facade"
 	"github.com/eiji03aero/mskit/utils/logger"
 )
 
@@ -44,16 +44,7 @@ func main() {
 		panic(err)
 	}
 
-	eventRegistry := mskit.NewEventRegistry()
-	eventRegistry.Set(orderdmn.OrderCreated{})
-	eventRegistry.Set(orderdmn.OrderRejected{})
-	eventRegistry.Set(orderdmn.OrderApproved{})
-	eventRegistry.Set(orderdmn.OrderRevisionBegan{})
-	eventRegistry.Set(orderdmn.UndoOrderRevisionBegan{})
-	eventRegistry.Set(orderdmn.OrderRevisionConfirmed{})
-	eventRegistry.Set(orderdmn.OrderTicketIdSet{})
-
-	eventStore, err := eventstore.New(dbOption, eventRegistry)
+	eventStore, err := eventstore.New(dbOption, facade.EventRegistry)
 	if err != nil {
 		panic(err)
 	}

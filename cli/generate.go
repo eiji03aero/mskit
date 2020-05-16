@@ -9,7 +9,8 @@ import (
 func init() {
 	rootCmd.AddCommand(generateCmd)
 
-	generateCmd.AddCommand(generateAggregateCmd)
+	generateCmd.AddCommand(generateDomainAggregateCmd)
+	generateCmd.AddCommand(generateDomainServiceCmd)
 	generateCmd.AddCommand(generatePublisherCmd)
 	generateCmd.AddCommand(generateConsumerCmd)
 	generateCmd.AddCommand(generateRPCEndpointCmd)
@@ -26,14 +27,28 @@ var generateCmd = &cobra.Command{
 	},
 }
 
-var generateAggregateCmd = &cobra.Command{
-	Use:   "aggregate",
-	Short: "Generates aggregate template",
-	Long:  "Generates aggregate template",
+var generateDomainAggregateCmd = &cobra.Command{
+	Use:   "domain:aggregate",
+	Short: "Generates domain aggregate template",
+	Long:  "Generates domain aggregate template",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
-		err := project.generateAggregate(name)
+		err := project.generateDomainAggregate(name)
+		if err != nil {
+			panic(err)
+		}
+	},
+}
+
+var generateDomainServiceCmd = &cobra.Command{
+	Use:   "domain:service",
+	Short: "Generates domain service template",
+	Long:  "Generates domain service template",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		name := args[0]
+		err := project.generateDomainService(name)
 		if err != nil {
 			panic(err)
 		}

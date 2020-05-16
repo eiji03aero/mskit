@@ -1,5 +1,10 @@
 package tpl
 
+func RootDomain() string {
+	return `package {{ .PkgName }}
+`
+}
+
 func DomainEntityTemplate() string {
 	return `package {{ .LowerName }}
 
@@ -53,4 +58,18 @@ func DomainCommandsTemplate() string {
 func DomainEventsTemplate() string {
 	return `package {{ .LowerName }}
 `
+}
+
+func DomainServiceTemplate() string {
+	return `package {{ .LowerName }}
+
+import (
+	"{{ .PkgName }}"
+)
+
+type service struct {}
+
+func New () {{ .PkgName }}.{{ .InterfaceName }} {
+	return &service{}
+}`
 }

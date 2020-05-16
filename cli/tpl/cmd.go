@@ -4,8 +4,6 @@ func CmdAppTemplate() string {
 	return `package main
 
 import (
-	"log"
-
 	"{{ .PkgName }}/service"
 
 	"github.com/eiji03aero/mskit/utils/logger"

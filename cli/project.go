@@ -142,7 +142,7 @@ func (p *Project) initializeService(
 }
 
 // -------------------- domain --------------------
-func (p *Project) generateAggregate(name string) (err error) {
+func (p *Project) generateDomainAggregate(name string) (err error) {
 	data := struct {
 		Name          string
 		LowerName     string
@@ -156,7 +156,7 @@ func (p *Project) generateAggregate(name string) (err error) {
 	data.SnakeName = strcase.ToSnake(name)
 	data.NameInitial = string([]rune(data.LowerName)[0])
 
-	dir := fmt.Sprintf("%s/domain/%s", p.WorkingDir, data.LowerName)
+	dir := fmt.Sprintf("%s/domain/entity/%s", p.WorkingDir, data.LowerName)
 
 	err = createDir(dir)
 	if err != nil {
@@ -197,6 +197,64 @@ func (p *Project) generateAggregate(name string) (err error) {
 		dir,
 		data.LowerName+"_events.go",
 		tpl.DomainEventsTemplate(),
+		data,
+	)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (p *Project) generateDomainService(name string) (err error) {
+	data := struct {
+		PkgName       string
+		Name          string
+		LowerName     string
+		SnakeName     string
+		InterfaceName string
+	}{
+		PkgName:       p.PkgName,
+		Name:          name,
+		LowerName:     strings.ToLower(name),
+		SnakeName:     strcase.ToSnake(name),
+		InterfaceName: name + "Service",
+	}
+
+	rootFileName := "domain.go"
+	rootFilePath := fmt.Sprintf("%s/%s", p.WorkingDir, rootFileName)
+
+	if _, err = os.Stat(rootFilePath); os.IsNotExist(err) {
+		err = createFileWithTemplate(
+			p.WorkingDir,
+			rootFileName,
+			tpl.RootProxy(),
+			data,
+		)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	err = appendToFileWithTemplate(
+		rootFilePath,
+		tpl.Interface(),
+		data,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	dmnDir := fmt.Sprintf("%s/domain/service/%s", p.WorkingDir, data.LowerName)
+	err = createDir(dmnDir)
+	if err != nil {
+		return
+	}
+
+	err = createFileWithTemplate(
+		dmnDir,
+		data.LowerName+".go",
+		tpl.DomainServiceTemplate(),
 		data,
 	)
 	if err != nil {

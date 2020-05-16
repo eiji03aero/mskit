@@ -2,26 +2,24 @@
 - toolkit for microservices in go
 
 # Todo
+
+```
 - review namings
   - none
 
 - refactor
-  - adapt domain service and refactor domain directory
-    - add aggregates and services directory
-    - take auth service as reference
   - try simplify the initialization in cmd/app :(
     - gave up for now
+    - kind of waiting for generics to see what it's gotta bring on table
 
 - setup tests
   - unit tests
   - add comments on exporteds
-  - github action
-  - reference
-    - https://github.com/jetbasrawi/go.cqrs
 
 - update aggregate
   - version
   - snapshot
+```
 
 # Concerns
 - better implementation for saga?
@@ -44,7 +42,10 @@ $ mskit init order
 $ cd order
 
 # generate aggregate
-$ mskit generate aggregate Order
+$ mskit generate domain:aggregate Order
+
+# generate domain service
+$ mskit generate domain:service Order
 
 # generate proxy
 $ mskit generate proxy Kitchen
